@@ -31,13 +31,16 @@ import org.alfresco.po.share.site.CreateSitePage;
 import org.alfresco.po.share.site.NewFolderPage;
 import org.alfresco.po.share.site.SiteDashboardPage;
 import org.alfresco.po.share.site.SitePage;
+import org.alfresco.po.share.site.UpdateFilePage;
 import org.alfresco.po.share.site.UploadFilePage;
+import org.alfresco.po.share.site.document.ConfirmDeletePage;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.po.share.site.document.CreatePlainTextContentPage;
 import org.alfresco.po.share.site.document.DocumentDetailsPage;
 import org.alfresco.po.share.site.document.DocumentLibraryPage;
 import org.alfresco.po.share.site.document.FileDirectoryInfo;
+import org.alfresco.po.share.site.document.ConfirmDeletePage.Action;
 import org.alfresco.webdrone.HtmlPage;
 import org.alfresco.webdrone.WebDrone;
 import org.alfresco.webdrone.exception.PageException;
@@ -466,7 +469,7 @@ public class ShareUtil
      * @return {@link DocumentLibraryPage}
      * @throws Exception
      */
-    public static DocumentLibraryPage createContent(WebDrone drone, ContentDetails contentDetails, ContentType contentType) throws Exception
+    public DocumentLibraryPage createContent(WebDrone drone, ContentDetails contentDetails, ContentType contentType) throws Exception
     {
         // Open Document Library
         DocumentLibraryPage documentLibPage = openDocumentLibrary(drone);
@@ -636,7 +639,7 @@ public class ShareUtil
      * @param contents String Contents for text file
      * @return File
      */
-    public File newFile(String filename, String contents)
+    public static  File newFile(String filename, String contents)
     {
         File file = new File(filename);
 
@@ -688,6 +691,85 @@ public class ShareUtil
        FileDirectoryInfo fileInfo =  getFileDirectoryInfo(drone, FileName);
        fileInfo.selectDownload();
     }
+    
+    /**
+     * Delete content in share 
+     * 
+     */
+    public void deleteContentInDocLib(WebDrone drone, String contentName)
+    {
+        selectContentCheckBox(drone, contentName);
+        DocumentLibraryPage doclib = deleteDocLibContents(drone);
+        doclib.render();
+        
+    }
+    /**
+     * Checks the checkbox for a content if not selected on the document library
+     * page.
+     * 
+     * @param drone
+     * @param contentName
+     * @return DocumentLibraryPage
+     * @IMP Note: Expects the user is logged in and document library page within
+     *      the selected site is open.
+     */
+    private  DocumentLibraryPage selectContentCheckBox(WebDrone drone, String contentName)
+    {
+        DocumentLibraryPage docLibPage = ((DocumentLibraryPage) getSharePage(drone)).render();
+        if (!docLibPage.getFileDirectoryInfo(contentName).isCheckboxSelected())
+        {
+            docLibPage.getFileDirectoryInfo(contentName).selectCheckbox();
+        }
+        return docLibPage.render();
+    }
+
+    /**
+     * Delete doc lib contents.
+     * 
+     * @param drone
+     * @return
+     */
+    private  DocumentLibraryPage deleteDocLibContents(WebDrone drone)
+    {
+        ConfirmDeletePage deletePage = ((DocumentLibraryPage) getSharePage(drone)).getNavigation().render().selectDelete();
+        return deletePage.selectAction(Action.Delete).render();
+    }
+
+   
+  /**
+     * This method uploads the new version for the document with the given file
+     * from data folder. User should be on Document details page.
+     * 
+     * @param fileName
+     * @param drone
+     * @return DocumentDetailsPage
+     * @throws IOException
+     */
+    public  String uploadNewVersionOfDocument(WebDrone drone,String title, String fileName, String comments) throws IOException
+    {
+        String fileContents = "New File being created via newFile:" + fileName;
+        File newFileName = newFile(fileName , fileContents);
+        DocumentLibraryPage doclib = (DocumentLibraryPage) drone.getCurrentPage();
+        DocumentDetailsPage detailsPage = doclib.selectFile(title).render();
+        UpdateFilePage updatePage = detailsPage.selectUploadNewVersion().render();
+        updatePage.selectMajorVersionChange();
+        updatePage.uploadFile(newFileName.getCanonicalPath());
+        updatePage.setComment(comments);
+        detailsPage = updatePage.submit().render();
+        return detailsPage.getDocumentVersion();
+    }
+    
+    /**
+     * Just get version number of the file 
+     */
+    public String getVersionNumber(WebDrone drone , String title)
+    {
+        DocumentLibraryPage doclib = (DocumentLibraryPage) drone.getCurrentPage();
+        DocumentDetailsPage detailsPage = doclib.selectFile(title).render();
+        return detailsPage.getDocumentVersion();
+    }
+    
+    
 }
 
    
