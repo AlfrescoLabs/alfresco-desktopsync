@@ -19,10 +19,18 @@ package org.alfresco.util;
  * This method contains all the required LDTP until
  */
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.alfresco.test.utilities.AbstractTestUitl;
 import org.alfresco.webdrone.WebDrone;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeSuite;
@@ -50,5 +58,58 @@ public class AbstractTest extends ShareAbstract
         }
 
     }
+    
+    /**
+     * Util method for waiting
+     * 
+     * @return
+     * @throws InterruptedException
+     */
+    public void syncWaitTime(long totalWaitTime) throws InterruptedException
+    {
+        int delaytime = 60000;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MMM-dd HH:mm (z)");
+        long delay = delaytime;
+        while (delay <= totalWaitTime)
+        {
+            logger.debug("Sync wait time started to sleep - " + format.format(System.currentTimeMillis()));
+            Thread.sleep(delay);
+            delay = delay + delaytime;
+        }
+        logger.debug("Sync wait time end  - " + format.format(System.currentTimeMillis()));
+    }
+    
+    /**
+     * Compare the file bytes
+     * 
+     * @return boolean
+     * @throws Exception
+     */
+    public boolean compareTwoFiles(String syncFilePath, String shareFilePath) throws Exception
+    {
+        boolean isFileSame = false;
+            byte[] syncFileByte = read(syncFilePath);
+            byte[] shareFileByte = read(shareFilePath);
+            if (Arrays.equals(syncFileByte, shareFileByte))
+            {
+                isFileSame = true;
+            }
+        return isFileSame;
+    }
+
+    /**
+     * Util method to get byte stream 
+     * @param path
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private byte[] read(String path) throws FileNotFoundException, IOException
+    {
+        String encoding = "UTF-8";
+        InputStream in = new FileInputStream(path);
+        return IOUtils.toByteArray(new InputStreamReader(in), encoding);
+    }
+
 
 }
