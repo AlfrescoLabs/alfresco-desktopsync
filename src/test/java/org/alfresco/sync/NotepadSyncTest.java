@@ -37,6 +37,7 @@ public class NotepadSyncTest extends AbstractTest
     String shareCreatedFolder = "";
     String syncLocation = "";
     String shareFilePath = "";
+    final String FILEEXT = ".txt";
 
     @BeforeClass
     public void initialSetupOfShare()
@@ -74,7 +75,7 @@ public class NotepadSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + ".txt"));
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
 
         }
         catch (Throwable e)
@@ -106,7 +107,7 @@ public class NotepadSyncTest extends AbstractTest
         try
         {
             String name = share.getFileName(share.getTestName()).toLowerCase();
-            String fileName = (name + ".txt").toLowerCase();
+            String fileName = (name + FILEEXT).toLowerCase();
             String folderName = name;
             File file = ShareUtil.newFile(fileName, fileName);
             share.loginToShare(drone, userInfo, shareUrl);
@@ -197,7 +198,8 @@ public class NotepadSyncTest extends AbstractTest
     {
         logger.info("test to create a FILE inside the sub folder created in previous testcase ");
         String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String syncPath = (syncLocation + File.separator + clientCreatedFolder + fileName).toLowerCase();
+        String syncPath = (syncLocation + File.separator + clientCreatedFolder + fileName +FILEEXT).toLowerCase();
+        String sharePath = shareFilePath + File.separator + fileName + FILEEXT;
         String[] folders = clientCreatedFolder.split(Pattern.quote(File.separator));
         String currentFolder = folders[(folders.length) - 1];
         try
@@ -212,9 +214,9 @@ public class NotepadSyncTest extends AbstractTest
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + clientCreatedFolder);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + ".txt")); 
-            share.shareDownloadFile(drone, fileName);
-            Assert.assertTrue(compareTwoFiles(syncPath, shareFilePath));
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT)); 
+            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, sharePath);
+            Assert.assertTrue(compareTwoFiles(syncPath, sharePath));
             notepad.closeNotepad(fileName);
         }
         catch (Throwable e)
@@ -275,7 +277,8 @@ public class NotepadSyncTest extends AbstractTest
     public void updateFileInClient()
     {
         String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String clientLocation = syncLocation + fileName + ".txt";
+        String clientLocation = syncLocation +File.separator + fileName + FILEEXT;
+        String shareLocation = shareFilePath + File.separator + fileName + FILEEXT;
         try
         {
 
@@ -292,12 +295,12 @@ public class NotepadSyncTest extends AbstractTest
             notepad.appendTextToNotepad("adding another line of text", fileName);
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
-            share.shareDownloadFile(drone, fileName);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareFilePath));
+            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT,shareLocation);
+            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
-            share.shareDownloadFile(drone, fileName);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareFilePath));
+            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, shareLocation);
+            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
         }
         catch (Throwable e)
         {
@@ -316,12 +319,14 @@ public class NotepadSyncTest extends AbstractTest
     @Test
     public void testUpdateFileInShare()
     {
-        String fileName = share.getFileName(share.getTestName() + ".txt").toLowerCase();
+        String fileName = share.getFileName(share.getTestName() +FILEEXT).toLowerCase();
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);
         content.setTitle(fileName);
-        String clientLocation = syncLocation + fileName;
+        content.setContent("share created file");
+        String clientLocation = syncLocation + File.separator +  fileName;
+        String shareLocation = shareFilePath + File.separator + fileName;
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
@@ -331,8 +336,8 @@ public class NotepadSyncTest extends AbstractTest
             Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + fileName));
             share.uploadNewVersionOfDocument(drone, fileName, fileName, "test sync update");
             syncWaitTime(SERVERSYNCTIME);
-            share.shareDownloadFile(drone, fileName);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareFilePath));
+      //      share.shareDownloadFileFromDocLib(drone, fileName +FILEEXT, shareLocation);
+            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
         }
         catch (Throwable e)
         {
@@ -360,7 +365,7 @@ public class NotepadSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName));
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
@@ -406,7 +411,7 @@ public class NotepadSyncTest extends AbstractTest
     public void testDeleteFolderWithFileInShare()
     {
         String folderName = share.getFileName(share.getTestName()).toLowerCase();
-        String fileName = share.getFileName(share.getTestName() + ".txt").toLowerCase();
+        String fileName = share.getFileName(share.getTestName() + FILEEXT).toLowerCase();
         try
         {
             File file = ShareUtil.newFile(fileName, fileName);
@@ -455,11 +460,11 @@ public class NotepadSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + ".txt"));
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             ldtpObject.setOnWindow(folderName);
             explorer.deleteFolder(folderName, true);
             syncWaitTime(CLIENTSYNCTIME);
-            Assert.assertFalse(share.isFileVisible(drone, fileName + ".txt"));
+            Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {

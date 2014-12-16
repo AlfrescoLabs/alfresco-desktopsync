@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 
 import org.alfresco.test.utilities.AbstractTestUitl;
@@ -65,16 +66,16 @@ public class AbstractTest extends ShareAbstract
      */
     public void syncWaitTime(long totalWaitTime) throws InterruptedException
     {
-        int delaytime = 60000;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MMM-dd HH:mm (z)");
+        long delaytime = 60000;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         long delay = delaytime;
         while (delay <= totalWaitTime)
         {
-            logger.info("Sync wait time started to sleep - " + format.format(System.currentTimeMillis()));
-            Thread.sleep(delay);
+            logger.info("Sync wait time started to sleep - " + format.format(new Date()));
+            Thread.sleep(delaytime);
             delay = delay + delaytime;
         }
-        logger.info("Sync wait time end  - " + format.format(System.currentTimeMillis()));
+        logger.info("Sync wait time end  - " + format.format(new Date()));
     }
     
     /**
