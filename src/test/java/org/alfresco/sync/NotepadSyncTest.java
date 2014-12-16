@@ -286,14 +286,12 @@ public class NotepadSyncTest extends AbstractTest
             notepad.editNotepad("first create in client", fileName);
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
-            System.out.println("after site dashboard");
-            notepad.editNotepad("adding another line of text", fileName);
-            System.out.println("after edit of notepad");
-            notepad.ctrlSSave();
-            syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + ".txt"));
+            notepad.appendTextToNotepad("adding another line of text", fileName);
+            notepad.ctrlSSave();
+            syncWaitTime(CLIENTSYNCTIME);
             share.shareDownloadFile(drone, fileName);
             Assert.assertTrue(compareTwoFiles(clientLocation, shareFilePath));
             notepad.closeNotepad(fileName);
