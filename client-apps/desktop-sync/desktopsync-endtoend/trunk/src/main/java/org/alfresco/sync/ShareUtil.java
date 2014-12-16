@@ -686,10 +686,12 @@ public class ShareUtil
      * Util to download a file in a particular path
      */
 
-    public void shareDownloadFile(WebDrone drone , String FileName )
+    public void shareDownloadFileFromDocLib(WebDrone drone , String FileName, String path )
     {
        FileDirectoryInfo fileInfo =  getFileDirectoryInfo(drone, FileName);
        fileInfo.selectDownload();
+       DocumentLibraryPage docLib = drone.getCurrentPage().render();
+       docLib.waitForFile(path);
     }
     
     /**
@@ -745,7 +747,7 @@ public class ShareUtil
      * @return DocumentDetailsPage
      * @throws IOException
      */
-    public  String uploadNewVersionOfDocument(WebDrone drone,String title, String fileName, String comments) throws IOException
+    public  void uploadNewVersionOfDocument(WebDrone drone,String title, String fileName, String comments) throws IOException
     {
         String fileContents = "New File being created via newFile:" + fileName;
         File newFileName = newFile(fileName , fileContents);
@@ -756,7 +758,7 @@ public class ShareUtil
         updatePage.uploadFile(newFileName.getCanonicalPath());
         updatePage.setComment(comments);
         detailsPage = updatePage.submit().render();
-        return detailsPage.getDocumentVersion();
+        detailsPage.selectDownload(null);
     }
     
     /**
@@ -768,7 +770,6 @@ public class ShareUtil
         DocumentDetailsPage detailsPage = doclib.selectFile(title).render();
         return detailsPage.getDocumentVersion();
     }
-    
     
 }
 
