@@ -49,7 +49,8 @@ public class ShareTestProperty
                               final String sitename,
                               final String officeVersion,
                               final String office2010,   
-                              final String office2013
+                              final String office2013,
+                              final String filedirectoryPath
                              ) 
     {
         this.shareUrl = shareUrl;
@@ -62,6 +63,8 @@ public class ShareTestProperty
         this.officeVersion = officeVersion;
         this.officePath2010 = office2010;
         this.officePath2013 = office2013;
+        this.filedirectoryPath = filedirectoryPath;
+        
     }
 
 
