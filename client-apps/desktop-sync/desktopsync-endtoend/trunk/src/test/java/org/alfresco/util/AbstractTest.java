@@ -38,7 +38,6 @@ import org.testng.annotations.BeforeSuite;
 public class AbstractTest extends ShareAbstract
 {
     Properties officeAppProperty = new Properties();
-    ShareAbstract share = new ShareAbstract();
     private static Log logger = LogFactory.getLog(AbstractTestUitl.class);
     public WebDrone drone;
 
@@ -48,9 +47,8 @@ public class AbstractTest extends ShareAbstract
     {
         try
         {
-            share.setupContext("share-po-test-context.xml");
-            drone = share.getWebDrone();
-            System.out.println("username" + username);
+            setupContext("share-po-test-context.xml");
+            drone = getWebDrone();
         }
         catch (Exception e)
         {
@@ -72,11 +70,11 @@ public class AbstractTest extends ShareAbstract
         long delay = delaytime;
         while (delay <= totalWaitTime)
         {
-            logger.debug("Sync wait time started to sleep - " + format.format(System.currentTimeMillis()));
+            logger.info("Sync wait time started to sleep - " + format.format(System.currentTimeMillis()));
             Thread.sleep(delay);
             delay = delay + delaytime;
         }
-        logger.debug("Sync wait time end  - " + format.format(System.currentTimeMillis()));
+        logger.info("Sync wait time end  - " + format.format(System.currentTimeMillis()));
     }
     
     /**

@@ -50,6 +50,7 @@ public class ShareAbstract
             officeVersion = t.getOfficeVersion();
             officePath = t.getOfficePath();
             downloadPath = t.getFiledirectoryPath();
+            System.out.println("t.getFiledirectoryPath()" + downloadPath);
 
             if(logger.isTraceEnabled())
             {

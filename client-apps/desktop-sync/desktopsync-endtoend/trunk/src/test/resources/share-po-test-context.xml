@@ -38,6 +38,6 @@
 		<constructor-arg name="officeVersion" value="${office.version}" />
 		<constructor-arg name="office2010" value="${office2010.path}" />
 		<constructor-arg name="office2013" value="${office2013.path}" />
-		<property name="filedirectoryPath" value="${webdrone.download.directory}" />
+		<constructor-arg name="filedirectoryPath" value="${webdrone.download.directory}" />
 	</bean>
 </beans>
