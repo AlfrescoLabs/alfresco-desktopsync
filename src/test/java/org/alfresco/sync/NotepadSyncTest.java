@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.testng.SkipException;
 import org.testng.annotations.Listeners;
 
+import com.cobra.ldtp.Ldtp;
+
 
 @Listeners(FailedTestListener.class)
 public class NotepadSyncTest extends AbstractTest
@@ -67,7 +69,7 @@ public class NotepadSyncTest extends AbstractTest
         logger.info("test to create file in client started");
         try
         {
-            String fileName = share.getFileName(share.getTestName());
+            String fileName = share.getFileName(share.getTestName()).toLowerCase();
             notepad.openNotepadApplication();
             notepad.setNotepadWindow("Notepad");
             notepad.saveAsNotpad(syncLocation, fileName);
@@ -272,6 +274,25 @@ public class NotepadSyncTest extends AbstractTest
 
     /**
      * Test to edit a file in client which is already synced
+     * Step1  - Open notepad application
+     * Step2  - Save the notepad to synclocation 
+     * Step3  - Add a new line of text "first create in client" to the notepad
+     * Step4  - DO a ctrl S and save the file
+     * Step5  - Wait for the sync time of 2 mins in case of client 
+     * Step6  - login to share 
+     * Step7  - Open site DocumentLibrary 
+     * Step8  - Validate whether the newly created File is Visible
+     * Step9  - Check the version number is also set to 1.1
+     * Step10 - Now access the client created notepad file and append the new line of text 
+     *                  "adding another line of text"
+     * Step11 - Save the file to sync location using Ctrl S
+     * Step12 - Wait for the sync time of 2 mins in case of client 
+     * Step13 - In share validate the version number is increased correctly 
+     * Step14 - In share Download the file 
+     * Step15 - Compare the two files between client and Share to see whether they are same 
+     * Step16 - Now Close the Notepad without any edit 
+     * Step17 - Wait for the sync time of 2 mins in case of client 
+     * Step18 - Validate whether the file is same and has the same version number
      */
     @Test
     public void updateFileInClient()
@@ -291,14 +312,17 @@ public class NotepadSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + ".txt"));
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.1");
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             notepad.appendTextToNotepad("adding another line of text", fileName);
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.2");
             share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT,shareLocation);
             Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.2");
             share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, shareLocation);
             Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
         }
@@ -314,7 +338,17 @@ public class NotepadSyncTest extends AbstractTest
     }
 
     /**
-     * Upload a new version in share
+     * Test to check whether the share new version are getting synced correctly 
+     * Step1  - login into Share
+     * Step2  - Open site Document Library
+     * Step3  - Create a content using create plain text menu 
+     * Step4  - Wait for the file to synced to client - which is 5 mins in case of Share
+     * Step5  - Validate in client whether the file is visible 
+     * Step6  - Now in share upload a new version with the content as test sync update
+     *          Download a copy of the share file location c:\DownloadAlfresco
+     * Step7  - Wait for the file to synced to client - which is 5 mins in case of Share
+     * Step8  - Compare the two files to see whether the same 
+     * 
      */
     @Test
     public void testUpdateFileInShare()
@@ -336,14 +370,16 @@ public class NotepadSyncTest extends AbstractTest
             Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + fileName));
             share.uploadNewVersionOfDocument(drone, fileName, fileName, "test sync update");
             syncWaitTime(SERVERSYNCTIME);
-      //      share.shareDownloadFileFromDocLib(drone, fileName +FILEEXT, shareLocation);
             Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
         }
         catch (Throwable e)
         {
             throw new SkipException("test case failed " + share.getTestName(), e);
         }
-
+        finally
+        {
+            share.logout(drone);
+        }
     }
 
     /**
@@ -352,15 +388,19 @@ public class NotepadSyncTest extends AbstractTest
     @Test
     public void testToDeleteFileJustCreated()
     {
-        String fileName = share.getFileName(share.getTestName()).toLowerCase();
+        String fileName = share.getFileName(share.getTestName() + "8").toLowerCase();
         try
         {
             notepad.openNotepadApplication();
+            notepad.setNotepadWindow("Notepad");
             notepad.saveAsNotpad(syncLocation, fileName);
             notepad.editNotepad("desktop Automated Testing", fileName);
             notepad.ctrlSSave();
             notepad.closeNotepad(fileName);
-            syncWaitTime(CLIENTSYNCTIME);
+            ldtpObject.setLdtp(null);
+            syncWaitTime(3000);
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
             explorer.deleteFile(fileName, true);
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
