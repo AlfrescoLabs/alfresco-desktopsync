@@ -771,6 +771,15 @@ public class ShareUtil
         return detailsPage.getDocumentVersion();
     }
     
+    /**
+     * Get Version info from Document Library 
+     */
+    public String getDocLibVersionInfo(WebDrone drone, String contentName)
+    {
+        FileDirectoryInfo fileInfo = getFileDirectoryInfo(drone, contentName);
+        return fileInfo.getVersionInfo();
+    }
+    
 }
 
    
