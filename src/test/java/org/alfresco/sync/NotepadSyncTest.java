@@ -20,8 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.testng.SkipException;
 import org.testng.annotations.Listeners;
 
-import com.cobra.ldtp.Ldtp;
-
 
 @Listeners(FailedTestListener.class)
 public class NotepadSyncTest extends AbstractTest
@@ -391,16 +389,16 @@ public class NotepadSyncTest extends AbstractTest
         String fileName = share.getFileName(share.getTestName() + "8").toLowerCase();
         try
         {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
             notepad.openNotepadApplication();
             notepad.setNotepadWindow("Notepad");
             notepad.saveAsNotpad(syncLocation, fileName);
             notepad.editNotepad("desktop Automated Testing", fileName);
             notepad.ctrlSSave();
             notepad.closeNotepad(fileName);
-            ldtpObject.setLdtp(null);
-            syncWaitTime(3000);
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
+            syncWaitTime(CLIENTSYNCTIME);
+            explorer.activateApplicationWindow(siteName);
             explorer.deleteFile(fileName, true);
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
