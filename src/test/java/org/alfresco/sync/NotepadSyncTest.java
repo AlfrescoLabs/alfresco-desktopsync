@@ -30,7 +30,6 @@ public class NotepadSyncTest extends AbstractTest
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     long SERVERSYNCTIME = 300000;
-    //long CLIENTSYNCTIME = 120000;
     long CLIENTSYNCTIME = 60000;
     String[] userInfo = new String[2];
     String clientCreatedFolder = "";
@@ -46,7 +45,6 @@ public class NotepadSyncTest extends AbstractTest
         userInfo[1] = password;
         syncLocation = location + File.separator + siteName;
         shareFilePath = downloadPath.toLowerCase();
-
     }
 
     /**
@@ -62,12 +60,13 @@ public class NotepadSyncTest extends AbstractTest
      */
 
     @Test
-    public void testToCreateAFileInClient()
+    public void createAFileInClient()
     {
         logger.info("test to create file in client started");
+        String fileName = "clientfile";
         try
         {
-            String fileName = share.getFileName(share.getTestName()).toLowerCase();
+            // String fileName = share.getFileName(share.getTestName()).toLowerCase();
             notepad.openNotepadApplication();
             notepad.setNotepadWindow("Notepad");
             notepad.saveAsNotpad(syncLocation, fileName);
@@ -101,12 +100,13 @@ public class NotepadSyncTest extends AbstractTest
      */
 
     @Test
-    public void testToCreateAFolderAndFileInShare()
+    public void createAFolderAndFileInShare()
     {
         logger.info("test to create a folder with file in share started");
+        String name = "sharefolderandfile";
         try
         {
-            String name = share.getFileName(share.getTestName()).toLowerCase();
+            // String name = share.getFileName(share.getTestName()).toLowerCase();
             String fileName = (name + FILEEXT).toLowerCase();
             String folderName = name;
             File file = ShareUtil.newFile(fileName, fileName);
@@ -145,15 +145,15 @@ public class NotepadSyncTest extends AbstractTest
      * Step10 - Validate whether the subFolder created is synced correctly
      */
     @Test
-    public void testToCreateFolderInClient()
+    public void createFolderInClient()
     {
         logger.info("test to create a folder and then sub folder in client");
-        String folderName = "";
-        String subFolderName = "";
+        String folderName = "clientfolder";
+        String subFolderName = "clientsubfolder";
         try
         {
-            folderName = share.getFileName(share.getTestName()).toLowerCase();
-            subFolderName = (folderName + "clientsub").toLowerCase();
+            // folderName = share.getFileName(share.getTestName()).toLowerCase();
+            // subFolderName = (folderName + "clientsub").toLowerCase();
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
             explorer.createandOpenFolder(folderName);
@@ -193,12 +193,13 @@ public class NotepadSyncTest extends AbstractTest
      * Step9 - Navigate to the sub Folder
      * step10 - Validate the file created in client is synced correctly
      */
-   @Test(dependsOnMethods = "testToCreateFolderInClient")
-    public void testToAddFileInsideTheFolderCreatedInClient()
+    @Test(dependsOnMethods = "testToCreateFolderInClient")
+    public void addFileInsideTheFolderCreatedInClient()
     {
         logger.info("test to create a FILE inside the sub folder created in previous testcase ");
-        String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String syncPath = (syncLocation + File.separator + clientCreatedFolder + fileName +FILEEXT).toLowerCase();
+        // String fileName = share.getFileName(share.getTestName()).toLowerCase();
+        String fileName = "clientfileinsidefolder";
+        String syncPath = (syncLocation + File.separator + clientCreatedFolder + fileName + FILEEXT).toLowerCase();
         String sharePath = shareFilePath + File.separator + fileName + FILEEXT;
         String[] folders = clientCreatedFolder.split(Pattern.quote(File.separator));
         String currentFolder = folders[(folders.length) - 1];
@@ -214,7 +215,7 @@ public class NotepadSyncTest extends AbstractTest
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + clientCreatedFolder);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT)); 
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, sharePath);
             Assert.assertTrue(compareTwoFiles(syncPath, sharePath));
             notepad.closeNotepad(fileName);
@@ -243,17 +244,19 @@ public class NotepadSyncTest extends AbstractTest
      * Step7 - In client validate both the folder and sub folder is present
      */
     @Test
-    public void testToCreateFolderInShare()
+    public void createFolderInShare()
     {
 
-        String shareCreatedFolder = share.getFileName(share.getTestName()).toLowerCase();
-        String subFolderName = "sub_" + shareCreatedFolder;
+        // String shareCreatedFolder = share.getFileName(share.getTestName()).toLowerCase();
+        String shareCreatedFolder = "sharefolder";
+        // String subFolderName = "sub_" + shareCreatedFolder;
+        String subFolderName = "sharesubfolder";
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, shareCreatedFolder, shareCreatedFolder, shareCreatedFolder);
-            ShareUtil.selectContent(drone, shareCreatedFolder);
+            share.selectContent(drone, shareCreatedFolder);
             share.createFolder(drone, subFolderName, subFolderName, subFolderName);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + shareCreatedFolder));
@@ -272,31 +275,32 @@ public class NotepadSyncTest extends AbstractTest
 
     /**
      * Test to edit a file in client which is already synced
-     * Step1  - Open notepad application
-     * Step2  - Save the notepad to synclocation 
-     * Step3  - Add a new line of text "first create in client" to the notepad
-     * Step4  - DO a ctrl S and save the file
-     * Step5  - Wait for the sync time of 2 mins in case of client 
-     * Step6  - login to share 
-     * Step7  - Open site DocumentLibrary 
-     * Step8  - Validate whether the newly created File is Visible
-     * Step9  - Check the version number is also set to 1.1
-     * Step10 - Now access the client created notepad file and append the new line of text 
-     *                  "adding another line of text"
+     * Step1 - Open notepad application
+     * Step2 - Save the notepad to synclocation
+     * Step3 - Add a new line of text "first create in client" to the notepad
+     * Step4 - DO a ctrl S and save the file
+     * Step5 - Wait for the sync time of 2 mins in case of client
+     * Step6 - login to share
+     * Step7 - Open site DocumentLibrary
+     * Step8 - Validate whether the newly created File is Visible
+     * Step9 - Check the version number is also set to 1.1
+     * Step10 - Now access the client created notepad file and append the new line of text
+     * "adding another line of text"
      * Step11 - Save the file to sync location using Ctrl S
-     * Step12 - Wait for the sync time of 2 mins in case of client 
-     * Step13 - In share validate the version number is increased correctly 
-     * Step14 - In share Download the file 
-     * Step15 - Compare the two files between client and Share to see whether they are same 
-     * Step16 - Now Close the Notepad without any edit 
-     * Step17 - Wait for the sync time of 2 mins in case of client 
+     * Step12 - Wait for the sync time of 2 mins in case of client
+     * Step13 - In share validate the version number is increased correctly
+     * Step14 - In share Download the file
+     * Step15 - Compare the two files between client and Share to see whether they are same
+     * Step16 - Now Close the Notepad without any edit
+     * Step17 - Wait for the sync time of 2 mins in case of client
      * Step18 - Validate whether the file is same and has the same version number
      */
     @Test
     public void updateFileInClient()
     {
-        String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String clientLocation = syncLocation +File.separator + fileName + FILEEXT;
+        // String fileName = share.getFileName(share.getTestName()).toLowerCase();
+        String fileName = "clientcreateandupdate";
+        String clientLocation = syncLocation + File.separator + fileName + FILEEXT;
         String shareLocation = shareFilePath + File.separator + fileName + FILEEXT;
         try
         {
@@ -316,7 +320,7 @@ public class NotepadSyncTest extends AbstractTest
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
             Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.2");
-            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT,shareLocation);
+            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, shareLocation);
             Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
@@ -336,28 +340,28 @@ public class NotepadSyncTest extends AbstractTest
     }
 
     /**
-     * Test to check whether the share new version are getting synced correctly 
-     * Step1  - login into Share
-     * Step2  - Open site Document Library
-     * Step3  - Create a content using create plain text menu 
-     * Step4  - Wait for the file to synced to client - which is 5 mins in case of Share
-     * Step5  - Validate in client whether the file is visible 
-     * Step6  - Now in share upload a new version with the content as test sync update
-     *          Download a copy of the share file location c:\DownloadAlfresco
-     * Step7  - Wait for the file to synced to client - which is 5 mins in case of Share
-     * Step8  - Compare the two files to see whether the same 
-     * 
+     * Test to check whether the share new version are getting synced correctly
+     * Step1 - login into Share
+     * Step2 - Open site Document Library
+     * Step3 - Create a content using create plain text menu
+     * Step4 - Wait for the file to synced to client - which is 5 mins in case of Share
+     * Step5 - Validate in client whether the file is visible
+     * Step6 - Now in share upload a new version with the content as test sync update
+     * Download a copy of the share file location c:\DownloadAlfresco
+     * Step7 - Wait for the file to synced to client - which is 5 mins in case of Share
+     * Step8 - Compare the two files to see whether the same
      */
     @Test
-    public void testUpdateFileInShare()
+    public void updateFileInShare()
     {
-        String fileName = share.getFileName(share.getTestName() +FILEEXT).toLowerCase();
+        // String fileName = share.getFileName(share.getTestName() +FILEEXT).toLowerCase();
+        String fileName = "sharecreateandupdate" + FILEEXT;
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);
         content.setTitle(fileName);
         content.setContent("share created file");
-        String clientLocation = syncLocation + File.separator +  fileName;
+        String clientLocation = syncLocation + File.separator + fileName;
         String shareLocation = shareFilePath + File.separator + fileName;
         try
         {
@@ -382,11 +386,22 @@ public class NotepadSyncTest extends AbstractTest
 
     /**
      * Test case to delete a file just created
+     * Step1 - Open Windows explorer and navigate to the synclocation
+     * Step2 - open notepad application
+     * Step3 - Add a new line and Save the file to the sync location
+     * step4 - close notepad
+     * step5 - Wait for the sync time - 2 mins as it is client sync
+     * Step6 - in the explorer window delete the file
+     * Step7 - Say yes in the delete confirmation dialog
+     * step8 - Wait for the sync time - 2 mins as it is client sync
+     * Step9 - login in share
+     * step10 - validate the file is not visible in document library
      */
     @Test
-    public void testToDeleteFileJustCreated()
+    public void deleteFileJustCreated()
     {
-        String fileName = share.getFileName(share.getTestName() + "8").toLowerCase();
+        // String fileName = share.getFileName(share.getTestName() + "10").toLowerCase();
+        String fileName = "clientdelete";
         try
         {
             explorer.openWindowsExplorer();
@@ -403,7 +418,7 @@ public class NotepadSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
+            Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
@@ -413,23 +428,32 @@ public class NotepadSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
+            explorer.closeExplorer();
         }
     }
 
     /**
-     * Test case to Delete a folder created in the previous test case.
+     * Test case to delete a folder which is already created by share in previous test case
+     * testToCreateFolderInShare
+     * Step1 - Open Windows explorer and navigate to the synclocation
+     * Step2 - open notepad application
+     * Step3 - delete the folder created in the previous test case
+     * step4 - Wait for the sync time - 2 mins as it is client sync
+     * Step5 - login in share
+     * step6 - validate the folder is not visible in document library
      */
     @Test(dependsOnMethods = "testToCreateFolderInShare")
-    public void testToDeleteFolder()
+    public void deleteFolder()
     {
         try
         {
+            explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
             explorer.deleteFolder(shareCreatedFolder, true);
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, shareCreatedFolder));
+            Assert.assertFalse(share.isFileVisible(drone, shareCreatedFolder));
         }
         catch (Throwable e)
         {
@@ -439,17 +463,31 @@ public class NotepadSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
+            explorer.activateApplicationWindow(syncLocation);
+            explorer.closeExplorer();
         }
     }
 
     /**
-     * In share delete a folder with File
+     * In share delete a folder with File which is synced
+     * Step1 - create a new file
+     * Step2 - login in to share
+     * Step3 - open site document library
+     * Step4 - create a folder
+     * Step5 - Upload the created file inside the folder created in step4
+     * Step6 - Wait for sync time - which is 5 mins in case of share
+     * Step7 - Validate in the explorer that file is visible
+     * Step8 - Now in share delete the folder
+     * Step9 - Wait for sync time - which is 5 mins in case of share
+     * Step10 - Validate that folder is not visible in sync location
      */
     @Test
-    public void testDeleteFolderWithFileInShare()
+    public void deleteFolderWithFileInShare()
     {
-        String folderName = share.getFileName(share.getTestName()).toLowerCase();
-        String fileName = share.getFileName(share.getTestName() + FILEEXT).toLowerCase();
+        // String folderName = share.getFileName(share.getTestName()).toLowerCase();
+        // String fileName = share.getFileName(share.getTestName() + FILEEXT).toLowerCase();
+        String folderName = "sharefolderdelete";
+        String fileName = "sharefolderfiledelete" + FILEEXT;
         try
         {
             File file = ShareUtil.newFile(fileName, fileName);
@@ -458,6 +496,7 @@ public class NotepadSyncTest extends AbstractTest
             share.createFolder(drone, folderName, folderName, folderName);
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
             share.uploadFile(drone, file);
+            share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + folderName + File.separator + fileName));
             share.deleteContentInDocLib(drone, folderName);
@@ -478,28 +517,31 @@ public class NotepadSyncTest extends AbstractTest
 
     /**
      * Delete file with folder in client
+     * Step1  - Open windows explorer 
      */
     @Test
-    public void testDeleteFolderWithFileInClient()
+    public void deleteFolderWithFileInClient()
     {
-        String folderName = share.getFileName(share.getTestName()).toLowerCase();
-        String fileName = share.getFileName(share.getTestName()).toLowerCase();
+        // String folderName = share.getFileName(share.getTestName()+ "3").toLowerCase();
+        // String fileName = share.getFileName(share.getTestName()).toLowerCase();
+        String folderName = "clientdeletefolder";
+        String fileName = "clientdeletefile";
         try
         {
             explorer.openWindowsExplorer();
-            logger.info("open specific folder in explorer");
             explorer.openFolder(syncLocation);
             explorer.createandOpenFolder(folderName);
             explorer.rightClickCreate(folderName, fileName, Application.TEXTFILE);
-            explorer.openFile(fileName, syncLocation + File.pathSeparator + folderName);
+            explorer.oepnFileInCurrentFolder(fileName);
             notepad.editNotepad("sync client testing", fileName);
             notepad.ctrlSSave();
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
-            ldtpObject.setOnWindow(folderName);
+            explorer.activateApplicationWindow(folderName);
             explorer.deleteFolder(folderName, true);
             syncWaitTime(CLIENTSYNCTIME);
             Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
@@ -512,13 +554,307 @@ public class NotepadSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
-            ldtpObject.setOnWindow(folderName);
+            explorer.activateApplicationWindow(folderName);
             explorer.closeExplorer();
         }
     }
 
     /**
-     * 
+     * Move files with subscription
      */
+    @Test(dependsOnMethods = "testToCreateAFileInClient")
+    public void moveFolderWithInSubInClient()
+    {
+        String fileName = "clientfile" + FILEEXT;
+        String folderName = "foldertomove";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            explorer.createNewFolderMenu(folderName);
+            explorer.moveFileInCurrent(fileName, syncLocation, folderName);
+            Assert.assertFalse(explorer.isFilePresent(fileName));
+            explorer.openFolderFromCurrent(folderName);
+            Assert.assertTrue(explorer.isFilePresent(fileName));
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertFalse(share.isFileVisible(drone, fileName));
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            Assert.assertTrue(share.isFileVisible(drone, fileName));
 
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.activateApplicationWindow(folderName);
+            explorer.closeExplorer();
+        }
+    }
+
+    /**
+     * Move folder with File in Subscription
+     */
+    @Test
+    public void moveFolderwithFileSubInClient()
+    {
+        String folderToMove = "moveFolderClient";
+        String fileName = "fileClient";
+        String currentFolder = "currentFolderClient";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            explorer.createNewFolderMenu(currentFolder);
+            explorer.oepnFileInCurrentFolder(currentFolder);
+            explorer.rightClickCreate(currentFolder, fileName, Application.TEXTFILE);
+            explorer.oepnFileInCurrentFolder(fileName);
+            notepad.setNotepadWindow(fileName);
+            notepad.editNotepad("desktop sync testing", fileName);
+            notepad.ctrlSSave();
+            notepad.closeNotepad(fileName);
+            syncWaitTime(CLIENTSYNCTIME);
+            explorer.activateApplicationWindow(currentFolder);
+            explorer.backButtonInExplorer(syncLocation);
+            explorer.moveFolderInCurrent(currentFolder, syncLocation, folderToMove);
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderToMove);
+            Assert.assertTrue(share.isFileVisible(drone, currentFolder));
+            share.selectContent(drone, currentFolder);
+            Assert.assertTrue(share.isFileVisible(drone, fileName));
+        }
+        catch (Throwable e)
+        {
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.activateApplicationWindow(syncLocation);
+            explorer.closeExplorer();
+        }
+    }
+
+    /**
+     * Move folder in share to a different site which is out of subscription
+     */
+    @Test
+    public void moveFolderInShareOutOfSubscription()
+    {
+        String siteNameToMove = "moveSite";
+        String folderName = "sharemovefolder";
+        String fileName = "sharemovefile" + "xml";
+        ContentDetails content = new ContentDetails();
+        content.setName(fileName);
+        content.setDescription(fileName);
+        content.setTitle(fileName);
+        content.setContent("share created file");
+        try
+        {
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.createSite(drone, siteNameToMove, "movesite", "public");
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.createFolder(drone, folderName, folderName, folderName);
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.createContent(drone, content, ContentType.XML);
+            share.navigateToDocuemntLibrary(drone, siteName);
+            share.copyOrMoveArtifact(drone, "Sites", siteNameToMove, null, folderName, "Move");
+            syncWaitTime(SERVERSYNCTIME);
+            Assert.assertFalse(explorer.isFolderPresent(syncLocation + File.separator + folderName));
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+
+        }
+    }
+
+    /**
+     * Move folder in share to a different site which is out of subscription
+     */
+    @Test
+    public void moveFolderInShareWithInSubscription()
+    {
+        String folderName = "sharemovefolder";
+        String fileName = "sharemovefile" + "xml";
+        String folderToMove = "sharefoldertomove";
+        ContentDetails content = new ContentDetails();
+        content.setName(fileName);
+        content.setDescription(fileName);
+        content.setTitle(fileName);
+        content.setContent("share created file");
+        try
+        {
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.createFolder(drone, folderName, folderName, folderName);
+            share.createFolder(drone, folderToMove, folderToMove, folderToMove);
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.createContent(drone, content, ContentType.XML);
+            share.navigateToDocuemntLibrary(drone, siteName);
+            syncWaitTime(SERVERSYNCTIME);
+            share.copyOrMoveArtifact(drone, "Sites", siteName, folderToMove, folderName, "Move");
+            syncWaitTime(SERVERSYNCTIME);
+            Assert.assertFalse(explorer.isFolderPresent(syncLocation + File.separator + folderName));
+            Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + folderToMove + File.separator + fileName));
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+
+        }
+    }
+
+    /*
+     * Move file inside a empty folder within the subscription in client
+     */
+    @Test
+    public void moveFileInsideEmptyFolderInClient()
+    {
+        String fileName = "movefileclient";
+        String folderNameToMove = "movefolderclient";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            explorer.createNewFolderMenu(folderNameToMove);
+            explorer.rightClickCreate(syncLocation, fileName, Application.TEXTFILE);
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertTrue(share.isFileVisible(drone, fileName));
+            explorer.activateApplicationWindow(syncLocation);
+            explorer.moveFileInCurrent(fileName, syncLocation, folderNameToMove);
+            syncWaitTime(CLIENTSYNCTIME);
+            Assert.assertFalse(share.isFileVisible(drone, fileName));
+            Assert.assertTrue(share.isFileVisible(drone, ShareUtil.DOCLIB + File.separator + folderNameToMove + File.separator + fileName + FILEEXT));
+        }
+        catch (Throwable e)
+        {
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.closeExplorer();
+        }
+    }
+
+    /**
+     * Create and move immediately
+     */
+    @Test
+    public void moveFileInsideFolderInClient()
+    {
+        String fileName = "movefileclient";
+        String folderNameToMove = "movefolderclient";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            explorer.createNewFolderMenu(folderNameToMove);
+            explorer.rightClickCreate(syncLocation, fileName, Application.TEXTFILE);
+            explorer.moveFileInCurrent(fileName, syncLocation, folderNameToMove);
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertFalse(share.isFileVisible(drone, fileName));
+            Assert.assertTrue(share.isFileVisible(drone, ShareUtil.DOCLIB + File.separator + folderNameToMove + File.separator + fileName + FILEEXT));
+        }
+        catch (Throwable e)
+        {
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.closeExplorer();
+        }
+    }
+    
+    /**
+     * Move File out of the subscription 
+     */
+    @Test
+    public void moveFileOutOfSubInClient()
+    {
+        String fileToMove = "filetomove";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            explorer.rightClickCreate(syncLocation, fileToMove, Application.TEXTFILE);
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, siteName);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertTrue(share.isFileVisible(drone, fileToMove + FILEEXT));
+            explorer.openWindowsExplorer();
+            explorer.openFolder("c:\\test");
+            String windowName = ldtpObject.findWindowName(syncLocation);
+            explorer.activateApplicationWindow(windowName);
+            explorer.moveFileBetweenFolders(syncLocation, "test", fileToMove);
+            syncWaitTime(CLIENTSYNCTIME);
+            Assert.assertFalse(share.isFileVisible(drone, fileToMove + FILEEXT));
+        }
+        catch (Throwable e)
+        {
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.closeExplorer();
+        }
+    }
+    
+    
+    /**
+     * Move a Folder with File out of Subscription 
+     */
+    @Test
+    public void moveFileIntoSubClient()
+    {
+      String fileName = "movefile";
+        try
+        {
+            explorer.openWindowsExplorer();
+            explorer.openFolder("c:\\samplefile");
+            explorer.openWindowsExplorer();
+            explorer.openFolder(syncLocation);
+            String windowName = ldtpObject.findWindowName("samplefile");
+            explorer.activateApplicationWindow(windowName);
+            explorer.moveFileBetweenFolders("c\\samplefile",syncLocation, fileName);
+            Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + fileName + FILEEXT));
+            syncWaitTime(CLIENTSYNCTIME);
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertTrue(share.isFileVisible(drone, fileName));
+        }
+        catch(Throwable e)
+        {
+            throw new SkipException("test case failed " + share.getTestName(), e);
+        }
+        finally
+        {
+            share.logout(drone);
+            explorer.closeExplorer();
+        }
+    }
 }
