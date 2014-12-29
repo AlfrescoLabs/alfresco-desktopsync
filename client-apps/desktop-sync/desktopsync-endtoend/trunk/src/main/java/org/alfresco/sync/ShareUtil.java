@@ -36,6 +36,7 @@ import org.alfresco.po.share.site.UploadFilePage;
 import org.alfresco.po.share.site.document.ConfirmDeletePage;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
+import org.alfresco.po.share.site.document.CopyOrMoveContentPage;
 import org.alfresco.po.share.site.document.CreatePlainTextContentPage;
 import org.alfresco.po.share.site.document.DocumentDetailsPage;
 import org.alfresco.po.share.site.document.DocumentLibraryPage;
@@ -179,7 +180,7 @@ public class ShareUtil
     /**
      * Create site
      */
-    public static boolean createSite(WebDrone drone, final String siteName, String desc, String siteVisibility)
+    public boolean createSite(WebDrone drone, final String siteName, String desc, String siteVisibility)
     {
         if (siteName == null || siteName.isEmpty())
         {
@@ -349,7 +350,7 @@ public class ShareUtil
      * @param contentName
      * @return
      */
-    public static HtmlPage selectContent(WebDrone drone, String contentName)
+    public HtmlPage selectContent(WebDrone drone, String contentName)
     {
         return getFileDirectoryInfo(drone, contentName).clickOnTitle().render();
     }
@@ -508,21 +509,6 @@ public class ShareUtil
         {
             return false;
         }
-    }
-    /**
-     * Helper to consistently get the filename.
-     *
-     * @param partFileName String Part Name of the file for uniquely identifying /
-     *                     mapping test data with the test
-     * @return String fileName
-     */
-    protected String getFileName(String partFileName)
-    {
-        String fileName = "";
-
-        fileName = String.format("File%s-%s", UNIQUE_TESTDATA_STRING, partFileName);
-
-        return fileName;
     }
     
     /**
@@ -766,7 +752,7 @@ public class ShareUtil
      */
     public String getVersionNumber(WebDrone drone , String title)
     {
-        DocumentLibraryPage doclib = (DocumentLibraryPage) drone.getCurrentPage();
+        DocumentLibraryPage doclib = (DocumentLibraryPage) drone.getCurrentPage().render();
         DocumentDetailsPage detailsPage = doclib.selectFile(title).render();
         return detailsPage.getDocumentVersion();
     }
@@ -780,6 +766,51 @@ public class ShareUtil
         return fileInfo.getVersionInfo();
     }
     
+    
+    /**
+     * Navigate to Document library
+     */
+    public void navigateToDocuemntLibrary(WebDrone drone, String siteName)
+    {
+       SiteDashboardPage siteDashboard =  openSiteURL(drone ,  siteName);
+       openDocumentLibrary(drone);
+        
+    }
+    
+    /**
+     * Copy or Move to File or folder from document library.
+     * 
+     * @param drone
+     * @param destination
+     * @param siteName
+     * @param fileName
+     * @return
+     */
+    public HtmlPage copyOrMoveArtifact(WebDrone drone, String destination, String siteName, String moveFolderName ,String fileName, String type)
+    {
+        DocumentLibraryPage docPage = (DocumentLibraryPage) getSharePage(drone);
+        CopyOrMoveContentPage copyOrMoveToPage;
+
+        if (type.equals("Copy"))
+        {
+            copyOrMoveToPage = docPage.getFileDirectoryInfo(fileName).selectCopyTo().render();
+        }
+        else
+        {
+            copyOrMoveToPage = docPage.getFileDirectoryInfo(fileName).selectMoveTo().render();
+        }
+
+        copyOrMoveToPage.selectDestination(destination);
+        copyOrMoveToPage.selectSite(siteName).render();
+        if (moveFolderName != null)
+        {
+            copyOrMoveToPage.selectPath(moveFolderName).render();
+        }
+        copyOrMoveToPage.selectOkButton().render();
+        return getSharePage(drone);
+    }
+
+
 }
 
    

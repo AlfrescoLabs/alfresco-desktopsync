@@ -91,20 +91,20 @@
           <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>share-po</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>5.0.1-SNAPSHOT</version>
      	    <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>share-po</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>5.0.1-SNAPSHOT</version>
      		 <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.alfresco</groupId>
             <artifactId>webdrone</artifactId>
-            <version>2.7-SNAPSHOT</version>
+            <version>2.6</version>
      	    <scope>compile</scope>
         </dependency>
         <dependency>
