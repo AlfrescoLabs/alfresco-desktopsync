@@ -473,7 +473,7 @@ public class ShareUtil
     public DocumentLibraryPage createContent(WebDrone drone, ContentDetails contentDetails, ContentType contentType) throws Exception
     {
         // Open Document Library
-        DocumentLibraryPage documentLibPage = openDocumentLibrary(drone);
+        DocumentLibraryPage documentLibPage = drone.getCurrentPage().render();
         DocumentDetailsPage detailsPage = null;
 
         try
@@ -772,7 +772,7 @@ public class ShareUtil
      */
     public void navigateToDocuemntLibrary(WebDrone drone, String siteName)
     {
-       SiteDashboardPage siteDashboard =  openSiteURL(drone ,  siteName);
+       openSiteURL(drone ,  siteName);
        openDocumentLibrary(drone);
         
     }
@@ -810,7 +810,33 @@ public class ShareUtil
         return getSharePage(drone);
     }
 
+    /**
+     * Uses the in-line rename function to rename content
+     * Assumes User is logged in and a DocumentLibraryPage of the selected site is open
+     * 
+     * @param drone
+     * @param contentName
+     * @param newName
+     * @param saveChanges <code>true</code> saves the changes, <code>false</code> cancels without saving.
+     * @return
+     */
+    public DocumentLibraryPage editContentNameInline(WebDrone drone, String contentName, String newName, boolean saveChanges)
+    {
+        FileDirectoryInfo fileDirInfo = getFileDirectoryInfo(drone, contentName);
 
+        fileDirInfo.contentNameEnableEdit();
+        fileDirInfo.contentNameEnter(newName);
+        if (saveChanges)
+        {
+            fileDirInfo.contentNameClickSave();
+        }
+        else
+        {
+            fileDirInfo.contentNameClickCancel();
+        }
+
+        return getSharePage(drone).render();
+    }
 }
 
    
