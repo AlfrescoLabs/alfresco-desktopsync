@@ -13,7 +13,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.util;
+package org.alfresco.sync;
 
 /**
  * This method contains all the required LDTP until

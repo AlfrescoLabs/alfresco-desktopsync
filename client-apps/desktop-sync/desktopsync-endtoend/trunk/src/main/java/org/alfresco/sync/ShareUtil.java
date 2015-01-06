@@ -625,7 +625,7 @@ public class ShareUtil
      * @param contents String Contents for text file
      * @return File
      */
-    public static  File newFile(String filename, String contents)
+    public   File newFile(String filename, String contents)
     {
         File file = new File(filename);
 
