@@ -1,4 +1,4 @@
-package org.alfresco.util;
+package org.alfresco.sync;
 
 import java.util.ArrayList;
 import java.util.List;
