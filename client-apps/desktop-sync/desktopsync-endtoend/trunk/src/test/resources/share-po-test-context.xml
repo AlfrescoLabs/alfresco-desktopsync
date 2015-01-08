@@ -25,7 +25,7 @@
 		<property name="ignoreResourceNotFound" value="true" />
 	</bean>
 
-	<bean id="shareTestProperties" class="org.alfresco.util.ShareTestProperty"
+	<bean id="shareTestProperties" class="org.alfresco.sync.ShareTestProperty"
 		depends-on="ShareProperties">
 		<constructor-arg name="shareUrl" value="${share.target}" />
 		<constructor-arg name="username" value="${test.username}" />
