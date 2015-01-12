@@ -23,7 +23,10 @@ public class ShareAbstract
         protected static String siteName;
         protected static String officeVersion;
         protected static String officePath;
+        protected static String fileAppend;
         protected WebDrone drone;
+        protected static long SERVERSYNCTIME = 300000;
+        protected static long CLIENTSYNCTIME = 60000;
         protected static String downloadPath;
         public static long maxWaitTime_CloudSync = 50000;
 
@@ -50,8 +53,8 @@ public class ShareAbstract
             officeVersion = t.getOfficeVersion();
             officePath = t.getOfficePath();
             downloadPath = t.getFiledirectoryPath();
-            System.out.println("t.getFiledirectoryPath()" + downloadPath);
-
+            fileAppend = t.getFileAppend();
+            
             if(logger.isTraceEnabled())
             {
                 logger.trace("Alfresco shareUrl is" + shareUrl);

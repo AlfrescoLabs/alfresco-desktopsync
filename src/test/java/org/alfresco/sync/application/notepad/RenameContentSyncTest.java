@@ -43,8 +43,6 @@ public class RenameContentSyncTest extends AbstractTest
     ShareUtil share = new ShareUtil();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
-    long SERVERSYNCTIME = 300000;
-    long CLIENTSYNCTIME = 60000;
     String[] userInfo = new String[2];
     String syncLocation = "";
     String shareFilePath = "";
@@ -73,8 +71,8 @@ public class RenameContentSyncTest extends AbstractTest
     public void renameFileInClient()
     {
         logger.info("Rename of file in client");
-        String fileName = "renamefileclient4";
-        String newName = "fileclientrename";
+        String fileName = "renamefileclient" + fileAppend;
+        String newName = "fileclientrename" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -119,9 +117,9 @@ public class RenameContentSyncTest extends AbstractTest
     public void renameFolderInClient()
     {
         logger.info("rename a folder with file in client");
-        String folderName = "folderclientrename";
-        String fileName = "fileclientrename";
-        String rename = "renameclientfolder";
+        String folderName = "folderclientrename" + fileAppend;
+        String fileName = "fileclientrename" + fileAppend;
+        String rename = "renameclientfolder" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -144,12 +142,12 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
         }
         finally
         {
             share.logout(drone);
-            explorer.activateApplicationWindow(folderName);
+            explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
     }
@@ -168,8 +166,8 @@ public class RenameContentSyncTest extends AbstractTest
     public void renameFileInShare()
     {
         logger.info("Rename a file in share");
-        String fileName = "filesharerename" + FILEEXT;
-        String rename = "renamesharefile" + FILEEXT;
+        String fileName = "filesharerename"+fileAppend + FILEEXT;
+        String rename = "renamesharefile"+fileAppend + FILEEXT;
         try
         {
             File file = share.newFile(fileName, fileName);
@@ -186,7 +184,7 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName()+ e.getMessage());
         }
         finally
         {
@@ -207,8 +205,8 @@ public class RenameContentSyncTest extends AbstractTest
     public void renameFolderInShare()
     {
         logger.info("Rename of empty folder in share");
-        String folderName = "foldersharerename";
-        String rename = "renamesharefolder";
+        String folderName = "foldersharerename" + fileAppend;
+        String rename = "renamesharefolder" + fileAppend;
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
@@ -224,7 +222,7 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
         }
         finally
         {
@@ -239,10 +237,10 @@ public class RenameContentSyncTest extends AbstractTest
     public void renameFolderWithFileInShare()
     {
         logger.info("Rename a folder with file in share");
-        String folderName = "foldersharerename3";
-        String rename = "renamesharefolder3";
-        String fileName = "fileshare3" + FILEEXT;
-        String fileRename = "renamefile3" + FILEEXT;
+        String folderName = "foldersharerename" + fileAppend;
+        String rename = "renamefolder" + fileAppend;
+        String fileName = "fileshare" + fileAppend + FILEEXT;
+        String fileRename = "renamefile"+ fileAppend + FILEEXT;
         try
         {
             File file = share.newFile(fileName, fileName);
@@ -267,7 +265,7 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
         }
         finally
         {
