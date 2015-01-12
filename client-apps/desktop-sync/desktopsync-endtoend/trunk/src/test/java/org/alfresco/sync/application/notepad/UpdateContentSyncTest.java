@@ -43,8 +43,6 @@ public class UpdateContentSyncTest extends AbstractTest
     ShareUtil share = new ShareUtil();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
-    long SERVERSYNCTIME = 300000;
-    long CLIENTSYNCTIME = 60000;
     String[] userInfo = new String[2];
     String syncLocation = "";
     String shareFilePath = "";
@@ -86,7 +84,7 @@ public class UpdateContentSyncTest extends AbstractTest
     public void updateFileInClient()
     {
         logger.info("Test to update a file in client which is already synced");
-        String fileName = "clientcreateandupdate";
+        String fileName = "clientcreateandupdate" + fileAppend;
         String clientLocation = syncLocation + File.separator + fileName + FILEEXT;
         String shareLocation = shareFilePath + File.separator + fileName + FILEEXT;
         try
@@ -142,7 +140,7 @@ public class UpdateContentSyncTest extends AbstractTest
     public void updateFileInShare()
     {
         logger.info("Test to check whether the share new version are getting synced correctly");
-        String fileName = "sharecreateandupdate" + FILEEXT;
+        String fileName = "sharecreateandupdate" + fileAppend + FILEEXT;
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);

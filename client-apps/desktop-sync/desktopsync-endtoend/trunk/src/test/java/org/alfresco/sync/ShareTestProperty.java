@@ -37,6 +37,7 @@ public class ShareTestProperty
     private final String officeVersion;
     private final String officePath2010;
     private final String officePath2013;
+    private final String fileAppend;
     protected long popupRendertime;
     private  String filedirectoryPath;
     
@@ -50,7 +51,8 @@ public class ShareTestProperty
                               final String officeVersion,
                               final String office2010,   
                               final String office2013,
-                              final String filedirectoryPath
+                              final String filedirectoryPath,
+                              final String fileappend
                              ) 
     {
         this.shareUrl = shareUrl;
@@ -64,7 +66,14 @@ public class ShareTestProperty
         this.officePath2010 = office2010;
         this.officePath2013 = office2013;
         this.filedirectoryPath = filedirectoryPath;
+        this.fileAppend = fileappend;
         
+    }
+
+
+    public String getFileAppend()
+    {
+        return fileAppend;
     }
 
 

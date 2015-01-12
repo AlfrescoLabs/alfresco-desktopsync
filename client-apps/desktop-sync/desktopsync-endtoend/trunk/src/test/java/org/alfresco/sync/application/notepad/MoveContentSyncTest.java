@@ -44,8 +44,6 @@ public class MoveContentSyncTest extends AbstractTest
     ShareUtil share = new ShareUtil();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
-    long SERVERSYNCTIME = 300000;
-    long CLIENTSYNCTIME = 120000;
     String[] userInfo = new String[2];
     String syncLocation = "";
     String shareFilePath = "";
@@ -59,6 +57,17 @@ public class MoveContentSyncTest extends AbstractTest
         userInfo[1] = password;
         syncLocation = location + File.separator + siteName;
         shareFilePath = downloadPath.toLowerCase();
+        try
+        {
+        explorer.openWindowsExplorer();
+        explorer.openFolder("c:\\samplefile");
+        explorer.rightClickCreate("samplefile", "movefileintosub"+fileAppend, Application.TEXTFILE);
+        explorer.closeExplorer();
+        }
+        catch(Throwable e)
+        {
+            
+        }
     }
 
     /**
@@ -74,12 +83,12 @@ public class MoveContentSyncTest extends AbstractTest
      * Step10 - Login in share , access the site dashboard
      * Step11 - Validate the file is not visible in the document library.
      */
-    @Test
+    //@Test
     public void moveFileWithInSubInClient()
     {
         logger.info(" Move files with subscription - This test case depends on the file created in the createAFileInclient test case");
-        String fileName = "clientfile" + FILEEXT;
-        String folderName = "foldertomove";
+        String fileName = "clientfile" +fileAppend+ FILEEXT;
+        String folderName = "foldertomove" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -99,7 +108,7 @@ public class MoveContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() +e.getMessage());
         }
         finally
         {
@@ -125,9 +134,9 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFolderwithFileWithInSubInClient()
     {
         logger.info("Move folder with File in Subscription");
-        String folderToMove = "movefolderclient";
-        String fileName = "fileclient";
-        String currentFolder = "folderclient1";
+        String folderToMove = "movefolderwithfileclient" + fileAppend;
+        String fileName = "fileclient" + fileAppend;
+        String currentFolder = "curernt" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -151,15 +160,20 @@ public class MoveContentSyncTest extends AbstractTest
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderToMove);
             Assert.assertTrue(share.isFileVisible(drone, currentFolder));
             share.selectContent(drone, currentFolder);
-            Assert.assertTrue(share.isFileVisible(drone, fileName));
+            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName() +e.getMessage());
         }
         finally
         {
             share.logout(drone);
+            explorer.activateApplicationWindow(folderToMove);
+            explorer.closeExplorer();
+           // explorer.activateApplicationWindow(currentFolder);
+           // explorer.closeExplorer();
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
@@ -179,9 +193,9 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFolderToSiteInShare()
     {
         logger.info("Move folder in share to a different site which is out of subscription");
-        String siteNameToMove = "moveSite";
-        String folderName = "sharemovefolder";
-        String fileName = "sharemovefile" + FILEEXT;
+        String siteNameToMove = "moveSite" + fileAppend;
+        String folderName = "sharemovefolder" + fileAppend;
+        String fileName = "sharemovefile" +fileAppend+ FILEEXT;
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);
@@ -190,7 +204,7 @@ public class MoveContentSyncTest extends AbstractTest
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
-          //  share.createSite(drone, siteNameToMove, "movesite", "public");
+            share.createSite(drone, siteNameToMove, "movesite", "public");
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
@@ -203,7 +217,7 @@ public class MoveContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
         }
         finally
         {
@@ -226,9 +240,9 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFolderWithInSubInShare()
     {
         logger.info("Move folder to a folder in share within the subscription");
-        String folderName = "sharemovefolder";
-        String fileName = "sharemovefile" + FILEEXT;
-        String folderToMove = "sharefoldertomove";
+        String folderName = "sharemovefolder" + fileAppend;
+        String fileName = "sharemovefile" + fileAppend + FILEEXT;
+        String folderToMove = "sharefoldertomove" + fileAppend;
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);
@@ -241,18 +255,19 @@ public class MoveContentSyncTest extends AbstractTest
             share.createFolder(drone, folderName, folderName, folderName);
             share.createFolder(drone, folderToMove, folderToMove, folderToMove);
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
-            share.createContent(drone, content, ContentType.XML);
+            share.createContent(drone, content, ContentType.PLAINTEXT);
             share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
             share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMove, folderName, "Move");
             syncWaitTime(SERVERSYNCTIME);
+            share.navigateToDocuemntLibrary(drone, siteName);
             Assert.assertFalse(explorer.isFolderPresent(syncLocation + File.separator + folderName));
             Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + folderToMove + File.separator + folderName + File.separator + fileName));
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
         }
         finally
         {
@@ -277,8 +292,8 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFileInsideEmptyFolderInClient()
     {
         logger.info("Move file inside a empty folder within the subscription in client");
-        String fileName = "movefileemptyclient";
-        String folderNameToMove = "moveemptyfolderclient";
+        String fileName = "movefileemptyclient" +fileAppend;
+        String folderNameToMove = "moveemptyfolderclient" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -300,7 +315,7 @@ public class MoveContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName()+ e.getMessage());
         }
         finally
         {
@@ -324,8 +339,8 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFileInsideFolderInClient()
     {
         logger.info("Test to Create and move immediately in client");
-        String fileName = "createmovefileclient";
-        String folderNameToMove = "createmovefolderclient";
+        String fileName = "movefileclient" + fileAppend;
+        String folderNameToMove = "movefolderclient" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -342,7 +357,8 @@ public class MoveContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
         }
         finally
         {
@@ -369,11 +385,11 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFileOutOfSubInClient()
     {
         logger.info("Move file out of subscription in client");
-        String fileToMove = "filetomove";
+        String fileToMove = "filetomove"+ fileAppend;
         try
         {
             explorer.openWindowsExplorer();
-            explorer.openFolder("c:\\test");
+            explorer.openFolder("c:\\moveout");
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
             explorer.rightClickCreate(siteName, fileToMove, Application.TEXTFILE);
@@ -383,21 +399,22 @@ public class MoveContentSyncTest extends AbstractTest
             Assert.assertTrue(share.isFileVisible(drone, fileToMove + FILEEXT));
             String windowName = ldtpObject.findWindowName(siteName);
             explorer.activateApplicationWindow(windowName);
-            explorer.moveFileBetweenFolders(siteName, "test", fileToMove);
+            explorer.moveFileBetweenFolders(siteName, "moveout", fileToMove);
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, fileToMove + FILEEXT));
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            e.printStackTrace();
+            throw new SkipException("test case failed " + share.getTestName() +  e.getMessage());
         }
         finally
         {
             share.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
-            explorer.activateApplicationWindow("test");
+            explorer.activateApplicationWindow("moveout");
             explorer.closeExplorer();
         }
     }
@@ -413,7 +430,7 @@ public class MoveContentSyncTest extends AbstractTest
     public void moveFileIntoSubClient()
     {
         logger.info(" Move a  File into the subscription");
-        String fileName = "movefileintosub";
+        String fileName = "movefileintosub" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -433,7 +450,7 @@ public class MoveContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
         }
         finally
         {

@@ -42,8 +42,6 @@ public class DeleteContentSyncTest extends AbstractTest
     ShareUtil share = new ShareUtil();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
-    long SERVERSYNCTIME = 300000;
-    long CLIENTSYNCTIME = 60000;
     String[] userInfo = new String[2];
     String syncLocation = "";
     String shareFilePath = "";
@@ -78,7 +76,7 @@ public class DeleteContentSyncTest extends AbstractTest
     {
         logger.info("Test case to delete a file just created");
         // String fileName = share.getFileName(share.getTestName() + "10").toLowerCase();
-        String fileName = "clientdelete3";
+        String fileName = "clientdelete6";
         try
         {
             explorer.openWindowsExplorer();
@@ -107,6 +105,7 @@ public class DeleteContentSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
+            syncWaitTime(SERVERSYNCTIME);
         //    explorer.activateApplicationWindow(siteName);
         //    explorer.closeExplorer();
         //    syncWaitTime(CLIENTSYNCTIME);
@@ -154,6 +153,15 @@ public class DeleteContentSyncTest extends AbstractTest
             share.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
+            try
+            {
+                syncWaitTime(SERVERSYNCTIME);
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -202,6 +210,15 @@ public class DeleteContentSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
+            try
+            {
+                syncWaitTime(SERVERSYNCTIME);
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -261,6 +278,15 @@ public class DeleteContentSyncTest extends AbstractTest
             share.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
+            try
+            {
+                syncWaitTime(SERVERSYNCTIME);
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 

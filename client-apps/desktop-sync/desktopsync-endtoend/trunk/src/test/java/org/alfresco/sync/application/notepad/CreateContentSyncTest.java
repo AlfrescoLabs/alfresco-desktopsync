@@ -43,8 +43,6 @@ public class CreateContentSyncTest extends AbstractTest
     ShareUtil share = new ShareUtil();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
-    long SERVERSYNCTIME = 300000;
-    long CLIENTSYNCTIME = 60000;
     String[] userInfo = new String[2];
     String syncLocation = "";
     String shareFilePath = "";
@@ -76,7 +74,7 @@ public class CreateContentSyncTest extends AbstractTest
     public void createFileInClient()
     {
         logger.info("test to create file in client started");
-        String fileName = "clientfile";
+        String fileName = "createfileclient" + fileAppend;
         try
         {
             notepad.openNotepadApplication();
@@ -115,10 +113,9 @@ public class CreateContentSyncTest extends AbstractTest
     public void createFolderAndFileInShare()
     {
         logger.info("test to create a folder with file in share started");
-        String name = "sharefolderandfile";
+        String name = "createfolderandfileshare" + fileAppend;
         try
         {
-            // String name = share.getFileName(share.getTestName()).toLowerCase();
             String fileName = (name + FILEEXT).toLowerCase();
             String folderName = name;
             File file = share.newFile(fileName, fileName);
@@ -159,12 +156,10 @@ public class CreateContentSyncTest extends AbstractTest
     public void createFolderTreeInClient()
     {
         logger.info("test to create a folder and then sub folder in client");
-        String folderName = "clientfolder";
-        String subFolderName = "clientsubfolder";
+        String folderName = "createfolderclient" + fileAppend;
+        String subFolderName = "createsubfolderclient" + fileAppend;
         try
         {
-            // folderName = share.getFileName(share.getTestName()).toLowerCase();
-            // subFolderName = (folderName + "clientsub").toLowerCase();
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
             explorer.createandOpenFolder(folderName);
@@ -208,8 +203,7 @@ public class CreateContentSyncTest extends AbstractTest
     public void createFileInsideFolderInClient()
     {
         logger.info("test to create a FILE inside the sub folder created in previous testcase ");
-        // String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String fileName = "clientfileinsidefolder";
+        String fileName = "createfileinsidefolderclient" + fileAppend;
         String syncPath = (syncLocation + File.separator + clientCreatedFolder +File.separator + fileName + FILEEXT).toLowerCase();
         String sharePath = shareFilePath + File.separator + fileName + FILEEXT;
         String[] folders = clientCreatedFolder.split(Pattern.quote(File.separator));
@@ -239,7 +233,7 @@ public class CreateContentSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
-            ldtpObject.setOnWindow(currentFolder);
+            explorer.activateApplicationWindow(clientCreatedFolder);
             explorer.closeExplorer();
         }
     }
@@ -258,10 +252,8 @@ public class CreateContentSyncTest extends AbstractTest
     public void createFolderInShare()
     {
         logger.info("test to create a folder in share"); 
-        // String shareCreatedFolder = share.getFileName(share.getTestName()).toLowerCase();
-        String shareCreatedFolder = "sharefolder";
-        // String subFolderName = "sub_" + shareCreatedFolder;
-        String subFolderName = "sharesubfolder";
+        String shareCreatedFolder = "createsharefolder" + fileAppend;
+        String subFolderName = "createsharesubfolder" + fileAppend;
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
