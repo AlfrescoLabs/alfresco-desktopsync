@@ -59,53 +59,26 @@ public class MoveContentSyncTest extends AbstractTest
         shareFilePath = downloadPath.toLowerCase();
         try
         {
+        
+        // This is to create sample file 
         explorer.openWindowsExplorer();
         explorer.openFolder("c:\\samplefile");
         explorer.rightClickCreate("samplefile", "movefileintosub"+fileAppend, Application.TEXTFILE);
         explorer.closeExplorer();
+       
+            // The below steps are to create data setup for all the test case
+        explorer.openWindowsExplorer();
+        explorer.openFolder(syncLocation);
+        setupMoveFolderwithFileSubInClient();
+        setupMoveFileInsideEmptyFolderInClient();
+        explorer.closeExplorer();
+        
+        // Data setup in Share 
+        setupInShare();
+        syncWaitTime(SERVERSYNCTIME);
+        
         }
         catch(Throwable e)
-        {
-            
-        }
-    }
-
-    /**
-     * Move files with subscription - This test case depends on the file created in the createAFileInclient test case
-     * Step1 - Open windows explorer
-     * Step2 - Access the sync location
-     * Step3 - Create a new folder
-     * Step4 - right click on file created in the createAFileInClient(clientfile.txt)
-     * Step6 - select Cut
-     * step7 - open the folder and paste it
-     * Step8 - Now hit back button on the explorer and validate that file is not visible there
-     * Step9 - Wait for the sync time - Client time
-     * Step10 - Login in share , access the site dashboard
-     * Step11 - Validate the file is not visible in the document library.
-     */
-    //@Test
-    public void moveFileWithInSubInClient()
-    {
-        logger.info(" Move files with subscription - This test case depends on the file created in the createAFileInclient test case");
-        String fileName = "clientfile" +fileAppend+ FILEEXT;
-        String folderName = "foldertomove" + fileAppend;
-        try
-        {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
-            explorer.createNewFolderMenu(folderName);
-            explorer.moveFileInCurrent(fileName, siteName, folderName);
-            explorer.backButtonInExplorer(siteName);
-            Assert.assertFalse(explorer.isFilePresent(fileName));
-            syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
-            share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, fileName));
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName));
-
-        }
-        catch (Throwable e)
         {
             e.printStackTrace();
             throw new SkipException("test case failed " + share.getTestName() +e.getMessage());
@@ -113,11 +86,30 @@ public class MoveContentSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
         }
     }
 
+    /**
+     * Data setup MoveFolderwithFileSubInClient
+     */
+    private void setupMoveFolderwithFileSubInClient()
+    {
+        logger.info("Data setup - Move folder with File in Subscription");
+        String folderToMove = "movefolderwithfileclient" + fileAppend;
+        String fileName = "fileclient" + fileAppend;
+        String currentFolder = "curernt" + fileAppend;
+        
+        explorer.createNewFolderMenu(folderToMove);
+        explorer.rightClickCreate(siteName, currentFolder, Application.FOLDER);
+        explorer.openFolderFromCurrent(currentFolder);
+        explorer.rightClickCreate(currentFolder, fileName, Application.TEXTFILE);
+        explorer.oepnFileInCurrentFolder(fileName);
+        notepad.setNotepadWindow(fileName);
+        notepad.editNotepad("desktop sync testing", fileName);
+        notepad.ctrlSSave();
+        notepad.closeNotepad(fileName);
+    }
+   
     /**
      * Move folder with File in Subscription
      * Step1 - open window explorer and open sync folder
@@ -141,18 +133,6 @@ public class MoveContentSyncTest extends AbstractTest
         {
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
-            explorer.createNewFolderMenu(folderToMove);
-            explorer.rightClickCreate(siteName, currentFolder, Application.FOLDER);
-            explorer.openFolderFromCurrent(currentFolder);
-            explorer.rightClickCreate(currentFolder, fileName, Application.TEXTFILE);
-            explorer.oepnFileInCurrentFolder(fileName);
-            notepad.setNotepadWindow(fileName);
-            notepad.editNotepad("desktop sync testing", fileName);
-            notepad.ctrlSSave();
-            notepad.closeNotepad(fileName);
-            syncWaitTime(CLIENTSYNCTIME);
-            explorer.activateApplicationWindow(currentFolder);
-            explorer.backButtonInExplorer(siteName);
             explorer.moveFolderInCurrent(currentFolder, siteName, folderToMove);
             syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
@@ -170,32 +150,20 @@ public class MoveContentSyncTest extends AbstractTest
         finally
         {
             share.logout(drone);
-            explorer.activateApplicationWindow(folderToMove);
-            explorer.closeExplorer();
-           // explorer.activateApplicationWindow(currentFolder);
-           // explorer.closeExplorer();
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
     }
-
-    /**
-     * Move folder in share to a different site which is out of subscription
-     * Step1 - Login in share
-     * Step2 - Create a new site (movesite)
-     * Step3 - Open the sync site
-     * Step4 - Create a folder and a file inside the folder
-     * Step5 - Move the folder to moveSite
-     * Step6 - Wait for the sync time of 5 mins
-     * Step7 - In client check whether the folder is not synced
-     */
-    @Test
-    public void moveFolderToSiteInShare()
+/**
+ *  All the file and folder required for the test in share 
+ */
+    private void setupInShare()
     {
-        logger.info("Move folder in share to a different site which is out of subscription");
         String siteNameToMove = "moveSite" + fileAppend;
         String folderName = "sharemovefolder" + fileAppend;
         String fileName = "sharemovefile" +fileAppend+ FILEEXT;
+        String folderName_2 = "sharemovefolder" + fileAppend;
+        String folderToMove = "sharefoldertomove" + fileAppend;
         ContentDetails content = new ContentDetails();
         content.setName(fileName);
         content.setDescription(fileName);
@@ -210,6 +178,37 @@ public class MoveContentSyncTest extends AbstractTest
             share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
             share.createContent(drone, content, ContentType.PLAINTEXT);
             share.navigateToDocuemntLibrary(drone, siteName);
+            share.createFolder(drone, folderName_2, folderName_2, folderName_2);
+            share.createFolder(drone, folderToMove, folderToMove, folderToMove);
+            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName_2);
+            share.createContent(drone, content, ContentType.PLAINTEXT);
+        }
+        catch(Exception e)
+        {
+            
+        }
+    }  
+    
+    /**
+     * Move folder in share to a different site which is out of subscription
+     * Step1 - Login in share
+     * Step2 - Create a new site (movesite)
+     * Step3 - Open the sync site
+     * Step4 - Create a folder and a file inside the folder
+     * Step5 - Move the folder to moveSite
+     * Step6 - Wait for the sync time of 5 mins
+     * Step7 - In client check whether the folder is not synced
+     */
+    @Test
+    public void moveFolderOutOfSubInShare()
+    {
+        logger.info("Move folder in share to a different site which is out of subscription");
+        String siteNameToMove = "moveSite" + fileAppend;
+        String folderName = "sharemovefolder" + fileAppend;
+        try
+        {
+            share.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
             share.copyOrMoveArtifact(drone, "All Sites", siteNameToMove, null, folderName, "Move");
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(explorer.isFolderPresent(syncLocation + File.separator + folderName));
@@ -243,21 +242,10 @@ public class MoveContentSyncTest extends AbstractTest
         String folderName = "sharemovefolder" + fileAppend;
         String fileName = "sharemovefile" + fileAppend + FILEEXT;
         String folderToMove = "sharefoldertomove" + fileAppend;
-        ContentDetails content = new ContentDetails();
-        content.setName(fileName);
-        content.setDescription(fileName);
-        content.setTitle(fileName);
-        content.setContent("share created file");
         try
         {
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.createFolder(drone, folderName, folderName, folderName);
-            share.createFolder(drone, folderToMove, folderToMove, folderToMove);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
-            share.createContent(drone, content, ContentType.PLAINTEXT);
-            share.navigateToDocuemntLibrary(drone, siteName);
-            syncWaitTime(SERVERSYNCTIME);
             share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMove, folderName, "Move");
             syncWaitTime(SERVERSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
@@ -276,6 +264,14 @@ public class MoveContentSyncTest extends AbstractTest
         }
     }
 
+    private void setupMoveFileInsideEmptyFolderInClient()
+    {
+        logger.info("Move file inside a empty folder within the subscription in client");
+        String fileName = "movefileemptyclient" +fileAppend;
+        String folderNameToMove = "moveemptyfolderclient" + fileAppend;
+        explorer.rightClickCreate(siteName, folderNameToMove, Application.FOLDER);
+        explorer.rightClickCreate(siteName, fileName, Application.TEXTFILE);
+    }
     /**
      * Move file inside a empty folder within the subscription in client
      * Step1 - open windows explorer
@@ -298,9 +294,6 @@ public class MoveContentSyncTest extends AbstractTest
         {
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
-            explorer.rightClickCreate(siteName, folderNameToMove, Application.FOLDER);
-            explorer.rightClickCreate(siteName, fileName, Application.TEXTFILE);
-            syncWaitTime(CLIENTSYNCTIME);
             share.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
