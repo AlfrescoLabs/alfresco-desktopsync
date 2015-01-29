@@ -75,8 +75,7 @@ public class DeleteContentSyncTest extends AbstractTest
     public void deleteFileCreated() throws InterruptedException 
     {
         logger.info("Test case to delete a file just created");
-        // String fileName = share.getFileName(share.getTestName() + "10").toLowerCase();
-        String fileName = "clientdelete6";
+        String fileName = "clientdelete" + fileAppend;
         try
         {
             explorer.openWindowsExplorer();
@@ -284,7 +283,6 @@ public class DeleteContentSyncTest extends AbstractTest
             }
             catch (InterruptedException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

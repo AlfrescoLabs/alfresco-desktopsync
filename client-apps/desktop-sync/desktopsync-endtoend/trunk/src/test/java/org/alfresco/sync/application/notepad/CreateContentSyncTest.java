@@ -274,5 +274,5 @@ public class CreateContentSyncTest extends AbstractTest
         {
             share.logout(drone);
         }
-    }
+    }     
 }
