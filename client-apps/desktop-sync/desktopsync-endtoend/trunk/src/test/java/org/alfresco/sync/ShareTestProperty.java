@@ -40,6 +40,7 @@ public class ShareTestProperty
     private final String fileAppend;
     protected long popupRendertime;
     private  String filedirectoryPath;
+    private final String installerpath;
     
     public ShareTestProperty (final String shareUrl,
                               final String username,
@@ -52,7 +53,8 @@ public class ShareTestProperty
                               final String office2010,   
                               final String office2013,
                               final String filedirectoryPath,
-                              final String fileappend
+                              final String fileappend,
+                              final String installerpath
                              ) 
     {
         this.shareUrl = shareUrl;
@@ -67,7 +69,15 @@ public class ShareTestProperty
         this.officePath2013 = office2013;
         this.filedirectoryPath = filedirectoryPath;
         this.fileAppend = fileappend;
+        this.installerpath = installerpath;
+               
         
+    }
+
+
+    public String getInstallerpath()
+    {
+        return installerpath;
     }
 
 
@@ -135,11 +145,4 @@ public class ShareTestProperty
     {
         return filedirectoryPath;
     }
-
-
-    public void setFiledirectoryPath(String filedirectoryPath)
-    {
-        this.filedirectoryPath = filedirectoryPath;
-    }
-
 }

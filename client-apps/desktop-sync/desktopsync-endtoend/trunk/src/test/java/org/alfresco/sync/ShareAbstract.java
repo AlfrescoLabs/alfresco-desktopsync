@@ -24,6 +24,8 @@ public class ShareAbstract
         protected static String officeVersion;
         protected static String officePath;
         protected static String fileAppend;
+        protected static String installerPath;
+        
         protected WebDrone drone;
         protected static long SERVERSYNCTIME = 300000;
         protected static long CLIENTSYNCTIME = 60000;
@@ -54,6 +56,7 @@ public class ShareAbstract
             officePath = t.getOfficePath();
             downloadPath = t.getFiledirectoryPath();
             fileAppend = t.getFileAppend();
+            installerPath = t.getInstallerpath();
             
             if(logger.isTraceEnabled())
             {
