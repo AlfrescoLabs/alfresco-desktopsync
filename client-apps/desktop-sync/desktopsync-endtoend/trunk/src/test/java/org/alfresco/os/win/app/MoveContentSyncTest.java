@@ -13,7 +13,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.sync.application.notepad;
+package org.alfresco.os.win.app;
 
 import java.io.File;
 
@@ -22,9 +22,10 @@ import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.sync.AbstractTest;
-import org.alfresco.sync.ShareUtil;
 import org.alfresco.utilities.Application;
 import org.alfresco.utilities.LdtpUtil;
+import org.alfreso.po.share.steps.LoginActions;
+import org.alfreso.po.share.steps.SiteActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -41,7 +42,8 @@ public class MoveContentSyncTest extends AbstractTest
 {
     private static Log logger = LogFactory.getLog(MoveContentSyncTest.class);
     NotepadApplications notepad = new NotepadApplications();
-    ShareUtil share = new ShareUtil();
+    LoginActions shareLogin = new LoginActions();
+    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     String[] userInfo = new String[2];
@@ -80,12 +82,11 @@ public class MoveContentSyncTest extends AbstractTest
         }
         catch(Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() +e.getMessage());
+            throw new SkipException("test case failed -  initialSetupOfShare " , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -135,21 +136,20 @@ public class MoveContentSyncTest extends AbstractTest
             explorer.openFolder(syncLocation);
             explorer.moveFolderInCurrent(currentFolder, siteName, folderToMove);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderToMove);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderToMove);
             Assert.assertTrue(share.isFileVisible(drone, currentFolder));
             share.selectContent(drone, currentFolder);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() +e.getMessage());
+            throw new SkipException("test case failed - moveFolderwithFileWithInSubInClient " ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
@@ -171,16 +171,16 @@ public class MoveContentSyncTest extends AbstractTest
         content.setContent("share created file");
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.createSite(drone, siteNameToMove, "movesite", "public");
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             share.createContent(drone, content, ContentType.PLAINTEXT);
             share.navigateToDocuemntLibrary(drone, siteName);
             share.createFolder(drone, folderName_2, folderName_2, folderName_2);
             share.createFolder(drone, folderToMove, folderToMove, folderToMove);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName_2);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName_2);
             share.createContent(drone, content, ContentType.PLAINTEXT);
         }
         catch(Exception e)
@@ -207,7 +207,7 @@ public class MoveContentSyncTest extends AbstractTest
         String folderName = "sharemovefolder" + fileAppend;
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.copyOrMoveArtifact(drone, "All Sites", siteNameToMove, null, folderName, "Move");
             syncWaitTime(SERVERSYNCTIME);
@@ -216,11 +216,11 @@ public class MoveContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
+            throw new SkipException("test case failed - moveFolderOutOfSubInShare " ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -244,7 +244,7 @@ public class MoveContentSyncTest extends AbstractTest
         String folderToMove = "sharefoldertomove" + fileAppend;
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMove, folderName, "Move");
             syncWaitTime(SERVERSYNCTIME);
@@ -254,12 +254,11 @@ public class MoveContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
+            throw new SkipException("test case failed - moveFolderWithInSubInShare",e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
 
         }
     }
@@ -294,7 +293,7 @@ public class MoveContentSyncTest extends AbstractTest
         {
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             explorer.activateApplicationWindow(siteName);
@@ -302,17 +301,16 @@ public class MoveContentSyncTest extends AbstractTest
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderNameToMove);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderNameToMove);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName()+ e.getMessage());
+            throw new SkipException("test case failed - setupMoveFileInsideEmptyFolderInClient ", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(folderNameToMove);
             explorer.closeExplorer();
         }
@@ -342,20 +340,19 @@ public class MoveContentSyncTest extends AbstractTest
             explorer.rightClickCreate(siteName, fileName, Application.TEXTFILE);
             explorer.moveFileInCurrent(fileName, siteName, folderNameToMove);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderNameToMove);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderNameToMove);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
+            throw new SkipException("test case failed - moveFileInsideFolderInClient" ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(folderNameToMove);
             explorer.closeExplorer();
         }
@@ -387,7 +384,7 @@ public class MoveContentSyncTest extends AbstractTest
             explorer.openFolder(syncLocation);
             explorer.rightClickCreate(siteName, fileToMove, Application.TEXTFILE);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileToMove + FILEEXT));
             String windowName = ldtpObject.findWindowName(siteName);
@@ -399,12 +396,11 @@ public class MoveContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() +  e.getMessage());
+            throw new SkipException("test case failed - moveFileOutOfSubInClient ",e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
             explorer.activateApplicationWindow("moveout");
@@ -436,18 +432,17 @@ public class MoveContentSyncTest extends AbstractTest
             Thread.sleep(3000);
             Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + fileName + FILEEXT));
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getMessage());
+            throw new SkipException("test case failed - moveFileIntoSubClient ",e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow("samplefile");
             explorer.closeExplorer();
             explorer.activateApplicationWindow(siteName);

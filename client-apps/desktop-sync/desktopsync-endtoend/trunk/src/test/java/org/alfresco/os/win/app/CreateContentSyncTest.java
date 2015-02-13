@@ -13,7 +13,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.sync.application.notepad;
+package org.alfresco.os.win.app;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -21,9 +21,10 @@ import java.util.regex.Pattern;
 import org.alfresco.application.windows.NotepadApplications;
 import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.sync.AbstractTest;
-import org.alfresco.sync.ShareUtil;
 import org.alfresco.utilities.Application;
 import org.alfresco.utilities.LdtpUtil;
+import org.alfreso.po.share.steps.LoginActions;
+import org.alfreso.po.share.steps.SiteActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -40,7 +41,8 @@ public class CreateContentSyncTest extends AbstractTest
 {
     private static Log logger = LogFactory.getLog(CreateContentSyncTest.class);
     NotepadApplications notepad = new NotepadApplications();
-    ShareUtil share = new ShareUtil();
+    LoginActions shareLogin = new LoginActions();
+    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     String[] userInfo = new String[2];
@@ -82,7 +84,7 @@ public class CreateContentSyncTest extends AbstractTest
             notepad.saveAsNotpad(syncLocation, fileName);
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
 
@@ -93,7 +95,7 @@ public class CreateContentSyncTest extends AbstractTest
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -119,10 +121,10 @@ public class CreateContentSyncTest extends AbstractTest
             String fileName = (name + FILEEXT).toLowerCase();
             String folderName = name;
             File file = share.newFile(fileName, fileName);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, "sync", "sync");
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             share.uploadFile(drone, file);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + folderName));
@@ -131,11 +133,11 @@ public class CreateContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - createFolderAndFileInShare " , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -165,21 +167,21 @@ public class CreateContentSyncTest extends AbstractTest
             explorer.createandOpenFolder(folderName);
             explorer.rightClickCreate(folderName, subFolderName, Application.FOLDER);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, folderName));
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             Assert.assertTrue(share.isFileVisible(drone, subFolderName));
 
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - createFolderTreeInClient" , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             ldtpObject.setOnWindow(folderName);
             explorer.closeExplorer();
             clientCreatedFolder = folderName + File.separator + subFolderName;
@@ -217,9 +219,9 @@ public class CreateContentSyncTest extends AbstractTest
             notepad.editNotepad("desktop sync", fileName);
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + clientCreatedFolder);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + clientCreatedFolder);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, sharePath);
             Assert.assertTrue(compareTwoFiles(syncPath, sharePath));
@@ -228,11 +230,11 @@ public class CreateContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - createFileInsideFolderInClient" , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(clientCreatedFolder);
             explorer.closeExplorer();
         }
@@ -256,7 +258,7 @@ public class CreateContentSyncTest extends AbstractTest
         String subFolderName = "createsharesubfolder" + fileAppend;
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, shareCreatedFolder, shareCreatedFolder, shareCreatedFolder);
             share.selectContent(drone, shareCreatedFolder);
@@ -268,11 +270,11 @@ public class CreateContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - createFolderInShare ", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }     
 }

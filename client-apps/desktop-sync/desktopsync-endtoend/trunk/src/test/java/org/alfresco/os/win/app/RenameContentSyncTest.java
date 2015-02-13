@@ -13,7 +13,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.sync.application.notepad;
+package org.alfresco.os.win.app;
 
 import java.io.File;
 
@@ -21,9 +21,10 @@ import org.alfresco.application.windows.NotepadApplications;
 import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.po.share.site.document.DocumentLibraryPage;
 import org.alfresco.sync.AbstractTest;
-import org.alfresco.sync.ShareUtil;
 import org.alfresco.utilities.Application;
 import org.alfresco.utilities.LdtpUtil;
+import org.alfreso.po.share.steps.LoginActions;
+import org.alfreso.po.share.steps.SiteActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -40,7 +41,8 @@ public class RenameContentSyncTest extends AbstractTest
 {
     private static Log logger = LogFactory.getLog(RenameContentSyncTest.class);
     NotepadApplications notepad = new NotepadApplications();
-    ShareUtil share = new ShareUtil();
+    LoginActions shareLogin = new LoginActions();
+    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     String[] userInfo = new String[2];
@@ -79,7 +81,7 @@ public class RenameContentSyncTest extends AbstractTest
             explorer.openFolder(syncLocation);
             explorer.rightClickCreate(siteName, fileName, Application.TEXTFILE);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             explorer.renameFile(fileName + FILEEXT, newName);
@@ -90,11 +92,11 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - renameFileInClient ", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
@@ -129,24 +131,23 @@ public class RenameContentSyncTest extends AbstractTest
             explorer.rightClickCreate(folderName, fileName, Application.TEXTFILE);
             explorer.backButtonInExplorer(siteName);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, folderName));
             explorer.renameFolder(folderName, rename);
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
             Assert.assertTrue((share.isFileVisible(drone, rename)));
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + rename);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + rename);
             Assert.assertTrue((share.isFileVisible(drone, fileName + FILEEXT)));
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
+            throw new SkipException("test case failed- renameFolderInClient" ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
         }
@@ -171,7 +172,7 @@ public class RenameContentSyncTest extends AbstractTest
         try
         {
             File file = share.newFile(fileName, fileName);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.uploadFile(drone, file);
             syncWaitTime(SERVERSYNCTIME);
@@ -184,11 +185,11 @@ public class RenameContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName()+ e.getMessage());
+            throw new SkipException("test case failed-renameFileInShare" ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -209,7 +210,7 @@ public class RenameContentSyncTest extends AbstractTest
         String rename = "renamesharefolder" + fileAppend;
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
             syncWaitTime(SERVERSYNCTIME);
@@ -221,12 +222,11 @@ public class RenameContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
+            throw new SkipException("test case failed-renameFolderInShare" ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 
@@ -244,17 +244,17 @@ public class RenameContentSyncTest extends AbstractTest
         try
         {
             File file = share.newFile(fileName, fileName);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             share.uploadFile(drone, file);
             share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + folderName));
             DocumentLibraryPage doclib = share.editContentNameInline(drone, folderName, rename, true);
             doclib.render();
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + rename);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + rename);
             share.editContentNameInline(drone, fileName, fileRename, true);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(explorer.isFolderPresent(syncLocation + File.separator + folderName));
@@ -264,12 +264,11 @@ public class RenameContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName() + e.getStackTrace());
+            throw new SkipException("test case failed- renameFolderWithFileInShare" ,e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 }

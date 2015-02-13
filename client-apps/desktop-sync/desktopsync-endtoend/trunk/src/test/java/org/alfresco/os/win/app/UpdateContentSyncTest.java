@@ -13,7 +13,7 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.sync.application.notepad;
+package org.alfresco.os.win.app;
 
 import java.io.File;
 
@@ -22,8 +22,9 @@ import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.sync.AbstractTest;
-import org.alfresco.sync.ShareUtil;
 import org.alfresco.utilities.LdtpUtil;
+import org.alfreso.po.share.steps.LoginActions;
+import org.alfreso.po.share.steps.SiteActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -40,7 +41,8 @@ public class UpdateContentSyncTest extends AbstractTest
 {
     private static Log logger = LogFactory.getLog(UpdateContentSyncTest.class);
     NotepadApplications notepad = new NotepadApplications();
-    ShareUtil share = new ShareUtil();
+    LoginActions shareLogin = new LoginActions();
+    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     String[] userInfo = new String[2];
@@ -96,7 +98,7 @@ public class UpdateContentSyncTest extends AbstractTest
             notepad.editNotepad("first create in client", fileName);
             notepad.ctrlSSave();
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.1");
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
@@ -115,11 +117,11 @@ public class UpdateContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed-updateFileInClient " , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
 
     }
@@ -150,7 +152,7 @@ public class UpdateContentSyncTest extends AbstractTest
         String shareLocation = shareFilePath + File.separator + fileName;
         try
         {
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createContent(drone, content, ContentType.PLAINTEXT);
             syncWaitTime(SERVERSYNCTIME);
@@ -161,11 +163,11 @@ public class UpdateContentSyncTest extends AbstractTest
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed -updateFileInShare " , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
         }
     }
 

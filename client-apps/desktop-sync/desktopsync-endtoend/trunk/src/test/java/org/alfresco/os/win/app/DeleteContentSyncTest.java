@@ -13,16 +13,17 @@
  * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.alfresco.sync.application.notepad;
+package org.alfresco.os.win.app;
 
 import java.io.File;
 
 import org.alfresco.application.windows.NotepadApplications;
 import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.sync.AbstractTest;
-import org.alfresco.sync.ShareUtil;
 import org.alfresco.utilities.Application;
 import org.alfresco.utilities.LdtpUtil;
+import org.alfreso.po.share.steps.LoginActions;
+import org.alfreso.po.share.steps.SiteActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -39,7 +40,8 @@ public class DeleteContentSyncTest extends AbstractTest
 {
     private static Log logger = LogFactory.getLog(DeleteContentSyncTest.class);
     NotepadApplications notepad = new NotepadApplications();
-    ShareUtil share = new ShareUtil();
+    LoginActions shareLogin = new LoginActions();
+    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
     LdtpUtil ldtpObject = new LdtpUtil();
     String[] userInfo = new String[2];
@@ -92,18 +94,18 @@ public class DeleteContentSyncTest extends AbstractTest
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - deleteFileCreated", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             syncWaitTime(SERVERSYNCTIME);
         //    explorer.activateApplicationWindow(siteName);
         //    explorer.closeExplorer();
@@ -130,7 +132,7 @@ public class DeleteContentSyncTest extends AbstractTest
         {
             explorer.openWindowsExplorer();
             explorer.openFolder(syncLocation);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
             syncWaitTime(SERVERSYNCTIME);
@@ -138,18 +140,18 @@ public class DeleteContentSyncTest extends AbstractTest
             explorer.activateApplicationWindow(siteName);
             explorer.deleteFolder(folderName, true);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, folderName));
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - deleteFolderInClient " , e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
             try
@@ -188,10 +190,10 @@ public class DeleteContentSyncTest extends AbstractTest
         try
         {
             File file = share.newFile(fileName, fileName);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderName, folderName, folderName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             share.uploadFile(drone, file);
             share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
@@ -204,11 +206,11 @@ public class DeleteContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - deleteFolderWithFileInShare", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             try
             {
                 syncWaitTime(SERVERSYNCTIME);
@@ -256,9 +258,9 @@ public class DeleteContentSyncTest extends AbstractTest
             notepad.ctrlSSave();
             notepad.closeNotepad(fileName);
             syncWaitTime(CLIENTSYNCTIME);
-            share.loginToShare(drone, userInfo, shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, ShareUtil.DOCLIB + File.separator + folderName);
+            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
             Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
             explorer.activateApplicationWindow(folderName);
             explorer.backButtonInExplorer(siteName);
@@ -270,11 +272,11 @@ public class DeleteContentSyncTest extends AbstractTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed " + share.getTestName(), e);
+            throw new SkipException("test case failed - deleteFolderWithFileInClient", e);
         }
         finally
         {
-            share.logout(drone);
+            shareLogin.logout(drone);
             explorer.activateApplicationWindow(siteName);
             explorer.closeExplorer();
             try
