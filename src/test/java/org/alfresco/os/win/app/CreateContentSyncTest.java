@@ -16,82 +16,61 @@
 package org.alfresco.os.win.app;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
-import org.alfresco.application.windows.NotepadApplications;
-import org.alfresco.explorer.WindowsExplorer;
-import org.alfresco.sync.AbstractTest;
-import org.alfresco.utilities.Application;
-import org.alfresco.utilities.LdtpUtil;
-import org.alfreso.po.share.steps.LoginActions;
-import org.alfreso.po.share.steps.SiteActions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.alfresco.po.share.steps.LoginActions;
+import org.alfresco.po.share.steps.SiteActions;
+import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
- * This class will contain all the test cases related to Create of file in both client (Windows machine) and share
+ * This class will contain all the test cases related to Create of file in both
+ * client (Windows machine) and share
  * 
  * @author Sprasanna
+ * @author Paul Brodner
  */
-public class CreateContentSyncTest extends AbstractTest
+public class CreateContentSyncTest extends DesktopSyncTest
 {
-    private static Log logger = LogFactory.getLog(CreateContentSyncTest.class);
-    NotepadApplications notepad = new NotepadApplications();
+    Notepad notepad = new Notepad();
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
-    WindowsExplorer explorer = new WindowsExplorer();
-    LdtpUtil ldtpObject = new LdtpUtil();
-    String[] userInfo = new String[2];
-    String syncLocation = "";
-    String shareFilePath = "";
-    final String FILEEXT = ".txt";
-    String clientCreatedFolder;
 
-    @BeforeClass
-    public void initialSetupOfShare()
-    {
-        userInfo[0] = username;
-        userInfo[1] = password;
-        syncLocation = location + File.separator + siteName;
-        shareFilePath = downloadPath.toLowerCase();
-    }
+    File folderChild = null;
+
+    WindowsExplorer explorer = new WindowsExplorer();
 
     /**
-     * This test will create a notePad file in client and validate whether it is visible in Share
-     * Step1 - Create a file in Note pad save it without any content
-     * Step2 - Close Notepad
-     * Step3 - Wait for Sync time which is 2 mins for client
+     * This test will create a notePad file in client and validate whether it is
+     * visible in Share
+     * Step1 - Create a file in NotePad save it without any
+     * content
+     * Step2 - Close NotePad
+     * Step3 - Wait for Sync time which is 2 minutes for client
      * Step4 - Login in share
      * Step5 - Access sync site
      * Step6 - Check the new file created in client is present in share.
      * 
      * @throws Exception
      */
-
     @Test
     public void createFileInClient()
     {
-        logger.info("test to create file in client started");
-        String fileName = "createfileclient" + fileAppend;
+        File clientTestFile = getRandomFileIn(getLocalSiteLocation(), "createFile", "txt");
         try
         {
-            notepad.openNotepadApplication();
-            notepad.setNotepadWindow("Notepad");
-            notepad.saveAsNotpad(syncLocation, fileName);
-            notepad.closeNotepad(fileName);
+            notepad.openApplication();
+            notepad.saveAs(clientTestFile);
+            notepad.close(clientTestFile);
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
-
+            Assert.assertTrue(share.isFileVisible(drone, clientTestFile.getName()), "Client Notepad file is successfuly synched in site.");
         }
         catch (Throwable e)
         {
-            throw new SkipException("create test case failed", e);
+            throw new SkipException("File was not created or synched on Share", e);
         }
         finally
         {
@@ -100,7 +79,8 @@ public class CreateContentSyncTest extends AbstractTest
     }
 
     /**
-     * This test will create a Folder and then a file in Share and validate whether it is visible in client
+     * This test will create a Folder and then a file in Share and validate
+     * whether it is visible in client
      * Step1 - login in share
      * Step2 - Access sync site
      * Step3 - Create a Folder
@@ -108,32 +88,34 @@ public class CreateContentSyncTest extends AbstractTest
      * Step5 - Upload File inside the folder
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step6 - in the client access the sync folder
-     * Step7 - Validate the folder with file created in share is synced correctly
+     * Step7 - Validate the folder with file created in share is synced
+     * correctly
      */
 
     @Test
     public void createFolderAndFileInShare()
     {
-        logger.info("test to create a folder with file in share started");
-        String name = "createfolderandfileshare" + fileAppend;
+        File folderToCreate = getRandomFolderIn(getLocalSiteLocation(), "createFolder");
+        File fileInClient = getRandomFileIn(folderToCreate, "fileSynched", "txt");
+        File fileToUpload = share.newFile(fileInClient.getName(), "empty");
+
         try
         {
-            String fileName = (name + FILEEXT).toLowerCase();
-            String folderName = name;
-            File file = share.newFile(fileName, fileName);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.createFolder(drone, folderName, "sync", "sync");
-            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
-            share.uploadFile(drone, file);
+            share.createFolder(drone, folderToCreate.getName(), folderToCreate.getName(), folderToCreate.getName());
+            share.navigateToFolder(drone, folderToCreate.getName());
+            share.uploadFile(drone, fileToUpload);
+
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + folderName));
-            Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + folderName + File.separator + fileName));
+
+            Assert.assertTrue(folderToCreate.exists(), "Folder synched from Remote, exists in client");
+            Assert.assertTrue(fileInClient.exists(), "File uploaded on Remote, was synched on client");
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - createFolderAndFileInShare " , e);
+            throw new SkipException("test case failed - createFolderAndFileInShare ", e);
         }
         finally
         {
@@ -142,55 +124,56 @@ public class CreateContentSyncTest extends AbstractTest
     }
 
     /**
-     * Test to create folder and sub Folder in client and validate whether folders is sync correctly in share.
+     * Test to create folder and sub Folder in client and validate whether
+     * folders is sync correctly in share.
      * Step1 - In client open the explorer , access the sync folder
      * Step2 - From the explorer menu create a new folder
-     * Step3 - Open the created folder and using the context folder create another folder
-     * Step4 - Wait for Sync time which is 2 mins for client
+     * Step3 - Open the created folder and using the context folder create
+     * another folder
+     * Step4 - Wait for Sync time which is 2 minutes for client
      * Step6 - Login in share
      * Step7 - open sync site document library
-     * Step8 - Validate the folder is synced correctly
+     * Step8 - Validate the folder is synched correctly
      * Step9 - Navigate to folder
-     * Step10 - Validate whether the subFolder created is synced correctly
+     * Step10 - Validate whether the subFolder created is synched correctly
      */
 
     @Test
     public void createFolderTreeInClient()
     {
-        logger.info("test to create a folder and then sub folder in client");
-        String folderName = "createfolderclient" + fileAppend;
-        String subFolderName = "createsubfolderclient" + fileAppend;
+        File folderParent = getRandomFolderIn(getLocalSiteLocation(), "folderParent");
+        folderChild = getRandomFolderIn(folderParent, "folderChild1");
         try
         {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
-            explorer.createandOpenFolder(folderName);
-            explorer.rightClickCreate(folderName, subFolderName, Application.FOLDER);
+            explorer.openApplication();
+            explorer.openFolder(getLocalSiteLocation());
+            explorer.createAndOpenFolder(folderParent.getName());
+            explorer.createAndOpenFolder(folderChild.getName());
+            explorer.closeExplorer();
+
             syncWaitTime(CLIENTSYNCTIME);
+
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, folderName));
-            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
-            Assert.assertTrue(share.isFileVisible(drone, subFolderName));
-
+            Assert.assertTrue(share.isFileVisible(drone, folderParent.getName()), "Folder parent is visible in Share");
+            share.navigateToFolder(drone, folderParent.getName());
+            Assert.assertTrue(share.isFileVisible(drone, folderChild.getName()), "Subfolder is visible in Share");
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - createFolderTreeInClient" , e);
+            throw new SkipException("test case failed - createFolderTreeInClient", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            ldtpObject.setOnWindow(folderName);
-            explorer.closeExplorer();
-            clientCreatedFolder = folderName + File.separator + subFolderName;
         }
     }
 
     /**
      * Test to add file inside the sub folder in the client
-     * This test case is dependents on the previous method testToCreateFolderInClient
+     * This test case is dependents on the previous method
+     * testToCreateFolderInClient
      * Step1 - open Windows Explorer
      * Step2 - open the sub folder
      * Step3 - Create a note pad inside the sub folder
@@ -204,44 +187,42 @@ public class CreateContentSyncTest extends AbstractTest
     @Test(dependsOnMethods = "createFolderTreeInClient")
     public void createFileInsideFolderInClient()
     {
-        logger.info("test to create a FILE inside the sub folder created in previous testcase ");
-        String fileName = "createfileinsidefolderclient" + fileAppend;
-        String syncPath = (syncLocation + File.separator + clientCreatedFolder +File.separator + fileName + FILEEXT).toLowerCase();
-        String sharePath = shareFilePath + File.separator + fileName + FILEEXT;
-        String[] folders = clientCreatedFolder.split(Pattern.quote(File.separator));
-        String currentFolder = folders[(folders.length) - 1];
+        File fileName = getRandomFileIn(folderChild, "createFile", "txt");
+        File downloadFile = new File(downloadPath, fileName.getName());
+
         try
         {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation + File.separator + clientCreatedFolder);
-            explorer.rightClickCreate(currentFolder, fileName, Application.TEXTFILE);
-            explorer.oepnFileInCurrentFolder(fileName);
-            notepad.editNotepad("desktop sync", fileName);
-            notepad.ctrlSSave();
+            notepad.openApplication();
+            notepad.edit("desktop sync");
+            notepad.saveAs(fileName);
+            notepad.close(fileName);
+
             syncWaitTime(CLIENTSYNCTIME);
+
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, share.DOCLIB + File.separator + clientCreatedFolder);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
-            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, sharePath);
-            Assert.assertTrue(compareTwoFiles(syncPath, sharePath));
-            notepad.closeNotepad(fileName);
+            share.navigateToFolder(drone, folderChild.getParentFile().getName());
+            share.navigateToFolder(drone, folderChild.getName());
+
+            Assert.assertTrue(share.isFileVisible(drone, fileName.getName()));
+            share.shareDownloadFileFromDocLib(drone, fileName.getName(), downloadFile.getPath());
+
+            Assert.assertTrue(compareTwoFiles(fileName.getPath(), downloadFile.getPath()));
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - createFileInsideFolderInClient" , e);
+            throw new SkipException("Test Case Failed - createFileInsideFolderInClient", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(clientCreatedFolder);
-            explorer.closeExplorer();
         }
     }
 
     /**
-     * Test cases to create empty sub folder in share without any files is sycned to the client correctly
+     * Test cases to create empty sub folder in share without any files is
+     * sycned to the client correctly
      * Step1 - login in share
      * Step2 - Open the sync site
      * Step3 - Create a Folder
@@ -253,19 +234,18 @@ public class CreateContentSyncTest extends AbstractTest
     @Test
     public void createFolderInShare()
     {
-        logger.info("test to create a folder in share"); 
-        String shareCreatedFolder = "createsharefolder" + fileAppend;
-        String subFolderName = "createsharesubfolder" + fileAppend;
+        File shareFolderParent = getRandomFolderIn(getLocalSiteLocation(), "createShareFolder");
+        File shareFolderChild = getRandomFolderIn(shareFolderParent, "creatChildFolder");
         try
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.createFolder(drone, shareCreatedFolder, shareCreatedFolder, shareCreatedFolder);
-            share.selectContent(drone, shareCreatedFolder);
-            share.createFolder(drone, subFolderName, subFolderName, subFolderName);
+            share.createFolder(drone, shareFolderParent.getName(), shareFolderParent.getName(), shareFolderParent.getName());
+            share.selectContent(drone, shareFolderParent.getName());
+            share.createFolder(drone, shareFolderChild.getName(), shareFolderChild.getName(), shareFolderChild.getName());
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + shareCreatedFolder));
-            Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + shareCreatedFolder + File.separator + subFolderName));
+            Assert.assertTrue(shareFolderChild.exists(), "Shared folder parent was synched in client");
+            Assert.assertTrue(shareFolderChild.exists(), "Shared folder child was synched in client");
         }
         catch (Throwable e)
         {
@@ -276,5 +256,5 @@ public class CreateContentSyncTest extends AbstractTest
         {
             shareLogin.logout(drone);
         }
-    }     
+    }
 }

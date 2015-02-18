@@ -17,47 +17,25 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
-import org.alfresco.application.windows.NotepadApplications;
-import org.alfresco.explorer.WindowsExplorer;
-import org.alfresco.sync.AbstractTest;
-import org.alfresco.utilities.Application;
-import org.alfresco.utilities.LdtpUtil;
-import org.alfreso.po.share.steps.LoginActions;
-import org.alfreso.po.share.steps.SiteActions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.alfresco.po.share.steps.LoginActions;
+import org.alfresco.po.share.steps.SiteActions;
+import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
  * This class will contain all the test cases related to delete of file in both client (Windows machine) and share
  * 
  * @author Sprasanna
+ * @author Paul Brodner
  */
-public class DeleteContentSyncTest extends AbstractTest
+public class DeleteContentSyncTest extends DesktopSyncTest
 {
-    private static Log logger = LogFactory.getLog(DeleteContentSyncTest.class);
-    NotepadApplications notepad = new NotepadApplications();
+    Notepad notepad = new Notepad();
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
-    LdtpUtil ldtpObject = new LdtpUtil();
-    String[] userInfo = new String[2];
-    String syncLocation = "";
-    String shareFilePath = "";
-    final String FILEEXT = ".txt";
-    String clientCreatedFolder;
-
-    @BeforeClass
-    public void initialSetupOfShare()
-    {
-        userInfo[0] = username;
-        userInfo[1] = password;
-        syncLocation = location + File.separator + siteName;
-        shareFilePath = downloadPath.toLowerCase();
-    }
 
     /**
      * Test case to delete a file just created
@@ -71,32 +49,27 @@ public class DeleteContentSyncTest extends AbstractTest
      * step8 - Wait for the sync time - 2 mins as it is client sync
      * Step9 - login in share
      * step10 - validate the file is not visible in document library
-     * @throws InterruptedException 
+     * 
+     * @throws InterruptedException
      */
     @Test
-    public void deleteFileCreated() throws InterruptedException 
+    public void deleteFileCreated() throws InterruptedException
     {
-        logger.info("Test case to delete a file just created");
-        String fileName = "clientdelete" + fileAppend;
+        File deleteFile = getRandomFileIn(getLocalSiteLocation(), "deleteFile", "txt");
         try
         {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
-            notepad.openNotepadApplication();
-            notepad.setNotepadWindow("Notepad");
-            notepad.saveAsNotpad(syncLocation, fileName);
-            notepad.editNotepad("desktop Automated Testing", fileName);
-            notepad.ctrlSSave();
-            notepad.closeNotepad(fileName);
+            notepad.openApplication();
+            notepad.edit("desktop Automated Testing");
+            notepad.saveAs(deleteFile);
+            notepad.close(deleteFile);
             syncWaitTime(CLIENTSYNCTIME);
-            explorer.activateApplicationWindow(siteName);
-            explorer.deleteFile(fileName, true);
-            explorer.activateApplicationWindow(siteName);
+            explorer.openApplication();
+            explorer.deleteFile(deleteFile, true);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
+            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File does not exist in Share after auto Sync.");
         }
         catch (Throwable e)
         {
@@ -106,11 +79,6 @@ public class DeleteContentSyncTest extends AbstractTest
         finally
         {
             shareLogin.logout(drone);
-            syncWaitTime(SERVERSYNCTIME);
-        //    explorer.activateApplicationWindow(siteName);
-        //    explorer.closeExplorer();
-        //    syncWaitTime(CLIENTSYNCTIME);
-          
         }
     }
 
@@ -123,46 +91,31 @@ public class DeleteContentSyncTest extends AbstractTest
      * Step5 - login in share
      * step6 - validate the folder is not visible in document library
      */
-    @Test(dependsOnMethods = "deleteFileCreated")
+    @Test
     public void deleteFolderInClient()
     {
-        logger.info("Test case to delete a folder which is already created by share");
-        String folderName = "sharecreatedfolder";
+        File deleteTestFolder = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
         try
         {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
-            shareLogin.loginToShare(drone, userInfo, shareUrl);
-            share.openSitesDocumentLibrary(drone, siteName);
-            share.createFolder(drone, folderName, folderName, folderName);
-            syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(explorer.isFolderPresent(syncLocation + File.separator + folderName));
-            explorer.activateApplicationWindow(siteName);
-            explorer.deleteFolder(folderName, true);
+            explorer.openApplication();
+            explorer.openFolder(deleteTestFolder.getParentFile());
+            explorer.createAndOpenFolder(deleteTestFolder.getName());
+            syncWaitTime(CLIENTSYNCTIME);
+            explorer.deleteFolder(deleteTestFolder.getName(), true);
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, folderName));
+            Assert.assertFalse(share.isFileVisible(drone, deleteTestFolder.getName()), "Folder does not exist in Share after auto Sync.");
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - deleteFolderInClient " , e);
+            throw new SkipException("test case failed - deleteFileCreated", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
-            try
-            {
-                syncWaitTime(SERVERSYNCTIME);
-            }
-            catch (InterruptedException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
     }
 
@@ -182,26 +135,22 @@ public class DeleteContentSyncTest extends AbstractTest
     @Test
     public void deleteFolderWithFileInShare()
     {
-        logger.info("Test share delete a folder with File which is synced");
-        // String folderName = share.getFileName(share.getTestName()).toLowerCase();
-        // String fileName = share.getFileName(share.getTestName() + FILEEXT).toLowerCase();
-        String folderName = "sharefolderdelete";
-        String fileName = "sharefolderfiledelete" + FILEEXT;
+        File folderDelete = getRandomFolderIn(getLocalSiteLocation(), "deleteFoldeF");
+        File fileDelete = getRandomFileIn(folderDelete, "fileDel", "txt");
         try
         {
-            File file = share.newFile(fileName, fileName);
+            File shareFile = share.newFile(fileDelete.getName(), fileDelete.getName());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.createFolder(drone, folderName, folderName, folderName);
-            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
-            share.uploadFile(drone, file);
+            share.createFolder(drone, folderDelete.getName(), folderDelete.getName(), folderDelete.getName());
+            share.navigateToFolder(drone, folderDelete.getName());
+            share.uploadFile(drone, shareFile);
             share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + folderName + File.separator + fileName));
-            share.deleteContentInDocLib(drone, folderName);
+            Assert.assertTrue(folderDelete.exists(), "Folder was synched in client");
+            share.deleteContentInDocLib(drone, folderDelete.getName());
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertFalse(explorer.isFilePresent(syncLocation + File.separator + folderName + File.separator + fileName));
-
+            Assert.assertFalse(fileDelete.exists(), "File was successfuly deleted from client after share.");
         }
         catch (Throwable e)
         {
@@ -211,15 +160,6 @@ public class DeleteContentSyncTest extends AbstractTest
         finally
         {
             shareLogin.logout(drone);
-            try
-            {
-                syncWaitTime(SERVERSYNCTIME);
-            }
-            catch (InterruptedException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
     }
 
@@ -242,52 +182,39 @@ public class DeleteContentSyncTest extends AbstractTest
     @Test
     public void deleteFolderWithFileInClient()
     {
-        logger.info("Test delete folder with file in client");
-        // String folderName = share.getFileName(share.getTestName()+ "3").toLowerCase();
-        // String fileName = share.getFileName(share.getTestName()).toLowerCase();
-        String folderName = "clientdeletefolder";
-        String fileName = "clientdeletefile";
+        File folderDelete = getRandomFolderIn(getLocalSiteLocation(), "deleteFolderWF");
+        File fileDelete = getRandomFileIn(folderDelete, "fileDel", "txt");
         try
         {
-            explorer.openWindowsExplorer();
-            explorer.openFolder(syncLocation);
-            explorer.createandOpenFolder(folderName);
-            explorer.rightClickCreate(folderName, fileName, Application.TEXTFILE);
-            explorer.oepnFileInCurrentFolder(fileName);
-            notepad.editNotepad("sync client testing", fileName);
-            notepad.ctrlSSave();
-            notepad.closeNotepad(fileName);
+            explorer.openApplication();
+            explorer.openFolder(folderDelete.getParentFile());
+            explorer.createAndOpenFolder(folderDelete.getName());
+            explorer.goBack(folderDelete.getParentFile().getName());
+
+            notepad.openApplication();
+            notepad.edit("content");
+            notepad.saveAs(fileDelete);
+            notepad.exitApplication();
             syncWaitTime(CLIENTSYNCTIME);
+
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, share.DOCLIB + File.separator + folderName);
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
-            explorer.activateApplicationWindow(folderName);
-            explorer.backButtonInExplorer(siteName);
-            explorer.activateApplicationWindow(siteName);
-            explorer.deleteFolder(folderName, true);
+            share.navigateToFolder(drone, folderDelete.getName());
+            Assert.assertTrue(share.isFileVisible(drone, fileDelete.getName()), "File exist in Share");
+
+            explorer.deleteFolder(folderDelete.getName());
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
-            Assert.assertFalse(share.isFileVisible(drone, fileName + FILEEXT));
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertFalse(share.isFileVisible(drone, folderDelete.getName()), "Folder was deleted automaticaly after sync.");
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed - deleteFolderWithFileInClient", e);
+            throw new SkipException("test case failed - deleteFolderWithFileInClient", e.getCause());
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
-            try
-            {
-                syncWaitTime(SERVERSYNCTIME);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
         }
     }
-
 }
