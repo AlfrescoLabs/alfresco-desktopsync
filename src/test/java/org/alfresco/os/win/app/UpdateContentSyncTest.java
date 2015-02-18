@@ -17,48 +17,27 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
-import org.alfresco.application.windows.NotepadApplications;
-import org.alfresco.explorer.WindowsExplorer;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
-import org.alfresco.sync.AbstractTest;
-import org.alfresco.utilities.LdtpUtil;
-import org.alfreso.po.share.steps.LoginActions;
-import org.alfreso.po.share.steps.SiteActions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.alfresco.po.share.steps.LoginActions;
+import org.alfresco.po.share.steps.SiteActions;
+import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
  * This class will contain all the test cases related to update of file in both client (Windows machine) and share
  * 
  * @author Sprasanna
+ * @author Paul Brodner
  */
-public class UpdateContentSyncTest extends AbstractTest
+public class UpdateContentSyncTest extends DesktopSyncTest
 {
-    private static Log logger = LogFactory.getLog(UpdateContentSyncTest.class);
-    NotepadApplications notepad = new NotepadApplications();
+    Notepad notepad = new Notepad();
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
-    LdtpUtil ldtpObject = new LdtpUtil();
-    String[] userInfo = new String[2];
-    String syncLocation = "";
-    String shareFilePath = "";
-    final String FILEEXT = ".txt";
-    String clientCreatedFolder;
-
-    @BeforeClass
-    public void initialSetupOfShare()
-    {
-        userInfo[0] = username;
-        userInfo[1] = password;
-        syncLocation = location + File.separator + siteName;
-        shareFilePath = downloadPath.toLowerCase();
-    }
 
     /**
      * Test to update a file in client which is already synced
@@ -85,45 +64,44 @@ public class UpdateContentSyncTest extends AbstractTest
     @Test
     public void updateFileInClient()
     {
-        logger.info("Test to update a file in client which is already synced");
-        String fileName = "clientcreateandupdate" + fileAppend;
-        String clientLocation = syncLocation + File.separator + fileName + FILEEXT;
-        String shareLocation = shareFilePath + File.separator + fileName + FILEEXT;
+        File synchedFile = getRandomFileIn(getLocalSiteLocation(), "updateSyncFile", "txt");
+        File downloadFile = new File(downloadPath, synchedFile.getName());
         try
         {
 
-            notepad.openNotepadApplication();
-            notepad.setNotepadWindow("Notepad");
-            notepad.saveAsNotpad(syncLocation, fileName);
-            notepad.editNotepad("first create in client", fileName);
-            notepad.ctrlSSave();
+            notepad.openApplication();
+            notepad.saveAs(synchedFile);
+            notepad.edit("first create in client");
+            notepad.save();
+
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.1");
-            Assert.assertTrue(share.isFileVisible(drone, fileName + FILEEXT));
-            notepad.appendTextToNotepad("adding another line of text", fileName);
-            notepad.ctrlSSave();
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
+            notepad.appendData("adding another line of text");
+            notepad.save();
+
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
-            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.2");
-            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, shareLocation);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
-            notepad.closeNotepad(fileName);
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.2", "Appropriate version found on synched file in share");
+            share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
+            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
+            notepad.close(synchedFile);
             syncWaitTime(CLIENTSYNCTIME);
-            Assert.assertEquals(share.getDocLibVersionInfo(drone, fileName + FILEEXT), "1.2");
-            share.shareDownloadFileFromDocLib(drone, fileName + FILEEXT, shareLocation);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
+            downloadFile.delete();
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.2", "Appropriate version found on synched file in share");
+            share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
+            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed-updateFileInClient " , e);
+            e.printStackTrace();
+            throw new SkipException("test case failed-updateFileInClient ", e);
         }
         finally
         {
             shareLogin.logout(drone);
         }
-
     }
 
     /**
@@ -141,34 +119,33 @@ public class UpdateContentSyncTest extends AbstractTest
     @Test
     public void updateFileInShare()
     {
-        logger.info("Test to check whether the share new version are getting synced correctly");
-        String fileName = "sharecreateandupdate" + fileAppend + FILEEXT;
+        File fileTestUpdate = getRandomFileIn(getLocalSiteLocation(), "updateFile", "txt");
+        File fileToUload = getRandomFileIn(getLocalSiteLocation(), "uploadFile", "txt");
         ContentDetails content = new ContentDetails();
-        content.setName(fileName);
-        content.setDescription(fileName);
-        content.setTitle(fileName);
+        content.setName(fileTestUpdate.getName());
+        content.setDescription(fileTestUpdate.getName());
+        content.setTitle(fileTestUpdate.getName());
         content.setContent("share created file");
-        String clientLocation = syncLocation + File.separator + fileName;
-        String shareLocation = shareFilePath + File.separator + fileName;
+
         try
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createContent(drone, content, ContentType.PLAINTEXT);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(explorer.isFilePresent(syncLocation + File.separator + fileName));
-            share.uploadNewVersionOfDocument(drone, fileName, fileName, "test sync update");
+            Assert.assertTrue(fileTestUpdate.exists(), "Share new version file is synched on client.");
+
+            share.uploadNewVersionOfDocument(drone, fileTestUpdate.getName(), fileTestUpdate.getName(), "test sync update");
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(compareTwoFiles(clientLocation, shareLocation));
+            Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), fileToUload.getPath()));
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed -updateFileInShare " , e);
+            throw new SkipException("test case failed -updateFileInShare ", e);
         }
         finally
         {
             shareLogin.logout(drone);
         }
     }
-
 }
