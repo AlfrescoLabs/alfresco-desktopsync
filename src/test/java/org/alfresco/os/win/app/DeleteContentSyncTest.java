@@ -62,14 +62,14 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             notepad.edit("desktop Automated Testing");
             notepad.saveAs(deleteFile);
             notepad.close(deleteFile);
-            syncWaitTime(CLIENTSYNCTIME);
+            //syncWaitTime(CLIENTSYNCTIME);
             explorer.openApplication();
             explorer.deleteFile(deleteFile, true);
             explorer.closeExplorer();
-            syncWaitTime(CLIENTSYNCTIME);
-            shareLogin.loginToShare(drone, userInfo, shareUrl);
-            share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File does not exist in Share after auto Sync.");
+//            syncWaitTime(CLIENTSYNCTIME);
+//            shareLogin.loginToShare(drone, userInfo, shareUrl);
+//            share.openSitesDocumentLibrary(drone, siteName);
+//            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File does not exist in Share after auto Sync.");
         }
         catch (Throwable e)
         {

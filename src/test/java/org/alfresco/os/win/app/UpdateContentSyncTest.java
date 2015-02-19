@@ -68,7 +68,6 @@ public class UpdateContentSyncTest extends DesktopSyncTest
         File downloadFile = new File(downloadPath, synchedFile.getName());
         try
         {
-
             notepad.openApplication();
             notepad.saveAs(synchedFile);
             notepad.edit("first create in client");

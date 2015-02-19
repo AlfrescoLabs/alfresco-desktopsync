@@ -91,7 +91,6 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
-
     @Test
     public void createFolderAndFileInShare()
     {
