@@ -67,6 +67,15 @@ public abstract class DesktopSyncAbstract
         siteName = t.getSiteName();
         downloadPath = t.getFiledirectoryPath();
         installerPath = t.getInstallerpath();
+
+        displayProperties("Client Sync Location", location);
+        displayProperties("Share URL", shareUrl);
+        displayProperties("SiteName", siteName);
+    }
+
+    private void displayProperties(String property, String value)
+    {
+        logger.info(String.format("Using DesktopSync property '%s'={%s}", property, value));
     }
 
     public WebDrone getWebDrone() throws Exception

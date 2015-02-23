@@ -76,7 +76,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
         while (delay <= totalWaitTime)
         {
-            logger.info("Sync wait time started to sleep - " + format.format(new Date()));
+            logger.info("Sync Wait Time Started to sleep - " + format.format(new Date()) + " (waiting to pass: " + totalWaitTime/delaytime + " minute(s) )");
             Thread.sleep(delaytime);
             delay = delay + delaytime;
         }
