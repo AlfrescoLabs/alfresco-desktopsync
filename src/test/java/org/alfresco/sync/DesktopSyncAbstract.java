@@ -71,6 +71,7 @@ public abstract class DesktopSyncAbstract
         displayProperties("Client Sync Location", location);
         displayProperties("Share URL", shareUrl);
         displayProperties("SiteName", siteName);
+        displayProperties("downloadpath", downloadPath);
     }
 
     private void displayProperties(String property, String value)

@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-
-	<import resource="classpath:webdrone-context.xml" />
+	
 	<import resource="desktopsync-context.xml" />
+	<import resource="classpath:webdrone-context.xml" />
 	<bean id="ShareProperties"
 		class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 		<property name="locations">
@@ -28,5 +28,8 @@
 		<constructor-arg name="sitename" value="${desktopsync.testsite}" />
 		<constructor-arg name="filedirectoryPath" value="${webdrone.download.directory}" />
 		<constructor-arg name="installerpath" value="${installerpath}" />
+		<constructor-arg name="grid" value="${webdrone.local.grid}"></constructor-arg>
+		<constructor-arg name="browser" value="${webdrone.browser}"></constructor-arg>
+		<constructor-arg name="version" value="${share.version}"></constructor-arg>
 	</bean>
 </beans>

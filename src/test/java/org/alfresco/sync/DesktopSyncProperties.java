@@ -34,7 +34,10 @@ public class DesktopSyncProperties
     protected long popupRendertime;
     private String filedirectoryPath;
     private final String installerpath;
-
+    private final String grid;
+    private final String browser;
+    private final String version;
+    
     public DesktopSyncProperties(
             final String shareUrl, 
             final String username, 
@@ -44,7 +47,10 @@ public class DesktopSyncProperties
             final String location, 
             final String sitename, 
             final String filedirectoryPath, 
-            final String installerpath)
+            final String installerpath,
+            final String grid,
+            final String browser,
+            final String version)
     {
         this.shareUrl = shareUrl;
         this.username = username;
@@ -55,6 +61,24 @@ public class DesktopSyncProperties
         this.siteName = sitename;
         this.filedirectoryPath = filedirectoryPath;
         this.installerpath = installerpath;
+        this.grid = grid;
+        this.browser=browser;
+        this.version=version;
+    }
+
+    public String getGrid()
+    {
+        return grid;
+    }
+
+    public String getBrowser()
+    {
+        return browser;
+    }
+
+    public String getVersion()
+    {
+        return version;
     }
 
     public String getInstallerpath()

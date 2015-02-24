@@ -8,8 +8,8 @@
 		class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath:sharepo.properties</value>
 				<value>classpath:webdrone.properties</value>
+				<value>classpath:sharepo.properties</value>
 			</list>
 		</property>
 	</bean>
