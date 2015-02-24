@@ -62,14 +62,14 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             notepad.edit("desktop Automated Testing");
             notepad.saveAs(deleteFile);
             notepad.close(deleteFile);
-            //syncWaitTime(CLIENTSYNCTIME);
+            syncWaitTime(CLIENTSYNCTIME);
             explorer.openApplication();
             explorer.deleteFile(deleteFile, true);
             explorer.closeExplorer();
-//            syncWaitTime(CLIENTSYNCTIME);
-//            shareLogin.loginToShare(drone, userInfo, shareUrl);
-//            share.openSitesDocumentLibrary(drone, siteName);
-//            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File does not exist in Share after auto Sync.");
+            syncWaitTime(CLIENTSYNCTIME);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File exists in Share after auto Sync.");
         }
         catch (Throwable e)
         {
@@ -100,11 +100,14 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             explorer.openApplication();
             explorer.openFolder(deleteTestFolder.getParentFile());
             explorer.createAndOpenFolder(deleteTestFolder.getName());
+            explorer.goBack(deleteTestFolder.getParentFile().getName());
             syncWaitTime(CLIENTSYNCTIME);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            Assert.assertTrue(share.isFileVisible(drone, deleteTestFolder.getName()), "Folder exists in Share after auto Sync.");
             explorer.deleteFolder(deleteTestFolder.getName(), true);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
-            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertFalse(share.isFileVisible(drone, deleteTestFolder.getName()), "Folder does not exist in Share after auto Sync.");
         }
@@ -190,7 +193,6 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             explorer.openFolder(folderDelete.getParentFile());
             explorer.createAndOpenFolder(folderDelete.getName());
             explorer.goBack(folderDelete.getParentFile().getName());
-
             notepad.openApplication();
             notepad.edit("content");
             notepad.saveAs(fileDelete);
