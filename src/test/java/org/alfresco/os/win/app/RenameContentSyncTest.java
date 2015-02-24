@@ -52,7 +52,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     public void renameFileInClient()
     {
         File fileToRename = getRandomFileIn(getLocalSiteLocation(), "fileToRename", "txt");
-        File fileRenamed = getRandomFileIn(getLocalSiteLocation(), "renamed", "txt");
+        File fileRenamed = getRandomFileIn(getLocalSiteLocation(), "renamedFile", "txt");
         try
         {
             notepad.openApplication();
@@ -69,7 +69,6 @@ public class RenameContentSyncTest extends DesktopSyncTest
             explorer.closeExplorer();
 
             syncWaitTime(CLIENTSYNCTIME);
-            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             Assert.assertTrue(share.isFileVisible(drone, fileRenamed.getName()));
         }
@@ -101,7 +100,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     public void renameFolderInClient()
     {
         File folder = getRandomFolderIn(getLocalSiteLocation(), "rnmFolder");
-        File folderRename = getRandomFolderIn(getLocalSiteLocation(), "rnmFolder");
+        File folderRename = getRandomFolderIn(getLocalSiteLocation(), "renamedFolder");
 
         File folderFile = getRandomFileIn(folder, "fileR", "txt");
         try
@@ -109,7 +108,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             explorer.openApplication();
             explorer.openFolder(folder.getParentFile());
             explorer.createAndOpenFolder(folder.getName());
-            explorer.closeExplorer();
+            explorer.goBack(folder.getParentFile().getName());
             notepad.openApplication();
             notepad.saveAs(folderFile);
             notepad.close(folderFile);
@@ -126,6 +125,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            e.printStackTrace();
             throw new SkipException("test case failed- renameFolderInClient", e);
         }
         finally
@@ -148,18 +148,17 @@ public class RenameContentSyncTest extends DesktopSyncTest
     public void renameFileInShare()
     {
         File fileTest = getRandomFileIn(getLocalSiteLocation(), "renameFileSh", "txt");
-        File renamedFile = new File(fileTest, "renFileFromShare.txt");
+        File renamedFile = getRandomFileIn(getLocalSiteLocation(), "renamedFileSh", "txt");
         try
         {
             File fileInShare = share.newFile(fileTest.getPath(), fileTest.getName());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.uploadFile(drone, fileInShare);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(fileTest.exists(), "File exists in Client");
-            share.editContentNameInline(drone, fileInShare.getName(), renamedFile.getName(), true);
+            Assert.assertTrue(fileInShare.exists(), "File exists in Client");
+            share.editContentNameInline(drone, fileTest.getName(), renamedFile.getName(), true);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertFalse(fileTest.exists(), "Original file renamed, does not exists in Client");
+            Assert.assertFalse(fileTest.exists(), "Original file does not exists in Client");
             Assert.assertTrue(renamedFile.exists(), "Renamed file in Share is now synched in Client");
         }
         catch (Throwable e)
@@ -187,7 +186,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     public void renameFolderInShare()
     {
         File folderInShare = getRandomFolderIn(getLocalSiteLocation(), "fldInShare");
-        File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "fldInShareRnm");
+        File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInShare");
         try
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
@@ -202,6 +201,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            e.printStackTrace();
             throw new SkipException("test case failed-renameFolderInShare", e);
         }
         finally
@@ -217,7 +217,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     public void renameFolderWithFileInShare()
     {
         File folderInShare = getRandomFolderIn(getLocalSiteLocation(), "fldInShare");
-        File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "fldInShareRnm");
+        File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInShare");
         File fileTest = getRandomFileIn(folderInShareRenamed, "file", "txt");
         try
         {
@@ -228,6 +228,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
             share.navigateToFolder(drone, folderInShare.getName());
             share.uploadFile(drone, fileInShare);
+            share.navigateToDocuemntLibrary(drone,siteName);
             fileInShare.delete();
 
             syncWaitTime(SERVERSYNCTIME);
@@ -240,6 +241,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            e.printStackTrace();
             throw new SkipException("test case failed-renameFolderInShare", e);
         }
         finally
