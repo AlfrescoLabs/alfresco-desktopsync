@@ -41,8 +41,6 @@ public abstract class DesktopSyncAbstract
     protected static String googlepassword;
     protected static String location;
     protected static String siteName;
-    protected static String officeVersion;
-    protected static String officePath;
     protected static String fileAppend;
     protected static String installerPath;
 
@@ -71,7 +69,7 @@ public abstract class DesktopSyncAbstract
         displayProperties("Client Sync Location", location);
         displayProperties("Share URL", shareUrl);
         displayProperties("SiteName", siteName);
-        displayProperties("downloadpath", downloadPath);
+        displayProperties("downloadPath", downloadPath);
     }
 
     private void displayProperties(String property, String value)

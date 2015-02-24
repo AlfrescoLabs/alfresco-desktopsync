@@ -37,6 +37,7 @@ public class DesktopSyncProperties
     private final String grid;
     private final String browser;
     private final String version;
+    private final String mimeTypes;
     
     public DesktopSyncProperties(
             final String shareUrl, 
@@ -50,7 +51,8 @@ public class DesktopSyncProperties
             final String installerpath,
             final String grid,
             final String browser,
-            final String version)
+            final String version,
+            final String mimeTypes)
     {
         this.shareUrl = shareUrl;
         this.username = username;
@@ -64,6 +66,7 @@ public class DesktopSyncProperties
         this.grid = grid;
         this.browser=browser;
         this.version=version;
+        this.mimeTypes=mimeTypes;
     }
 
     public String getGrid()
@@ -124,5 +127,10 @@ public class DesktopSyncProperties
     public String getFiledirectoryPath()
     {
         return filedirectoryPath;
+    }
+
+    public String getMimeTypes()
+    {
+        return mimeTypes;
     }
 }
