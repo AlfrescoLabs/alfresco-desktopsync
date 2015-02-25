@@ -17,6 +17,7 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
+import org.alfresco.po.share.site.document.*;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
@@ -250,6 +251,35 @@ public class CreateContentSyncTest extends DesktopSyncTest
         {
             e.printStackTrace();
             throw new SkipException("test case failed - createFolderInShare ", e);
+        }
+        finally
+        {
+            shareLogin.logout(drone);
+        }
+    }
+
+    @Test
+    public void createGoogleDocInShare()
+    {
+        File shareTestFile = getRandomFileIn(getLocalSiteLocation(), "createGoogleDoc", "docx");
+        try
+        {
+            shareLogin.loginToShare(drone,userInfo,shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            DocumentLibraryPage docPage = new DocumentLibraryPage(drone);
+            GoogleDocsAuthorisation googleAuth = docPage.getNavigation().selectCreateContent(ContentType.GOOGLEDOCS).render();
+            GoogleSignUpPage signUpPage = googleAuth.submitAuth().render();
+            EditInGoogleDocsPage googleDocsPage = signUpPage.signUp(googleusername, googlepassword).render();
+            GoogleDocsRenamePage renameDocs = googleDocsPage.renameDocumentTitle().render();
+            googleDocsPage = renameDocs.updateDocumentName(shareTestFile.getName()).render();
+            googleDocsPage.selectSaveToAlfresco().render();
+            syncWaitTime(SERVERSYNCTIME);
+            Assert.assertTrue(shareTestFile.exists(), "GoogleDoc created on Remote was synched on client");
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            throw new SkipException("test case failed - createGoogleDocInShare ", e);
         }
         finally
         {
