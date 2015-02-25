@@ -1,29 +1,22 @@
-# alfresco-desktopsync
+# Alfresco LDTP
+* [Introduction](#introduction)
+* [About DekstopSync](#about-dekstopSync)
+* [Requirements](#requirements)
+* [LDTP Documentation](#ldtp-documentation)
+* [Wiki](https://github.com/AlfrescoTestAutomation/alfresco-ldtp/wiki)
 
-Alfresco LDTP
-Introduction
-Requirements
-LDTP Documentation
+## Introduction
 
-Introduction
+This is a Java based automation suite that will enable us to test DekstopSync client application of Alfresco on both MAC and Windows OS.
 
-  We are pleased to introduce Alfresco Deskotp sync library (IN Progress): a Java based automation suite that will enable us to test Dekstop sync client of Alfresco
+## About DekstopSync
 
-Requirements
+This application synchronizes files between a local desktop and Alfresco using Web Services. The application currently synchronizes files in document library of any site a user has access to. The application is built using Java and uses jNotify.
 
-For MAC you will need:
+## Requirements
 
-OS X system with Xcode installed (tested on 10.9) If you experience any issues, please feel free to open a ticket in the issue tracker.
-please also follow the Getting Started with Pyatom section from official page.
-For Windows you will need:
+* DesktopSync [client]( http://sourceforge.net/projects/alfrescodesktop/files/)
 
-Windows XP/ Windows 7 SP1 / Winows 8 - as a minimum requirement.
-please follow the Installation Instruction of Cobra LDTP from official page.
-Dekstop sync client
-Alfresco share
-LDTP Documentation
-
-Please take a look on LDTP User Manual
-
-
-
+* Alfresco-LDTP project dependency (this should be build automaticaly on mvn clean install -DskipTests)
+⋅⋅* [source](https://github.com/AlfrescoTestAutomation/alfresco-ldtp/) project.
+⋅⋅* [wiki](https://github.com/AlfrescoTestAutomation/alfresco-ldtp/wiki)
