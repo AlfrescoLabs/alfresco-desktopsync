@@ -186,7 +186,7 @@ public class InitialSync extends Application
      */
     public void getSystemTray()
     {
-        // ldtp.click("pane2");
+        getLdtp().click("pane2");
         String[] allWindows = getLdtp().getAppList();
         for (String objects : allWindows)
         {

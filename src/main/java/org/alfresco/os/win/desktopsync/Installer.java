@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.alfresco.os.win.Application;
+import org.testng.Assert;
 import org.testng.SkipException;
 
 import com.cobra.ldtp.Ldtp;
@@ -66,7 +67,7 @@ public class Installer extends Application
         ldtp.waitTillGuiExist("Next");
         ldtp.click("Next");
         ldtp.click("I accept the terms in the license agreement");
-    //    Assert.assertEquals(ldtp.isTextStateEnabled("Next") , 1);
+        Assert.assertEquals(ldtp.isTextStateEnabled("Next") , 1);
         ldtp.click("Install");
         ldtp.waitTillGuiExist("Finish");
         ldtp.click("Finish");
