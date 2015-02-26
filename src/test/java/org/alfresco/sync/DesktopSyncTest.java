@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 
+import org.alfresco.po.share.steps.LoginActions;
+import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
 import org.alfresco.webdrone.WebDrone;
 import org.apache.commons.io.IOUtils;
@@ -38,9 +40,13 @@ import org.testng.annotations.BeforeSuite;
 public class DesktopSyncTest extends DesktopSyncAbstract
 {
     Properties officeAppProperty = new Properties();
-    private static Log logger = LogFactory.getLog(DesktopSyncTest.class);
+    protected static Log logger = onThisClass();
     public WebDrone drone;
     protected String[] userInfo = null;
+
+    // generic share variables used in tests
+    protected LoginActions shareLogin = new LoginActions();
+    protected SiteActions share = new SiteActions();
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -76,7 +82,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
         while (delay <= totalWaitTime)
         {
-            logger.info("Sync Wait Time Started to sleep - " + format.format(new Date()) + " (waiting to pass: " + totalWaitTime/delaytime + " minute(s) )");
+            logger.info("Sync Wait Time Started to sleep - " + format.format(new Date()) + " (waiting to pass: " + totalWaitTime / delaytime + " minute(s) )");
             Thread.sleep(delaytime);
             delay = delay + delaytime;
         }
@@ -114,6 +120,17 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         String encoding = "UTF-8";
         InputStream in = new FileInputStream(path);
         return IOUtils.toByteArray(new InputStreamReader(in), encoding);
+    }
+
+    /**
+     * This will return the logger of the caller
+     * 
+     * @return logger of the class name
+     */
+    protected static Log onThisClass()
+    {
+        StackTraceElement thisCaller = Thread.currentThread().getStackTrace()[2];
+        return LogFactory.getLog(thisCaller.getClassName());
     }
 
     /**
@@ -159,7 +176,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      * Extension should not contain any period.
      * 
      * @param prefix
-     * @param extension
+     * @param extensions
      * @return
      */
     protected File getRandomFolderIn(File location, String prefix)
@@ -168,5 +185,4 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         LdtpUtils.logInfo("Generated Random folder: " + tmp.getPath());
         return tmp;
     }
-
 }

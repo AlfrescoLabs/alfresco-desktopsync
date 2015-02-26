@@ -17,25 +17,20 @@ package org.alfresco.os.mac.app;
 
 import java.io.File;
 
-import org.alfresco.po.share.steps.LoginActions;
-import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
- * This class will contain all the test cases related to Create of file in both
- * client (Windows machine) and share
+ * This class will contain all the test cases related to Create of a file and folder
+ * in both environments: client (MAC machine) and share
  * 
- * @author Sprasanna
  * @author Paul Brodner
  */
 public class CreateContentSyncTest extends DesktopSyncTest
 {
     TextEdit notepad = new TextEdit();
-    LoginActions shareLogin = new LoginActions();
-    SiteActions share = new SiteActions();
     File folderChild = null;
     FinderExplorer explorer = new FinderExplorer();
 
@@ -52,7 +47,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * 
      * @throws Exception
      */
-    @Test
+    @Test(groups = { "MacOnly", "Create" })
     public void createFileInClient()
     {
         File clientTestFile = getRandomFileIn(getLocalSiteLocation(), "createFile", "rtf");
@@ -64,11 +59,13 @@ public class CreateContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, clientTestFile.getName()), "Client Notepad file is successfuly synched in site.");
+
+            Assert.assertTrue(share.isFileVisible(drone, clientTestFile.getName()),
+                    String.format("Client Notepad File [%s] is successfuly synched in site.", clientTestFile.getName()));
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            throw new SkipException("createFileInClient errors found", e.getCause());
+            throw new TestException("createFileInClient errors found", e.getCause());
         }
         finally
         {
@@ -90,7 +87,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
-    @Test
+    @Test(groups = { "MacOnly", "Create" })
     public void createFolderAndFileInShare()
     {
         File folderToCreate = getRandomFolderIn(getLocalSiteLocation(), "createFolder");
@@ -104,16 +101,15 @@ public class CreateContentSyncTest extends DesktopSyncTest
             share.createFolder(drone, folderToCreate.getName(), folderToCreate.getName(), folderToCreate.getName());
             share.navigateToFolder(drone, folderToCreate.getName());
             share.uploadFile(drone, fileToUpload);
-            
+
             syncWaitTime(SERVERSYNCTIME);
 
-            Assert.assertTrue(folderToCreate.exists(), "Folder synched from Remote, exists in client");
-            Assert.assertTrue(fileInClient.exists(), "File uploaded on Remote, was synched on client");
+            Assert.assertTrue(folderToCreate.exists(), String.format("Folder synched from Remote [%s], exists in client", folderToCreate.getPath()));
+            Assert.assertTrue(fileInClient.exists(), String.format("File uploaded on Remote [%s], was synched on client", fileInClient.getPath()));
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed - createFolderAndFileInShare ", e);
+            throw new TestException("test case failed - createFolderAndFileInShare ", e.getCause());
         }
         finally
         {
@@ -137,15 +133,14 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step9 - Navigate to folder
      * Step10 - Validate whether the subFolder created is synched correctly
      */
-
-    @Test
+    @Test(groups = { "MacOnly", "Create" })
     public void createFolderTreeInClient()
     {
         File folderParent = getRandomFolderIn(getLocalSiteLocation(), "folderParent");
         folderChild = getRandomFolderIn(folderParent, "folderChild1");
         try
         {
-            explorer.openApplication();       
+            explorer.openApplication();
             explorer.createAndOpenFolder(folderParent);
             explorer.createAndOpenFolder(folderChild);
             explorer.closeExplorer();
@@ -154,14 +149,14 @@ public class CreateContentSyncTest extends DesktopSyncTest
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, folderParent.getName()), "Folder parent is visible in Share");
+            Assert.assertTrue(share.isFileVisible(drone, folderParent.getName()),
+                    String.format("Folder Parent [%s] is visible in Share", folderParent.getName()));
             share.navigateToFolder(drone, folderParent.getName());
-            Assert.assertTrue(share.isFileVisible(drone, folderChild.getName()), "Subfolder is visible in Share");
+            Assert.assertTrue(share.isFileVisible(drone, folderChild.getName()), String.format("Subfolder [%s] is visible in Share", folderChild.getName()));
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed - createFolderTreeInClient", e);
+            throw new TestException("test case failed - createFolderTreeInClient", e.getCause());
         }
         finally
         {
@@ -183,7 +178,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step9 - Navigate to the sub Folder
      * step10 - Validate the file created in client is synced correctly
      */
-    @Test(dependsOnMethods = "createFolderTreeInClient")
+    @Test(groups = { "MacOnly", "Create" }, dependsOnMethods = "createFolderTreeInClient")
     public void createFileInsideFolderInClient()
     {
         folderChild = folderChild.getParentFile();
@@ -202,15 +197,14 @@ public class CreateContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, folderChild.getName());
-            Assert.assertTrue(share.isFileVisible(drone, fileName.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, fileName.getName()), String.format("File [%s] is synched in Share", fileName.getName()));
             share.shareDownloadFileFromDocLib(drone, fileName.getName(), downloadFile.getPath());
 
-            Assert.assertTrue(compareTwoFiles(fileName.getPath(), downloadFile.getPath()));
+            Assert.assertTrue(compareTwoFiles(fileName.getPath(), downloadFile.getPath()), "File uploaded is the same as file downloaded.");
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            e.printStackTrace();
-            throw new SkipException("Test Case Failed - createFileInsideFolderInClient", e);
+            throw new TestException("Test Case Failed - createFileInsideFolderInClient", e.getCause());
         }
         finally
         {
@@ -220,7 +214,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
 
     /**
      * Test cases to create empty sub folder in share without any files is
-     * sycned to the client correctly
+     * Synched to the client correctly
      * Step1 - login in share
      * Step2 - Open the sync site
      * Step3 - Create a Folder
@@ -229,26 +223,25 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step7 - In client validate both the folder and sub folder is present
      */
-    @Test
+    @Test(groups = { "MacOnly", "Create" })
     public void createFolderInShare()
     {
-        File shareFolderParent = getRandomFolderIn(getLocalSiteLocation(), "createShareFolder");
-        File shareFolderChild = getRandomFolderIn(shareFolderParent, "creatChildFolder");
+        File shareFolderParent = getRandomFolderIn(getLocalSiteLocation(), "createShareParentFldr");
+        File shareFolderChild = getRandomFolderIn(shareFolderParent, "creatSharedChildFldr");
         try
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, shareFolderParent.getName(), shareFolderParent.getName(), shareFolderParent.getName());
-            share.selectContent(drone, shareFolderParent.getName());
+            share.navigateToFolder(drone, shareFolderParent.getName());
             share.createFolder(drone, shareFolderChild.getName(), shareFolderChild.getName(), shareFolderChild.getName());
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(shareFolderChild.exists(), "Shared folder parent was synched in client");
-            Assert.assertTrue(shareFolderChild.exists(), "Shared folder child was synched in client");
+            Assert.assertTrue(shareFolderParent.exists(), String.format("Shared folder [%s] parent was synched in client", shareFolderParent.getPath()));
+            Assert.assertTrue(shareFolderChild.exists(), String.format("Shared folder [%s] was synched in client", shareFolderChild.getPath()));
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
-            e.printStackTrace();
-            throw new SkipException("test case failed - createFolderInShare ", e);
+            throw new TestException("test case failed - createFolderInShare ", e.getCause());
         }
         finally
         {
