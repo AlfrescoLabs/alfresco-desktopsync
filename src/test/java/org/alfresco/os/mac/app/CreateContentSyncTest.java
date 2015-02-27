@@ -16,6 +16,7 @@
 package org.alfresco.os.mac.app;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
@@ -65,7 +66,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException("createFileInClient errors found", e.getCause());
+            throw new TestException(Arrays.toString(e.getStackTrace()));
         }
         finally
         {
@@ -101,7 +102,9 @@ public class CreateContentSyncTest extends DesktopSyncTest
             share.createFolder(drone, folderToCreate.getName(), folderToCreate.getName(), folderToCreate.getName());
             share.navigateToFolder(drone, folderToCreate.getName());
             share.uploadFile(drone, fileToUpload);
-
+            Assert.assertTrue(share.isFileVisible(drone, fileToUpload.getName()),
+                    String.format("File {%s} was uploaded successfuly in Share", fileToUpload.getName()));
+            
             syncWaitTime(SERVERSYNCTIME);
 
             Assert.assertTrue(folderToCreate.exists(), String.format("Folder synched from Remote [%s], exists in client", folderToCreate.getPath()));
@@ -109,7 +112,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException("test case failed - createFolderAndFileInShare ", e.getCause());
+            throw new TestException(Arrays.toString(e.getStackTrace()));
         }
         finally
         {
@@ -156,7 +159,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException("test case failed - createFolderTreeInClient", e.getCause());
+            throw new TestException(Arrays.toString(e.getStackTrace()));
         }
         finally
         {
@@ -204,7 +207,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException("Test Case Failed - createFileInsideFolderInClient", e.getCause());
+            throw new TestException(Arrays.toString(e.getStackTrace()));
         }
         finally
         {
@@ -241,7 +244,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException("test case failed - createFolderInShare ", e.getCause());
+            throw new TestException(Arrays.toString(e.getStackTrace()));
         }
         finally
         {

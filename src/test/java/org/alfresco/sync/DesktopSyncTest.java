@@ -21,9 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
+import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Properties;
 
 import org.alfresco.po.share.steps.LoginActions;
@@ -34,7 +33,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 public class DesktopSyncTest extends DesktopSyncAbstract
@@ -77,16 +79,15 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     public void syncWaitTime(long totalWaitTime) throws InterruptedException
     {
         long delaytime = 60000;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         long delay = delaytime;
-
+        logger.info("Sync Wait Time Started (waiting to pass: " + (totalWaitTime / delaytime) + " minute(s) )");
         while (delay <= totalWaitTime)
         {
-            logger.info("Sync Wait Time Started to sleep - " + format.format(new Date()) + " (waiting to pass: " + totalWaitTime / delaytime + " minute(s) )");
+            logger.info("Sleep - (for 1 minute)");
             Thread.sleep(delaytime);
             delay = delay + delaytime;
         }
-        logger.info("Sync wait time end  - " + format.format(new Date()));
+        logger.info("Sync Wait Time Ended (after: " + (totalWaitTime / delaytime) + " minute(s) )");
     }
 
     /**
@@ -184,5 +185,17 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         File tmp = new File(location, String.format("%s-%s", prefix, RandomStringUtils.randomAlphanumeric(5)));
         LdtpUtils.logInfo("Generated Random folder: " + tmp.getPath());
         return tmp;
+    }
+
+    @BeforeMethod
+    public void showStartInfo(Method method)
+    {
+        logger.info("*** START TestNG Method: {" + method.getName() + "} ***");
+    }
+
+    @AfterMethod
+    public void showEndInfo(ITestResult method)
+    {
+        logger.info("*** END TestNG Method:   {" + method.getMethod().getMethodName() + "} ***");
     }
 }

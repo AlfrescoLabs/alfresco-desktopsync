@@ -25,7 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
- * This class will contain all the test cases related to delete of a file and folder 
+ * This class will contain all the test cases related to delete of a file and folder
  * in both environments: Client (MAC machine) and Share
  * 
  * @author Paul Brodner
@@ -46,11 +46,11 @@ public class DeleteContentSyncTest extends DesktopSyncTest
     {
         super.initialSetupOfShare();
 
-        _deleteFileClient       = getRandomFileIn(getLocalSiteLocation(), "deleteFile", "rtf");
-        _deleteFolderClient     = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
+        _deleteFileClient = getRandomFileIn(getLocalSiteLocation(), "deleteFile", "rtf");
+        _deleteFolderClient = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
 
-        _deleteFolderShareMisc  = getRandomFolderIn(getLocalSiteLocation(), "deleteShareFolder");
-        _deleteFileShareMisc    = getRandomFileIn(_deleteFolderShareMisc, "shareFile", "rtf");
+        _deleteFolderShareMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteShareFolder");
+        _deleteFileShareMisc = getRandomFileIn(_deleteFolderShareMisc, "shareFile", "rtf");
 
         _deleteFolderClientMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteFolderClientMisc");
         _deleteFileClientMisc = getRandomFileIn(_deleteFolderClientMisc, "fileShareMisc", "rtf");
@@ -185,11 +185,15 @@ public class DeleteContentSyncTest extends DesktopSyncTest
                     String.format("Folder [%s] is synched in Client prior to test", _deleteFolderShareMisc.getPath()));
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.navigateToDocuemntLibrary(drone, siteName);
+            Assert.assertTrue(share.isFileVisible(drone, _deleteFolderShareMisc.getName()),
+                    String.format("Folder [%s] exists in Share prior to deletion.", _deleteFolderShareMisc.getName()));
+
             share.deleteContentInDocLib(drone, _deleteFolderShareMisc.getName());
             syncWaitTime(SERVERSYNCTIME);
 
             Assert.assertFalse(_deleteFolderShareMisc.exists(),
-                    String.format("Folder [%s] was successfuly deleted from Client after sync.", _deleteFileShareMisc.getPath()));
+                    String.format("Folder [%s] was successfuly deleted from Client after sync.", _deleteFolderShareMisc.getPath()));
             Assert.assertFalse(_deleteFileShareMisc.exists(),
                     String.format("File [%s] was successfuly deleted from Client after sync.", _deleteFileShareMisc.getPath()));
         }
