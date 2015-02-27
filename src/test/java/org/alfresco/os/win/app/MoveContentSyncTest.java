@@ -24,6 +24,7 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.utilities.LdtpUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -42,80 +43,77 @@ public class MoveContentSyncTest extends DesktopSyncTest
     WindowsExplorer explorer = new WindowsExplorer();
     File moveFileOutOFSub = null;
     File downloadLocation = null;
-    
+
     /**
-     * File and Folder deceleration  for test MoveFolderwithFileSubInClient  
+     * File and Folder deceleration for test MoveFolderwithFileSubInClient
      */
     File folderToMoveInFolderwithFile = null;
     File fileNameInFolderwithFile = null;
     File currentFolderInFolderwithFile = null;
-    
+
     /**
-     * File and Folder deceleration for share related move 
+     * File and Folder deceleration for share related move
      */
     String siteNameToMoveShare = null;
     File folderNameShare = null;
     File fileNameShare = null;
     File folderName_2Share = null;
     File folderToMoveShare = null;
-    
+
     /**
-     *File and Folder deceleration for  MoveFileInsideEmptyFolderInClient
-     *
+     * File and Folder deceleration for MoveFileInsideEmptyFolderInClient
      */
     File emptyFolderName = null;
     File emptyFileName = null;
-    
 
     @BeforeClass
     public void initialSetupOfShare()
     {
         downloadLocation = new File(downloadPath);
-        super.initialSetupOfShare(); 
+        super.initialSetupOfShare();
         moveFileOutOFSub = getRandomFileIn(downloadLocation, "moveFileOutOFSub", "txt");
-        
+
         try
         {
-        
-        // This is to create sample file 
-        explorer.openApplication();
-        explorer.openFolder(downloadLocation);
-        explorer.rightClickCreate(downloadLocation.getName(),moveFileOutOFSub.getName(), type.TEXTFILE);
-        //explorer.closeExplorer();
-       
+
+            // This is to create sample file
+            explorer.openApplication();
+            explorer.openFolder(downloadLocation);
+            explorer.rightClickCreate(downloadLocation.getName(), moveFileOutOFSub.getName(), type.TEXTFILE);
+
             // The below steps are to create data setup for all the test case
-    //    explorer.openApplication();
-        explorer.openFolder(getLocalSiteLocation());
-        setupMoveFolderwithFileSubInClient();
-        setupMoveFileInsideEmptyFolderInClient();
-        explorer.closeExplorer();
-        
-        // Data setup in Share 
-        setupInShare();
-        syncWaitTime(SERVERSYNCTIME);
-        
+            explorer.openFolder(getLocalSiteLocation());
+            setupMoveFolderwithFileSubInClient();
+            // ** set up for test file inside empty folder in client
+            setupMoveFileInsideEmptyFolderInClient();
+            explorer.closeExplorer();
+
+            // Data setup in Share
+            setupMoveFolderOutOfSubInShare();
+            setupMoveFolderWithInSubInShare();
+            syncWaitTime(SERVERSYNCTIME);
+
         }
-        catch(Throwable e)
+        catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed -  initialSetupOfShare " , e);
-        }
-        finally
-        {
-            shareLogin.logout(drone);
+            throw new SkipException("test case failed -  initialSetupOfShare ", e);
         }
     }
 
     /**
-     * Data setup MoveFolderwithFileSubInClient 
+     * Data setup MoveFolderwithFileSubInClient
      * This will create a Two folder moveFolder
+     * 
+     * @throws Exception
      */
     private void setupMoveFolderwithFileSubInClient()
     {
+
         folderToMoveInFolderwithFile = getRandomFolderIn(getLocalSiteLocation(), "movefolder");
         fileNameInFolderwithFile = getRandomFileIn(folderToMoveInFolderwithFile, "fileclient", "txt");
         currentFolderInFolderwithFile = getRandomFolderIn(getLocalSiteLocation(), "currentfolder");
-        
+
         explorer.createNewFolderMenu(folderToMoveInFolderwithFile.getName());
         explorer.createAndOpenFolder(currentFolderInFolderwithFile.getName());
         explorer.rightClickCreate(currentFolderInFolderwithFile.getName(), fileNameInFolderwithFile.getName(), type.TEXTFILE);
@@ -124,8 +122,10 @@ public class MoveContentSyncTest extends DesktopSyncTest
         notepad.edit("desktop sync testing");
         notepad.save();
         notepad.close();
+        explorer.goBack(getLocalSiteLocation().getName());
+
     }
-   
+
     /**
      * Move folder with File in Subscription
      * Step1 - open window explorer and open sync folder
@@ -145,36 +145,66 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             explorer.openApplication();
             explorer.openFolder(getLocalSiteLocation());
-            explorer.moveFolder(currentFolderInFolderwithFile, fileNameInFolderwithFile);
+            explorer.moveFolder(currentFolderInFolderwithFile, folderToMoveInFolderwithFile);
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, folderToMoveInFolderwithFile.getName());
-            Assert.assertTrue(share.isFileVisible(drone, currentFolderInFolderwithFile.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, currentFolderInFolderwithFile.getName()), "current folder is not present in doc lib");
             share.selectContent(drone, currentFolderInFolderwithFile.getName());
-            Assert.assertTrue(share.isFileVisible(drone, fileNameInFolderwithFile.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, fileNameInFolderwithFile.getName()), "folder and file is moved successfully");
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - moveFolderwithFileWithInSubInClient " ,e);
+            throw new SkipException("test case failed - moveFolderwithFileWithInSubInClient ", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
         }
     }
-/**
- *  All the file and folder required for the test in share 
- */
-    private void setupInShare()
+
+    /**
+     * All the file and folder required for the test in share
+     * MoveFolderWithInSubInShare
+     * 
+     */
+    private void setupMoveFolderWithInSubInShare()
     {
-        siteNameToMoveShare = "movesite" + System.currentTimeMillis();
-        folderNameShare = getRandomFolderIn(getLocalSiteLocation(),"sharemovefolder");
+        folderName_2Share = getRandomFolderIn(getLocalSiteLocation(), "folderName_2Share");
+        folderToMoveShare = getRandomFolderIn(getLocalSiteLocation(), "folderToMoveShare");
         fileNameShare = getRandomFile("sharemovefile", "txt");
-        folderName_2Share =getRandomFolderIn(getLocalSiteLocation(),"sharemovefolder2");
-        folderToMoveShare = getRandomFolderIn(getLocalSiteLocation() ,"sharefoldertomove");
+        ContentDetails content = new ContentDetails();
+        content.setName(fileNameShare.getName());
+        content.setDescription(fileNameShare.getName());
+        content.setTitle(fileNameShare.getName());
+        content.setContent("share created file");
+        try
+        {
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.createFolder(drone, folderName_2Share.getName(), folderName_2Share.getName(), folderName_2Share.getName());
+            share.createFolder(drone, folderToMoveShare.getName(), folderToMoveShare.getName(), folderToMoveShare.getName());
+            share.navigateToFolder(drone, folderName_2Share.getName());
+            share.createContent(drone, content, ContentType.PLAINTEXT);
+            shareLogin.logout(drone);
+        }
+        catch (Exception e)
+        {
+            throw new SkipException("share creation failed ", e);
+        }
+    }
+
+    /**
+     * Data setup for move folder out of MoveFolderOutOfSubInShare 
+     * 
+     */
+    public void setupMoveFolderOutOfSubInShare()
+    {
+        siteNameToMoveShare = "movesite" +  RandomStringUtils.randomAlphanumeric(5);
+        folderNameShare = getRandomFolderIn(getLocalSiteLocation(), "sharemovefolder");
+        fileNameShare = getRandomFile("sharemovefile", "txt");
         ContentDetails content = new ContentDetails();
         content.setName(fileNameShare.getName());
         content.setDescription(fileNameShare.getName());
@@ -186,19 +216,16 @@ public class MoveContentSyncTest extends DesktopSyncTest
             share.createSite(drone, siteNameToMoveShare, "movesite", "public");
             share.openSitesDocumentLibrary(drone, siteName);
             share.createFolder(drone, folderNameShare.getName(), folderNameShare.getName(), folderNameShare.getName());
-            share.navigateToFolder(drone,  folderNameShare.getName());
+            share.navigateToFolder(drone, folderNameShare.getName());
             share.createContent(drone, content, ContentType.PLAINTEXT);
-            share.navigateToDocuemntLibrary(drone, siteName);
-            share.createFolder(drone, folderName_2Share.getName(), folderName_2Share.getName(), folderName_2Share.getName());
-            share.createFolder(drone, folderToMoveShare.getName(), folderToMoveShare.getName(), folderToMoveShare.getName());
-            share.navigateToFolder(drone, folderName_2Share.getName());
-            share.createContent(drone, content, ContentType.PLAINTEXT);
+            shareLogin.logout(drone);
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
-            
+           throw new SkipException("Share data setup in share failed " , e); 
         }
-    }  
+            
+    }
     
     /**
      * Move folder in share to a different site which is out of subscription
@@ -224,7 +251,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - moveFolderOutOfSubInShare " ,e);
+            throw new SkipException("test case failed - moveFolderOutOfSubInShare ", e);
         }
         finally
         {
@@ -250,15 +277,13 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            share.copyOrMoveArtifact(drone, "All Sites", siteName, folderName_2Share.getName(), folderName_2Share.getName(), "Move");
+            share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMoveShare.getName(),folderName_2Share.getName(), "Move");
             syncWaitTime(SERVERSYNCTIME);
-            share.navigateToDocuemntLibrary(drone, siteName);
-            Assert.assertFalse(folderName_2Share.exists() , "Folder is moved correctly");
-            Assert.assertTrue(fileNameShare.exists(), "file is under moved folder");
+            Assert.assertFalse(LdtpUtils.isFilePresent(folderToMoveShare.getAbsolutePath()+ File.separator+folderName_2Share.getName()+File.separator + fileNameShare.getName()), "Folder is moved correctly");
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - moveFolderWithInSubInShare",e);
+            throw new SkipException("test case failed - moveFolderWithInSubInShare", e);
         }
         finally
         {
@@ -266,14 +291,18 @@ public class MoveContentSyncTest extends DesktopSyncTest
 
         }
     }
-
+    /**
+     * Data set up for MoveFileInsideEmptyFolderInClient
+     */
+    
     private void setupMoveFileInsideEmptyFolderInClient()
     {
         emptyFileName = getRandomFile("movefileemptyclient", "txt");
-        emptyFolderName =getRandomFolderIn(getLocalSiteLocation(), "moveemptyfolderclient");
+        emptyFolderName = getRandomFolderIn(getLocalSiteLocation(), "moveemptyfolderclient");
         explorer.rightClickCreate(getLocalSiteLocation().getName(), emptyFolderName.getName(), type.FOLDER);
         explorer.rightClickCreate(getLocalSiteLocation().getName(), emptyFileName.getName(), type.TEXTFILE);
     }
+
     /**
      * Move file inside a empty folder within the subscription in client
      * Step1 - open windows explorer
@@ -295,14 +324,15 @@ public class MoveContentSyncTest extends DesktopSyncTest
             explorer.openFolder(getLocalSiteLocation());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()),"File got sycned to the client");
             explorer.activateApplicationWindow(siteName);
-            explorer.moveFolder(emptyFileName,emptyFolderName);
+            explorer.moveFolder(emptyFileName, emptyFolderName);
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, emptyFileName.getName()));
+            Assert.assertFalse(share.isFileVisible(drone, emptyFileName.getName()),"file is not visible in doc lib");
             share.navigateToFolder(drone, emptyFolderName.getName());
-            Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()),"File is moved inside the empty folder");
         }
         catch (Throwable e)
         {
@@ -311,8 +341,6 @@ public class MoveContentSyncTest extends DesktopSyncTest
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(emptyFolderName.getName());
-            explorer.closeExplorer();
         }
     }
 
@@ -329,8 +357,8 @@ public class MoveContentSyncTest extends DesktopSyncTest
     @Test
     public void moveFileInsideFolderInClient()
     {
-        File fileName = getRandomFile("movefileclient","txt");
-        File folderNameToMove = getRandomFolderIn(getLocalSiteLocation(),"movefolderclient");
+        File fileName = getRandomFile("movefileclient", "txt");
+        File folderNameToMove = getRandomFolderIn(getLocalSiteLocation(), "foldertomoveclient");
         try
         {
             explorer.openApplication();
@@ -338,22 +366,21 @@ public class MoveContentSyncTest extends DesktopSyncTest
             explorer.createNewFolderMenu(folderNameToMove.getName());
             explorer.rightClickCreate(siteName, fileName.getName(), type.TEXTFILE);
             explorer.moveFolder(fileName, folderNameToMove);
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, fileName.getName()));
-            share.navigateToFolder(drone,  folderNameToMove.getName());
-            Assert.assertTrue(share.isFileVisible(drone, fileName.getName()));
+            Assert.assertFalse(share.isFileVisible(drone, fileName.getName()),"The file is not present in doc lib as it is moved");
+            share.navigateToFolder(drone, folderNameToMove.getName());
+            Assert.assertTrue(share.isFileVisible(drone, fileName.getName()),"File is moved correctly inside the folder");
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - moveFileInsideFolderInClient" ,e);
+            throw new SkipException("test case failed - moveFileInsideFolderInClient", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(folderNameToMove.getName());
-            explorer.closeExplorer();
         }
     }
 
@@ -377,31 +404,26 @@ public class MoveContentSyncTest extends DesktopSyncTest
         try
         {
             explorer.openApplication();
-            explorer.openFolder(downloadLocation);
-            explorer.openApplication();
             explorer.openFolder(getLocalSiteLocation());
             explorer.rightClickCreate(siteName, fileToMove.getName(), type.TEXTFILE);
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone,fileToMove.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, fileToMove.getName()),"the file created is visible in share");
             explorer.activateApplicationWindow(siteName);
-            explorer.moveFolder(downloadLocation, fileToMove);
+            explorer.moveFolder( fileToMove,downloadLocation);
+            explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, fileToMove.getName()));
+            Assert.assertFalse(share.isFileVisible(drone, fileToMove.getName()),"The file is moved out successfully");
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - moveFileOutOfSubInClient ",e);
+            throw new SkipException("test case failed - moveFileOutOfSubInClient ", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
-            explorer.activateApplicationWindow(downloadPath);
-            explorer.closeExplorer();
         }
     }
 
@@ -418,28 +440,22 @@ public class MoveContentSyncTest extends DesktopSyncTest
         try
         {
             explorer.openApplication();
-            explorer.openFolder(getLocalSiteLocation());
-            explorer.openApplication();
             explorer.openFolder(downloadLocation);
-            explorer.moveFolder(downloadLocation, moveFileOutOFSub);
-            Thread.sleep(3000);
-            Assert.assertTrue(LdtpUtils.isFilePresent(getLocalSiteLocation().getName() + File.separator + moveFileOutOFSub.getName()));
+            explorer.moveFolder(moveFileOutOFSub,getLocalSiteLocation());
+            explorer.closeExplorer();
+            Assert.assertTrue(LdtpUtils.isFilePresent(getLocalSiteLocation().getAbsolutePath() + File.separator + moveFileOutOFSub.getName()),"move was successful in client");
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertTrue(share.isFileVisible(drone, moveFileOutOFSub.getName()));
+            Assert.assertTrue(share.isFileVisible(drone, moveFileOutOFSub.getName()),"move intp of subscription was successful");
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - moveFileIntoSubClient ",e);
+            throw new SkipException("test case failed - moveFileIntoSubClient ", e);
         }
         finally
         {
             shareLogin.logout(drone);
-            explorer.activateApplicationWindow("samplefile");
-            explorer.closeExplorer();
-            explorer.activateApplicationWindow(siteName);
-            explorer.closeExplorer();
         }
     }
 }
