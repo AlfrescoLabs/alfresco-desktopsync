@@ -7,6 +7,7 @@ import org.testng.Assert;
  *
  * Handles operations related to Desktop Sync Notification icon in System Tray (bottom right corner)
  * Created by rdorobantu on 2/25/2015.
+ * @author - Sprasanna
  */
 public class DesktopSyncNotification extends Application
 {
@@ -23,33 +24,60 @@ public class DesktopSyncNotification extends Application
 
     public void openContext()
     {
+        logger.info("open the system tray menu of sync ");
         getLdtp().mouseRightClick(alfrescoNotificationItemName);
         getLdtp().waitTime(2);
     }
-
-    public boolean isConflictStatusCorrect(String conflictType)
+    
+    /**
+     * Method to check conflict status is correct for the file name paseed 
+     * @param conflictType - String 
+     * @return - Boolean 
+     */
+    public boolean isConflictStatusCorrect(String conflictType, String fileName)
     {
         try
         {
-            openContext();
-            getLdtp().setWindowName(notificationWindowName);
-            getLdtp().selectMenuItem("View Conflicting Files");
-            getLdtp().setWindowName("Conflicting Files");
-            getLdtp().waitTillGuiExist(conflictType);
-            return true;
+            openConflictDialog();
+            logger.info("Checking the conflict status for the file " + fileName);
+            String[] getAllObjectList = getLdtp().getObjectList();
+            for (String eachObject : getAllObjectList)
+            {
+                if(eachObject.contains(fileName))
+                {
+                    getLdtp().waitTillGuiExist(conflictType);
+                    return true;
+                }
+            }
         }
         catch (Exception e)
         {
-            return false;
         }
+        return false;
     }
+    
+    /**
+     * Method to open Conflict dialog  
+     * 
+     */
+      private void openConflictDialog()
+      {
+          openContext();
+          logger.info("open the conflict dialog");
+          getLdtp().setWindowName(notificationWindowName);
+          getLdtp().selectMenuItem("View Conflicting Files");
+          getLdtp().waitTime(2);
+          getLdtp().setWindowName("Conflicting Files");
+      }
+    /**
+     * Resolving the conflict based on the file name
+     * @param fileName
+     * @param typeOfResolve
+     */
     public void resolveConflictingFiles(String fileName, String typeOfResolve)
     {
-        openContext();
-        getLdtp().setWindowName(notificationWindowName);
-        getLdtp().selectMenuItem("View Conflicting Files");
-        getLdtp().waitTime(2);
-        getLdtp().setWindowName("Conflicting Files");
+        openConflictDialog();
+        logger.info("resolving conflict for the file " + fileName + " type of resolution is " + typeOfResolve);
         getLdtp().click(fileName);
         getLdtp().generateKeyEvent("<space>");
         getLdtp().click(typeOfResolve);
