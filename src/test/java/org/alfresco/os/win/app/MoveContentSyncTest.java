@@ -150,6 +150,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.navigateToFolder(drone, folderToMoveInFolderwithFile.getName());
             Assert.assertTrue(share.isFileVisible(drone, currentFolderInFolderwithFile.getName()), "current folder is not present in doc lib");
             share.selectContent(drone, currentFolderInFolderwithFile.getName());
@@ -184,6 +185,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderName_2Share.getName(), folderName_2Share.getName(), folderName_2Share.getName());
             share.createFolder(drone, folderToMoveShare.getName(), folderToMoveShare.getName(), folderToMoveShare.getName());
             share.navigateToFolder(drone, folderName_2Share.getName());
@@ -215,6 +217,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.createSite(drone, siteNameToMoveShare, "movesite", "public");
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderNameShare.getName(), folderNameShare.getName(), folderNameShare.getName());
             share.navigateToFolder(drone, folderNameShare.getName());
             share.createContent(drone, content, ContentType.PLAINTEXT);
@@ -244,6 +247,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.copyOrMoveArtifact(drone, "All Sites", siteNameToMoveShare, null, folderNameShare.getName(), "Move");
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(folderNameShare.exists(), "Folder move performed in share is synced correctly");
@@ -277,6 +281,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMoveShare.getName(),folderName_2Share.getName(), "Move");
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(LdtpUtils.isFilePresent(folderToMoveShare.getAbsolutePath()+ File.separator+folderName_2Share.getName()+File.separator + fileNameShare.getName()), "Folder is moved correctly");
@@ -324,12 +329,14 @@ public class MoveContentSyncTest extends DesktopSyncTest
             explorer.openFolder(getLocalSiteLocation());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()),"File got sycned to the client");
             explorer.activateApplicationWindow(siteName);
             explorer.moveFolder(emptyFileName, emptyFolderName);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertFalse(share.isFileVisible(drone, emptyFileName.getName()),"file is not visible in doc lib");
             share.navigateToFolder(drone, emptyFolderName.getName());
             Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()),"File is moved inside the empty folder");
@@ -370,6 +377,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertFalse(share.isFileVisible(drone, fileName.getName()),"The file is not present in doc lib as it is moved");
             share.navigateToFolder(drone, folderNameToMove.getName());
             Assert.assertTrue(share.isFileVisible(drone, fileName.getName()),"File is moved correctly inside the folder");
@@ -409,12 +417,14 @@ public class MoveContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, fileToMove.getName()),"the file created is visible in share");
             explorer.activateApplicationWindow(siteName);
             explorer.moveFolder( fileToMove,downloadLocation);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertFalse(share.isFileVisible(drone, fileToMove.getName()),"The file is moved out successfully");
         }
         catch (Throwable e)
@@ -447,6 +457,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, moveFileOutOFSub.getName()),"move intp of subscription was successful");
         }
         catch (Throwable e)

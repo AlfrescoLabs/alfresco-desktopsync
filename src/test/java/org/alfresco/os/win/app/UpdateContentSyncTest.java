@@ -76,12 +76,14 @@ public class UpdateContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
             notepad.appendData("adding another line of text");
             notepad.save();
 
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.2", "Appropriate version found on synched file in share");
             share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
             Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
@@ -130,6 +132,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createContent(drone, content, ContentType.PLAINTEXT);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(fileTestUpdate.exists(), "Share new version file is synched on client.");

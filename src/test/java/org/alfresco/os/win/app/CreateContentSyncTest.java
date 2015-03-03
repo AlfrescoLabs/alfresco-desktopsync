@@ -41,6 +41,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
     File folderChild = null;
 
     WindowsExplorer explorer = new WindowsExplorer();
+    
 
     /**
      * This test will create a notePad file in client and validate whether it is
@@ -67,6 +68,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, clientTestFile.getName()), "Client Notepad file is successfuly synched in site.");
         }
         catch (Throwable e)
@@ -103,6 +105,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderToCreate.getName(), folderToCreate.getName(), folderToCreate.getName());
             share.navigateToFolder(drone, folderToCreate.getName());
             share.uploadFile(drone, fileToUpload);
@@ -155,6 +158,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, folderParent.getName()), "Folder parent is visible in Share");
             share.navigateToFolder(drone, folderParent.getName());
             Assert.assertTrue(share.isFileVisible(drone, folderChild.getName()), "Subfolder is visible in Share");
@@ -201,6 +205,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.navigateToFolder(drone, folderChild.getParentFile().getName());
             share.navigateToFolder(drone, folderChild.getName());
 
@@ -240,6 +245,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, shareFolderParent.getName(), shareFolderParent.getName(), shareFolderParent.getName());
             share.selectContent(drone, shareFolderParent.getName());
             share.createFolder(drone, shareFolderChild.getName(), shareFolderChild.getName(), shareFolderChild.getName());
@@ -266,6 +272,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone,userInfo,shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             DocumentLibraryPage docPage = new DocumentLibraryPage(drone);
             GoogleDocsAuthorisation googleAuth = docPage.getNavigation().selectCreateContent(ContentType.GOOGLEDOCS).render();
             GoogleSignUpPage signUpPage = googleAuth.submitAuth().render();

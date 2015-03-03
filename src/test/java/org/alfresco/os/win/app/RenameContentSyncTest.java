@@ -61,6 +61,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, fileToRename.getName()), "File was synced successfuly to Share");
 
             explorer.openApplication();
@@ -115,10 +116,12 @@ public class RenameContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, folder.getName()), "Folder was synched in Share");
             explorer.rename(folder, folderRename);
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue((share.isFileVisible(drone, folderRename.getName())), "Renamed folder was synched in Share");
             share.navigateToFolder(drone, folderRename.getName());
             Assert.assertTrue((share.isFileVisible(drone, folderFile.getName())), "File exists in renamed folder in Share");
@@ -154,6 +157,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             File fileInShare = share.newFile(fileTest.getPath(), fileTest.getName());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(fileInShare.exists(), "File exists in Client");
             share.editContentNameInline(drone, fileTest.getName(), renamedFile.getName(), true);
@@ -191,6 +195,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         {
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(folderInShare.exists(), "Folder created in Share was synched to Client");
@@ -225,6 +230,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
             share.navigateToFolder(drone, folderInShare.getName());
             share.uploadFile(drone, fileInShare);

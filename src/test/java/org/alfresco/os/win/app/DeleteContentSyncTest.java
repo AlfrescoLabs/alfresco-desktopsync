@@ -69,6 +69,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File exists in Share after auto Sync.");
         }
         catch (Throwable e)
@@ -104,11 +105,13 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, deleteTestFolder.getName()), "Folder exists in Share after auto Sync.");
             explorer.deleteFolder(deleteTestFolder.getName(), true);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertFalse(share.isFileVisible(drone, deleteTestFolder.getName()), "Folder does not exist in Share after auto Sync.");
         }
         catch (Throwable e)
@@ -145,6 +148,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             File shareFile = share.newFile(fileDelete.getName(), fileDelete.getName());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.createFolder(drone, folderDelete.getName(), folderDelete.getName(), folderDelete.getName());
             share.navigateToFolder(drone, folderDelete.getName());
             share.uploadFile(drone, shareFile);
@@ -201,6 +205,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.navigateToFolder(drone, folderDelete.getName());
             Assert.assertTrue(share.isFileVisible(drone, fileDelete.getName()), "File exist in Share");
 

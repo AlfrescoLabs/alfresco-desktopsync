@@ -18,55 +18,46 @@
  */
 package org.alfresco.os.win.desktopsync;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
+import org.alfresco.os.common.ApplicationBase;
 import org.alfresco.os.win.Application;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.testng.SkipException;
 
 import com.cobra.ldtp.Ldtp;
 
-public class InitialSync extends Application
+public class ManageAccount extends Application
 {
-
-    private static Log logger = LogFactory.getLog(InitialSync.class);
 
     /**
      * Method to start up the windows native client
      */
-    public void startSyncClient()
-    {
-        Ldtp ldtp;
-        try
-        {
-            TimeUnit.SECONDS.sleep(5);
-        }
-        catch (InterruptedException e)
-        {
-        }
-        try
-        {
-            Runtime.getRuntime().exec("C:\\Program Files (x86)\\Alfresco\\My Product Name\\AlfrescoDesktopSync.exe");
-        }
-        catch (IOException e1)
-        {
-            throw new SkipException("The sync exe cannot be started", e1);
-        }
 
+    public ManageAccount()
+    {
+        boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
+        if (is64bit == true)
+        {
+            setApplicationPath("C:\\Program Files (x86)\\Alfresco\\Alfresco Desktop Sync\\AlfrescoDesktopSync.exe");
+        }
+        else
+        {
+            setApplicationPath("C:\\Program Files\\Alfresco\\Alfresco Desktop Sync\\AlfrescoDesktopSync.exe");
+        }
+        setApplicationName("AlfrescoDesktopSync.exe");
+        // set the root path of the Finder Window to the current user Documents folder
+        // each finder has the window name set to the current folder name
+        setWaitWindow("My Account");
+    }
+
+    public ApplicationBase openApplication()
+    {
         try
         {
-            TimeUnit.SECONDS.sleep(3);
+            openApplication(new String[] { getApplicationPath() });
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
-            throw new SkipException("TimeoutException ", e);
+            logger.error("Could not open Application " + getApplicationName() + "Error: " + e);
         }
-        ldtp = new Ldtp("My Account");
-        ldtp.setWindowName("My Account");
-        ldtp.activateWindow("My Account");
-        setLdtp(ldtp);
+        return this;
     }
 
     /**
@@ -132,72 +123,48 @@ public class InitialSync extends Application
      * @param - String - password
      * @param - String - Url
      */
-    public void login(String username, String password, String url)
+    public void login(String[] userInfo, String url)
     {
         Ldtp ldtp = getLdtp();
-        enterUserName(username);
+        enterUserName(userInfo[0]);
         ldtp.keyPress("<tab>");
-        enterPassword(password);
+        enterPassword(userInfo[1]);
         ldtp.keyPress("<tab>");
         enterUrl(url);
         clickOkButton();
+
     }
 
     /**
-     * Select the tab to get the list
+     * is login Successful -
      * 
-     * @param - String - Tab name we want to select
+     * @return - boolean
      */
-    public void selectTabs(String tabName)
+    public boolean isLoginSuccessful()
     {
-        Ldtp ldtp = getLdtp();
-        ldtp.mouseMove(tabName);
+        try
+        {
+            getLdtp().waitTillGuiExist("My Account", 30);
+            if (getLdtp().getWindowName().contains("My Account"))
+                return true;
+        }
+        catch (Exception e)
+        {
+        }
+        return false;
     }
 
     /**
-     * Select the site
-     * 
-     * @parm - String[] - list of sites you want to select
+     * Sync Error Dialog
      */
-    public void selectSites(String[] sites)
+    public String getErrorText()
     {
-        Ldtp ldtp = getLdtp();
-        String[] allSites = ldtp.getObjectList();
-        for (String eachSite : sites)
-        {
-            for (String eachObject : allSites)
-            {
-                System.out.println("each object under a tab " + eachObject);
-                if (eachObject.contains(eachSite))
-                {
-                    if (eachObject.contains("lbl"))
-                    {
-                        ldtp.doubleClick(eachObject);
-                        ldtp.comboSelect(eachObject, eachSite);
-                        break;
-                    }
-                }
-            }
-        }
+        getLdtp().setWindowName("dlgAlfresco Desktop Sync");
+        getLdtp().activateWindow("dlgAlfresco Desktop Sync");
+        String errorText = getLdtp().getObjectProperty("lblFailed*", "label");
+        getLdtp().click("OK");
+        getLdtp().setWindowName("My Account");
+        getLdtp().activateWindow("My Account");
+        return errorText;
     }
-
-    /**
-     * Access system tray icon menu
-     */
-    public void getSystemTray()
-    {
-        getLdtp().click("pane2");
-        String[] allWindows = getLdtp().getAppList();
-        for (String objects : allWindows)
-        {
-            System.out.println("objects " + objects);
-        }
-        String[] allWindows1 = getLdtp().getAllStates("AlfrescoDesktopSync");
-        for (String objects : allWindows1)
-        {
-            System.out.println("objects " + objects);
-        }
-
-    }
-
 }
