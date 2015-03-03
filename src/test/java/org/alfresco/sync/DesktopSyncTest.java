@@ -49,7 +49,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     // generic share variables used in tests
     protected LoginActions shareLogin = new LoginActions();
     protected SiteActions share = new SiteActions();
-    protected String folderTestLocation = "";
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -58,6 +57,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         {
             setupContext();
             drone = getWebDrone();
+            userInfo = new String[] { username, password };
         }
         catch (Exception e)
         {
@@ -68,7 +68,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     @BeforeClass
     public void initialSetupOfShare()
     {
-        userInfo = new String[] { username, password };
+        logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
 
     /**
@@ -141,6 +141,21 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     protected File getLocalSiteLocation()
     {
+        File tmp = new File(getLocalSiteLocation(), getClass().getSimpleName());
+        if (!tmp.exists())
+        {
+            tmp.mkdir();
+        }
+        return tmp;
+    }
+
+    /**
+     * Return the location of the site in Client, without the name of the class.
+     * 
+     * @return
+     */
+    protected File getLocalSiteLocationClean()
+    {
         return new File(location, siteName);
     }
 
@@ -183,9 +198,20 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     protected File getRandomFolderIn(File location, String prefix)
     {
-        File tmp = new File(location, String.format("%s-%s", prefix, RandomStringUtils.randomAlphanumeric(5)));
+        File tmp = new File(location, getRandomValue(prefix));
         LdtpUtils.logInfo("Generated Random folder: " + tmp.getPath());
         return tmp;
+    }
+
+    /**
+     * Returns a random values using the prefix provided
+     * 
+     * @param prefix
+     * @return
+     */
+    protected String getRandomValue(String prefix)
+    {
+        return String.format("%s-%s", prefix, RandomStringUtils.randomAlphanumeric(5));
     }
 
     @BeforeMethod
