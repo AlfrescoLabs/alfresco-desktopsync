@@ -50,7 +50,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected LoginActions shareLogin = new LoginActions();
     protected SiteActions share = new SiteActions();
     protected String folderTestLocation = "";
-    
+
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
     {
@@ -69,7 +69,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     public void initialSetupOfShare()
     {
         userInfo = new String[] { username, password };
-        folderTestLocation = this.getClass().getSimpleName();
     }
 
     /**
@@ -142,11 +141,8 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     protected File getLocalSiteLocation()
     {
-        File tmp = new File(location + File.separator+ siteName, folderTestLocation);
-        tmp.mkdir();
-        return tmp;
+        return new File(location, siteName);
     }
-   
 
     /**
      * Generate a new random filename using prefix and extension
