@@ -141,7 +141,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     protected File getLocalSiteLocation()
     {
-        File tmp = new File(getLocalSiteLocation(), getClass().getSimpleName());
+        File tmp = new File(getLocalSiteLocationClean(), getClass().getSimpleName());
         if (!tmp.exists())
         {
             tmp.mkdir();
