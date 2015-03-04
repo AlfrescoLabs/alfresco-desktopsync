@@ -16,9 +16,8 @@
 package org.alfresco.os.mac.app;
 
 import java.io.File;
-import java.util.Arrays;
 
-import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.os.mac.DesktopSyncMacTest;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.BeforeClass;
@@ -30,7 +29,7 @@ import org.testng.annotations.Test;
  * 
  * @author Paul Brodner
  */
-public class DeleteContentSyncTest extends DesktopSyncTest
+public class DeleteContentSyncTest extends DesktopSyncMacTest
 {
     TextEdit notepad = new TextEdit();
     FinderExplorer explorer = new FinderExplorer();
@@ -41,29 +40,30 @@ public class DeleteContentSyncTest extends DesktopSyncTest
     File _deleteFolderClientMisc;
     File _deleteFileClientMisc;
 
+    /**
+     * Prepare the files and folders in Client and Share prior to the tests
+     * We use this approach in order to gain more time and just sync once the files.
+     */
     @BeforeClass
     public void prepareData() throws Exception
     {
         super.initialSetupOfShare();
 
         _deleteFileClient = getRandomFileIn(getLocalSiteLocation(), "deleteFile", "rtf");
+        notepad.openApplication();
+        notepad.save(_deleteFileClient);
+        notepad.close(_deleteFileClient);
+
         _deleteFolderClient = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
-
-        _deleteFolderShareMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteShareFolder");
-        _deleteFileShareMisc = getRandomFileIn(_deleteFolderShareMisc, "shareFile", "rtf");
-
         _deleteFolderClientMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteFolderClientMisc");
-        _deleteFileClientMisc = getRandomFileIn(_deleteFolderClientMisc, "fileShareMisc", "rtf");
-
         explorer.openApplication();
         explorer.createFolder(_deleteFolderClient);
         explorer.createFolder(_deleteFolderClientMisc);
         explorer.closeExplorer();
 
-        // create a NotePad file on Client
-        notepad.openApplication();
-        notepad.save(_deleteFileClient);
-        notepad.close(_deleteFileClient);
+        _deleteFolderShareMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteShareFolder");
+        _deleteFileShareMisc = getRandomFileIn(_deleteFolderShareMisc, "shareFile", "rtf");
+        _deleteFileClientMisc = getRandomFileIn(_deleteFolderClientMisc, "fileShareMisc", "rtf");
 
         notepad.openApplication();
         notepad.save(_deleteFileClientMisc);
@@ -116,7 +116,8 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getStackTrace());
+            throw new TestException(e.getCause());
         }
         finally
         {
@@ -155,7 +156,8 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getStackTrace());
+            throw new TestException(e.getCause());
         }
         finally
         {
@@ -199,7 +201,8 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getStackTrace());
+            throw new TestException(e.getCause());
         }
         finally
         {
@@ -249,7 +252,8 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getStackTrace());
+            throw new TestException(e.getCause());
         }
         finally
         {
