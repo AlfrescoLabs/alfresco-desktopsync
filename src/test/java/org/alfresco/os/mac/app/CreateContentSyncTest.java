@@ -18,7 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 import java.util.Arrays;
 
-import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.os.mac.DesktopSyncMacTest;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.Test;
@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  * 
  * @author Paul Brodner
  */
-public class CreateContentSyncTest extends DesktopSyncTest
+public class CreateContentSyncTest extends DesktopSyncMacTest
 {
     TextEdit notepad = new TextEdit();
     File folderChild = null;

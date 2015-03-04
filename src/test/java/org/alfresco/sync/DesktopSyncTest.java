@@ -29,6 +29,7 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
 import org.alfresco.webdrone.WebDrone;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
@@ -77,7 +78,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      * @return
      * @throws InterruptedException
      */
-    public void syncWaitTime(long totalWaitTime) throws InterruptedException
+    public void syncWaitTime(long totalWaitTime)
     {
         long delaytime = 60000;
         long delay = delaytime;
@@ -85,7 +86,14 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         while (delay <= totalWaitTime)
         {
             logger.info("Sleep - (for 1 minute)");
-            Thread.sleep(delaytime);
+            try
+            {
+                Thread.sleep(delaytime);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
             delay = delay + delaytime;
         }
         logger.info("Sync Wait Time Ended (after: " + (totalWaitTime / delaytime) + " minute(s) )");
@@ -212,6 +220,19 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected String getRandomValue(String prefix)
     {
         return String.format("%s-%s", prefix, RandomStringUtils.randomAlphanumeric(5));
+    }
+
+    /**
+     * Return if <fileOrFolder> is a Directory or a File
+     * on MAC f.isDirectory() or f.isFile() doesn't work, so we will check the type object based
+     * on the presence of the extension.
+     * 
+     * @param fileOrFolder
+     * @return
+     */
+    protected boolean isFolder(File fileOrFolder)
+    {
+        return (FilenameUtils.getExtension(fileOrFolder.getName()).isEmpty());
     }
 
     @BeforeMethod
