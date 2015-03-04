@@ -9,14 +9,14 @@ import org.testng.Assert;
  * Created by rdorobantu on 2/25/2015.
  * @author - Sprasanna
  */
-public class DesktopSyncNotification extends Application
+public class SyncSystemMenu extends Application
 {
 
     String notificationWindowName = "Context";
     String alfrescoNotificationItemName = "Latest*";
     String desktopWindowName = "pane0";
 
-    public DesktopSyncNotification()
+    public SyncSystemMenu()
     {
         setWaitWindow(desktopWindowName);
         setLdtp(initializeLdtp());
@@ -84,4 +84,8 @@ public class DesktopSyncNotification extends Application
         getLdtp().waitTime(3);
         getLdtp().click("OK");
     }
+    
+    /**
+     * 
+     */
 }

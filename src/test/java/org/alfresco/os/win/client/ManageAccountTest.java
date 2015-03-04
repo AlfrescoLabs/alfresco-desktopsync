@@ -78,10 +78,11 @@ public class ManageAccountTest extends DesktopSyncTest
      * Test to check whether sites and my sites can be selected 
      */
     @Test
-    public void selectSitesTest()
+    public void select()
     {
         String[] selection = { };
         
+        // Selecting my files 
         syncSelection.selectTabs(syncOptions.MYFILES);
         syncSelection.selectMyFiles();
         
