@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.testng.annotations.AfterSuite;
 
 /**
  * Handle context Beans from alfresco projects
@@ -82,21 +81,6 @@ public abstract class DesktopSyncAbstract
         drone = (WebDrone) ctx.getBean("webDrone");
         drone.maximize();
         return drone;
-    }
-
-    @AfterSuite(alwaysRun = true)
-    public void closeWebDrone()
-    {
-        if (logger.isTraceEnabled())
-        {
-            logger.trace("Closing web drone");
-        }
-        // Close the browser
-        if (drone != null)
-        {
-            drone.quit();
-            drone = null;
-        }
     }
 
 }

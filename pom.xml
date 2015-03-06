@@ -21,6 +21,10 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<properties>
+		<suiteXml>win-os-smoke.xml</suiteXml>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.alfresco</groupId>
@@ -122,6 +126,9 @@
 				<configuration>
 					<argLine>-Xms512m -Xmx1024m</argLine>
 					<workingDirectory>target</workingDirectory>
+					<suiteXmlFiles>
+						<suiteXmlFile>src/test/resources/${suiteXml}</suiteXmlFile>
+					</suiteXmlFiles>
 				</configuration>
 			</plugin>
 		</plugins>

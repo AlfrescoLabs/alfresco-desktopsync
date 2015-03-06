@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
+import org.alfresco.utils.DirectoryTree;
 import org.alfresco.webdrone.WebDrone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,6 +36,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -50,6 +52,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     // generic share variables used in tests
     protected LoginActions shareLogin = new LoginActions();
     protected SiteActions share = new SiteActions();
+    protected boolean showClientFolderContent = true;
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -57,6 +60,19 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         try
         {
             setupContext();
+        }
+        catch (Exception e)
+        {
+            logger.error("Failed to initialise the Suite of Tests :" + this.getClass(), e);
+        }
+    }
+
+    @BeforeClass(alwaysRun = true)
+    public void initialSetupOfShare()
+    {
+        logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
+        try
+        {
             drone = getWebDrone();
             userInfo = new String[] { username, password };
         }
@@ -66,10 +82,13 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         }
     }
 
-    @BeforeClass
-    public void initialSetupOfShare()
+    @AfterClass(alwaysRun = true)
+    public void tearDown()
     {
-        logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
+        if (drone != null)
+        {
+            drone.quit();
+        }
     }
 
     /**
@@ -239,11 +258,19 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     public void showStartInfo(Method method)
     {
         logger.info("*** START TestNG Method: {" + method.getName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content BEFORE test:");
+        }
     }
 
     @AfterMethod
     public void showEndInfo(ITestResult method)
     {
         logger.info("*** END TestNG Method:   {" + method.getMethod().getMethodName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content AFTER test:");
+        }
     }
 }
