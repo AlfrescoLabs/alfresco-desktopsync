@@ -16,7 +16,6 @@
 package org.alfresco.os.mac.app;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
 import org.testng.Assert;
@@ -51,7 +50,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
     @Test(groups = { "MacOnly", "Create" })
     public void createFileInClient()
     {
-        File clientTestFile = getRandomFileIn(getLocalSiteLocation(), "createFile", "rtf");
+        File clientTestFile = getRandomFileIn(getLocalSiteLocationClean(), "createFile", "rtf");
         try
         {
             notepad.openApplication();
@@ -66,7 +65,8 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -91,7 +91,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
     @Test(groups = { "MacOnly", "Create" })
     public void createFolderAndFileInShare()
     {
-        File folderToCreate = getRandomFolderIn(getLocalSiteLocation(), "createFolder");
+        File folderToCreate = getRandomFolderIn(getLocalSiteLocationClean(), "createFolder");
         File fileInClient = getRandomFileIn(folderToCreate, "fileSynched", "rtf");
         File fileToUpload = share.newFile(fileInClient.getName(), "empty");
 
@@ -104,7 +104,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
             share.uploadFile(drone, fileToUpload);
             Assert.assertTrue(share.isFileVisible(drone, fileToUpload.getName()),
                     String.format("File {%s} was uploaded successfuly in Share", fileToUpload.getName()));
-            
+
             syncWaitTime(SERVERSYNCTIME);
 
             Assert.assertTrue(folderToCreate.exists(), String.format("Folder synched from Remote [%s], exists in client", folderToCreate.getPath()));
@@ -112,7 +112,8 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -139,7 +140,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
     @Test(groups = { "MacOnly", "Create" })
     public void createFolderTreeInClient()
     {
-        File folderParent = getRandomFolderIn(getLocalSiteLocation(), "folderParent");
+        File folderParent = getRandomFolderIn(getLocalSiteLocationClean(), "folderParent");
         folderChild = getRandomFolderIn(folderParent, "folderChild1");
         try
         {
@@ -159,7 +160,8 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -207,7 +209,8 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -229,7 +232,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
     @Test(groups = { "MacOnly", "Create" })
     public void createFolderInShare()
     {
-        File shareFolderParent = getRandomFolderIn(getLocalSiteLocation(), "createShareParentFldr");
+        File shareFolderParent = getRandomFolderIn(getLocalSiteLocationClean(), "createShareParentFldr");
         File shareFolderChild = getRandomFolderIn(shareFolderParent, "creatSharedChildFldr");
         try
         {
@@ -244,7 +247,8 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            throw new TestException(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {

@@ -49,19 +49,19 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
     {
         super.initialSetupOfShare();
 
-        _deleteFileClient = getRandomFileIn(getLocalSiteLocation(), "deleteFile", "rtf");
+        _deleteFileClient = getRandomFileIn(getLocalSiteLocationClean(), "deleteFile", "rtf");
         notepad.openApplication();
         notepad.save(_deleteFileClient);
         notepad.close(_deleteFileClient);
 
-        _deleteFolderClient = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
-        _deleteFolderClientMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteFolderClientMisc");
+        _deleteFolderClient = getRandomFolderIn(getLocalSiteLocationClean(), "deleteFolder");
+        _deleteFolderClientMisc = getRandomFolderIn(getLocalSiteLocationClean(), "deleteFolderClientMisc");
         explorer.openApplication();
         explorer.createFolder(_deleteFolderClient);
         explorer.createFolder(_deleteFolderClientMisc);
         explorer.closeExplorer();
 
-        _deleteFolderShareMisc = getRandomFolderIn(getLocalSiteLocation(), "deleteShareFolder");
+        _deleteFolderShareMisc = getRandomFolderIn(getLocalSiteLocationClean(), "deleteShareFolder");
         _deleteFileShareMisc = getRandomFileIn(_deleteFolderShareMisc, "shareFile", "rtf");
         _deleteFileClientMisc = getRandomFileIn(_deleteFolderClientMisc, "fileShareMisc", "rtf");
 
@@ -116,8 +116,8 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -156,8 +156,8 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -201,8 +201,8 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -252,8 +252,8 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
