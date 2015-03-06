@@ -85,7 +85,18 @@ public class SyncSystemMenu extends Application
         getLdtp().click("OK");
     }
     
-    /**
-     * 
+    /** Resolving the conflict based on the file name
+     * without re-opening the conflict dialog page
+     * @param fileName
      */
+
+    public void resolveConflictingFilesWithoutOpeningWindow(String fileName, String typeOfResolve)
+    {
+        logger.info("resolving conflict for the file " + fileName + " type of resolution is " + typeOfResolve);
+        getLdtp().click(fileName);
+        getLdtp().generateKeyEvent("<space>");
+        getLdtp().click(typeOfResolve);
+        getLdtp().waitTime(3);
+        getLdtp().click("OK");
+    }
 }
