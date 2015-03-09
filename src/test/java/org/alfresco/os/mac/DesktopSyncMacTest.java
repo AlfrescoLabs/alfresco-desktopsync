@@ -45,6 +45,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
     /**
      * Just initialize a LinkedHashMap variable with all files or folders <fileFolder> that
      * you want to create using the <Application> class
+     * All data within this array, will be processed by {@link #runDataCreationInClient()}
      * 
      * @param fileFolder
      * @param macApp
@@ -59,6 +60,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
     /**
      * Just initialize an ArrayList of Files or Folders <folderOrFile>
      * that are uploaded or created in the Share.
+     * All data within this array, will be processed by {@link #runDataCreationInShare()}
      * 
      * @param folderOrFile
      * @return
@@ -71,7 +73,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
 
     /**
      * This Method will create data in Client and also on Share
-     * based on the files/folders/applications provided
+     * based on the files/folders/applications
      * 
      * @throws Exception
      */
@@ -82,7 +84,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
     }
 
     /**
-     * Run and Create data in Client
+     * Run and Create data in Client, added on {@link #addDataInClient(File, Application)}
      */
     protected void runDataCreationInClient()
     {
@@ -125,7 +127,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
     }
 
     /**
-     * Run and create data in Share
+     * Run and create data in Share, found on data array created with {@link #addDataInClient(File, Application)}
      * 
      * @throws Exception
      */
@@ -145,7 +147,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
 
             // always start from Document Library
             share.openSitesDocumentLibrary(drone, siteName);
-            
+
             if (dataType.equals(TEST_DATA.CONTENT))
             {
                 ContentDetails content = new ContentDetails();
