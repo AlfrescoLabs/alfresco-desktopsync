@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
+import org.alfresco.utils.DirectoryTree;
 import org.alfresco.webdrone.WebDrone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -48,8 +49,9 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected String[] userInfo = null;
 
     // generic share variables used in tests
-     LoginActions shareLogin = new LoginActions();
-     SiteActions site = new SiteActions();
+    protected LoginActions shareLogin = new LoginActions();
+    protected SiteActions share = new SiteActions();
+    protected boolean showClientFolderContent = true;
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -59,8 +61,8 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             setupContext();
             drone = getWebDrone();
             userInfo = new String[] { username, password };
-            
-            // Site creation for windows 
+
+            // Site creation for windows
             initialSiteSetUp();
         }
         catch (Exception e)
@@ -71,17 +73,17 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
     /**
      * private method which will create a site and upload just one file so that as part of initial sync process
-     * we can find out it was successful 
+     * we can find out it was successful
      */
     private void initialSiteSetUp()
     {
         siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
-       // File fileToUpload = getRandomFile("initialsyncfileofshare" , "txt");
+        // File fileToUpload = getRandomFile("initialsyncfileofshare" , "txt");
         shareLogin.loginToShare(drone, userInfo, shareUrl);
-        site.createSite(drone, siteName, siteName, "public");
+        share.createSite(drone, siteName, siteName, "public");
     }
-    
-    @BeforeClass
+
+    @BeforeClass(alwaysRun = true)
     public void initialSetupOfShare()
     {
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
@@ -254,11 +256,19 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     public void showStartInfo(Method method)
     {
         logger.info("*** START TestNG Method: {" + method.getName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content BEFORE test:");
+        }
     }
 
     @AfterMethod
     public void showEndInfo(ITestResult method)
     {
         logger.info("*** END TestNG Method:   {" + method.getMethod().getMethodName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content AFTER test:");
+        }
     }
 }
