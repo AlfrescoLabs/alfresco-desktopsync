@@ -15,14 +15,26 @@
 
 package org.alfresco.sync;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+
+
+import org.alfresco.os.win.desktopsync.ManageAccount;
+import org.alfresco.os.win.desktopsync.SyncSystemMenu;
+import org.alfresco.po.share.steps.LoginActions;
+import org.alfresco.po.share.steps.SiteActions;
+import org.alfresco.utilities.LdtpUtils;
 import org.alfresco.webdrone.WebDrone;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 
 /**
@@ -43,6 +55,9 @@ public abstract class DesktopSyncAbstract
     protected static String siteName;
     protected static String fileAppend;
     protected static String installerPath;
+    SyncSystemMenu contextMenu = new SyncSystemMenu();
+    ManageAccount account =new ManageAccount();
+    
 
     protected WebDrone drone;
     protected static long SERVERSYNCTIME = 300000;
@@ -87,6 +102,12 @@ public abstract class DesktopSyncAbstract
     @AfterSuite(alwaysRun = true)
     public void closeWebDrone()
     {
+        String[] userDetails = {username, password};
+        //Delete the site before close 
+        if(SystemUtils.OS_NAME.contains("Windows"))
+        {
+            removeAccount();
+         }
         if (logger.isTraceEnabled())
         {
             logger.trace("Closing web drone");
@@ -98,5 +119,25 @@ public abstract class DesktopSyncAbstract
             drone = null;
         }
     }
-
+    
+    /**
+     * Delete Account from the client 
+     */
+    public void removeAccount()
+    {
+        try
+        {
+            contextMenu.manageAccount("Remove Account");
+            Assert.assertEquals(contextMenu.removeAccount(), "Are you sure you want to permanently delete all of these items?");
+            contextMenu.removeAccountConfirmation(true);
+            Assert.assertTrue(account.isLoginSuccessful() ,"control is transferred to login screen");
+            Thread.sleep(1000);
+            Assert.assertFalse(LdtpUtils.isDirectoryPresent(location + File.separator + siteName));
+            account.clickCancelButton();
+        }
+        catch (Throwable e)
+        {
+            logger.error(e);
+        }
+    }
 }

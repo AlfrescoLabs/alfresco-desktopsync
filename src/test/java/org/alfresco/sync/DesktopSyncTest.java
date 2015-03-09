@@ -48,8 +48,8 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected String[] userInfo = null;
 
     // generic share variables used in tests
-    protected LoginActions shareLogin = new LoginActions();
-    protected SiteActions share = new SiteActions();
+     LoginActions shareLogin = new LoginActions();
+     SiteActions site = new SiteActions();
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -59,6 +59,9 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             setupContext();
             drone = getWebDrone();
             userInfo = new String[] { username, password };
+            
+            // Site creation for windows 
+            initialSiteSetUp();
         }
         catch (Exception e)
         {
@@ -66,6 +69,18 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         }
     }
 
+    /**
+     * private method which will create a site and upload just one file so that as part of initial sync process
+     * we can find out it was successful 
+     */
+    private void initialSiteSetUp()
+    {
+        siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
+       // File fileToUpload = getRandomFile("initialsyncfileofshare" , "txt");
+        shareLogin.loginToShare(drone, userInfo, shareUrl);
+        site.createSite(drone, siteName, siteName, "public");
+    }
+    
     @BeforeClass
     public void initialSetupOfShare()
     {
@@ -147,7 +162,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      * @return location of the site
      * @author Paul Brodner
      */
-    protected File getLocalSiteLocation()
+    public File getLocalSiteLocation()
     {
         File tmp = new File(getLocalSiteLocationClean(), getClass().getSimpleName());
         if (!tmp.exists())

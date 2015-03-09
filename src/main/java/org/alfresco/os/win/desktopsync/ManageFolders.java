@@ -49,6 +49,12 @@ public class ManageFolders extends Application
             return options;
         }
     }
+    
+    public ManageFolders()
+    {
+        setWaitWindow("My Account");
+        setLdtp(initializeLdtp());
+    }
     /**
      * Select the tab to get the list
      * 
@@ -65,7 +71,7 @@ public class ManageFolders extends Application
      * 
      * @parm - String[] - list of sites you want to select
      */
-    public void selectSyncSet(String[] sites)
+    public void selectSites(String[] sites)
     {
         Ldtp ldtp = getLdtp();
         String[] allSites = ldtp.getObjectList();
@@ -102,5 +108,30 @@ public class ManageFolders extends Application
     {
         getLdtp().doubleClick("My Files");
         getLdtp().doubleClick("Shared Files");
+    }
+    
+    /**
+     * Validating to see whether sync is succesful 
+     */
+    public boolean isSyncSuccessful()
+    {
+        boolean syncSucessful = false;
+        try
+        {
+           String getText =  getLdtp().getObjectProperty("Desktop sync*", "label");
+           if (getText.contains("Desktop sync is now installed and running."))
+               syncSucessful = true;
+        }
+        catch(Exception e)
+        {
+        }
+        return syncSucessful;
+    }
+    /**
+     * Click on the sync sucess dialog
+     */
+    public void clickOkSyncSucessDialog()
+    {
+        getLdtp().click("OK");
     }
 }

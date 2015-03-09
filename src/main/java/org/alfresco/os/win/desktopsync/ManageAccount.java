@@ -22,7 +22,13 @@ import org.alfresco.os.common.ApplicationBase;
 import org.alfresco.os.win.Application;
 
 import com.cobra.ldtp.Ldtp;
+import com.cobra.ldtp.LdtpExecutionError;
 
+/**
+ * Manage account class will contain all the util methods related to login dialog 
+ * @author subaprasann
+ *
+ */
 public class ManageAccount extends Application
 {
 
@@ -30,7 +36,7 @@ public class ManageAccount extends Application
      * Method to start up the windows native client
      */
 
-    public ManageAccount()
+    public ManageAccount() 
     {
         boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
         if (is64bit == true)
@@ -42,8 +48,6 @@ public class ManageAccount extends Application
             setApplicationPath("C:\\Program Files\\Alfresco\\Alfresco Desktop Sync\\AlfrescoDesktopSync.exe");
         }
         setApplicationName("AlfrescoDesktopSync.exe");
-        // set the root path of the Finder Window to the current user Documents folder
-        // each finder has the window name set to the current folder name
         setWaitWindow("My Account");
     }
 
@@ -123,7 +127,7 @@ public class ManageAccount extends Application
      * @param - String - password
      * @param - String - Url
      */
-    public void login(String[] userInfo, String url)
+    public void login(String[] userInfo, String url) throws Exception
     {
         Ldtp ldtp = getLdtp();
         enterUserName(userInfo[0]);
@@ -132,7 +136,6 @@ public class ManageAccount extends Application
         ldtp.keyPress("<tab>");
         enterUrl(url);
         clickOkButton();
-
     }
 
     /**
@@ -144,7 +147,7 @@ public class ManageAccount extends Application
     {
         try
         {
-            getLdtp().waitTillGuiExist("My Account", 30);
+        //    getLdtp().waitTillGuiExist("My Account", 30);
             if (getLdtp().getWindowName().contains("My Account"))
                 return true;
         }
@@ -157,7 +160,7 @@ public class ManageAccount extends Application
     /**
      * Sync Error Dialog
      */
-    public String getErrorText()
+    public String getErrorText() throws LdtpExecutionError
     {
         getLdtp().setWindowName("dlgAlfresco Desktop Sync");
         getLdtp().activateWindow("dlgAlfresco Desktop Sync");

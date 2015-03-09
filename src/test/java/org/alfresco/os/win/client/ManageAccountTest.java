@@ -1,11 +1,11 @@
 package org.alfresco.os.win.client;
 
-import javax.security.sasl.SaslException;
 
 import org.alfresco.os.win.desktopsync.ManageAccount;
 import org.alfresco.os.win.desktopsync.ManageFolders;
 import org.alfresco.os.win.desktopsync.ManageFolders.syncOptions;
 import org.alfresco.sync.DesktopSyncTest;
+import org.springframework.context.annotation.DependsOn;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -23,6 +23,8 @@ public class ManageAccountTest extends DesktopSyncTest
         super.initialSetupOfShare();
         Url = shareUrl.replace("share", "alfresco");
         logger.info("Url to enter " + Url);
+        
+        // Create a site in share before we do initial sync 
 
     }
 
@@ -55,7 +57,7 @@ public class ManageAccountTest extends DesktopSyncTest
      * Step 3 - Check whether Error dialog is displayed
      */
 
-    @Test
+    //@Test
     public void invalidLoginTest()
     {
 
@@ -76,15 +78,30 @@ public class ManageAccountTest extends DesktopSyncTest
     
     /**
      * Test to check whether sites and my sites can be selected 
+     * @throws Exception 
      */
-    @Test
-    public void select()
+    @Test(dependsOnMethods = "syncClientLoginTest")
+    public void selectSites() throws Exception 
     {
-        String[] selection = { };
-        
+        String[] sitesToSelect = {siteName};
+       try
+       {
         // Selecting my files 
-        syncSelection.selectTabs(syncOptions.MYFILES);
-        syncSelection.selectMyFiles();
-        
+        syncSelection.selectTabs(syncOptions.SITES);
+        syncSelection.selectSites(sitesToSelect);
+        syncSelection.selectSync();
+        if (syncSelection.isSyncSuccessful())
+        {
+            syncSelection.clickOkSyncSucessDialog();
+        }
+        Thread.sleep(1000);
+        System.out.println("getLocalSiteLocation().getParentFile().getName() " + getLocalSiteLocation().getParentFile().getName());
+        Assert.assertTrue(getLocalSiteLocation().getParentFile().exists(), "site is synced successful");
+       }
+       catch(Throwable e)
+       {
+           throw new Exception("test of select my file and share files failed ", e);
+       }
     }
+    
 }
