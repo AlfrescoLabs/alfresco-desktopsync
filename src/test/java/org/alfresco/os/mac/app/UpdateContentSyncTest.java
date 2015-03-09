@@ -26,11 +26,11 @@ import org.testng.annotations.Test;
 
 /**
  * This class will contain all the test cases related to update of file in both client (MAC machine) and share
- * 
+ *  Must be executed using the -Dwebdrone.browser=FireFoxDownloadToDir 
  * @author Paul Brodner
  */
 public class UpdateContentSyncTest extends DesktopSyncMacTest
-{
+{   
     TextEdit notepad = new TextEdit();
     FinderExplorer explorer = new FinderExplorer();
 
@@ -70,7 +70,10 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
+            Assert.assertTrue(share.isFileVisible(drone, synchedFile.getName()), "Notepad file " + synchedFile.getName() + " was synched to Share.");
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.0", "Appropriate version found on synched file in share");
+
+            notepad.focus(synchedFile.getName());
             notepad.edit("adding another line of text");
             notepad.save();
 
@@ -82,14 +85,14 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
             notepad.close(synchedFile);
             syncWaitTime(CLIENTSYNCTIME);
             downloadFile.delete();
-            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.2", "Appropriate version found on synched file in share");
+            Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
             share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
             Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -113,7 +116,7 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
     public void updateFileInShare()
     {
         File fileTestUpdate = getRandomFileIn(getLocalSiteLocationClean(), "updateFile", "rtf");
-        File fileToUload = getRandomFileIn(getLocalSiteLocationClean(), "uploadFile", "rtf");
+        File fileDownloaded = new File(downloadPath, fileTestUpdate.getName());
         ContentDetails content = new ContentDetails();
         content.setName(fileTestUpdate.getName());
         content.setDescription(fileTestUpdate.getName());
@@ -126,18 +129,18 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
             share.openSitesDocumentLibrary(drone, siteName);
             share.createContent(drone, content, ContentType.PLAINTEXT);
             syncWaitTime(SERVERSYNCTIME);
-
-            Assert.assertTrue(fileTestUpdate.exists(), 
-                    String.format("Share new version file {%s} is synched on client.", fileTestUpdate.getPath()));
+            Assert.assertTrue(fileTestUpdate.exists(), String.format("Share new version file {%s} is synched on client.", fileTestUpdate.getPath()));
 
             share.uploadNewVersionOfDocument(drone, fileTestUpdate.getName(), fileTestUpdate.getName(), "test sync update");
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), fileToUload.getPath()), "Share and Client files are identical.");
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.shareDownloadFileFromDocLib(drone, fileTestUpdate.getName(), fileTestUpdate.getPath());
+            Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), fileDownloaded.getPath()), "Share and Client files are identical.");
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Smoke Test Suites">
+	<test verbose="2" name="CRUD Tests" preserve-order="true" thread-count="1">
+		<classes>
+			<class name="org.alfresco.os.win.app.CreateContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.DeleteContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.MoveContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.RenameContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.UpdateContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.ConcurrentContentSyncTest"/>
+		</classes>
+	</test>
+</suite> 
+<!-- mvn test -DsuiteXml=win-os-smoke.xml -Dwebdrone.browser=FireFoxDownloadToDir -->

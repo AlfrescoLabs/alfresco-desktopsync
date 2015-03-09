@@ -52,7 +52,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         _clFolderFile   = addDataInClient(getRandomFileIn(_clFolder, "clFolderFile", "rtf"), notepad);
         _clFile         = addDataInClient(getRandomFileIn(getLocalSiteLocationClean(), "file", "rtf"), notepad);
         _shFile         = addDataInShare(getRandomFileIn(getLocalSiteLocationClean(), "shFile", "rtf"), TEST_DATA.FILE);
-        
+
         _shFolderWFile  = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderWFile"), TEST_DATA.FILE);
         _shFileInFolder = addDataInShare(getRandomFileIn(_shFolderWFile, "shFileInFolder", "rtf"), TEST_DATA.FILE);
 
@@ -91,8 +91,8 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -139,8 +139,8 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -176,8 +176,8 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
@@ -211,8 +211,8 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         }
         catch (Exception e)
         {
-            logger.error(e.getStackTrace());
-            throw new TestException(e.getCause());
+            logger.error(e.getMessage(), e);
+            throw new TestException(e.getMessage(), e.getCause());
         }
         finally
         {
