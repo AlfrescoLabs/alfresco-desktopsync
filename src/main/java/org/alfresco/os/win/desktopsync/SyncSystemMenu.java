@@ -1,7 +1,6 @@
 package org.alfresco.os.win.desktopsync;
 
 import org.alfresco.os.win.Application;
-import org.testng.Assert;
 
 /**
  *
@@ -124,7 +123,6 @@ public class SyncSystemMenu extends Application
         }
     }
 
-}
     /** Resolving the conflict based on the file name
      * without re-opening the conflict dialog page
      * @param fileName
