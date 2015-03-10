@@ -5,7 +5,6 @@ import org.alfresco.os.win.desktopsync.ManageAccount;
 import org.alfresco.os.win.desktopsync.ManageFolders;
 import org.alfresco.os.win.desktopsync.ManageFolders.syncOptions;
 import org.alfresco.sync.DesktopSyncTest;
-import org.springframework.context.annotation.DependsOn;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -35,7 +34,7 @@ public class ManageAccountTest extends DesktopSyncTest
      * Step 3 - Check whether login is successful and the My Account Dialog is displayed
      */
 
-    @Test
+    @Test(priority = 2)
     public void syncClientLoginTest()
     {
         try
@@ -57,7 +56,7 @@ public class ManageAccountTest extends DesktopSyncTest
      * Step 3 - Check whether Error dialog is displayed
      */
 
-    //@Test
+    @Test(priority = 1)
     public void invalidLoginTest()
     {
 
@@ -80,7 +79,7 @@ public class ManageAccountTest extends DesktopSyncTest
      * Test to check whether sites and my sites can be selected 
      * @throws Exception 
      */
-    @Test(dependsOnMethods = "syncClientLoginTest")
+    @Test(priority = 3 , dependsOnMethods = "syncClientLoginTest")
     public void selectSites() throws Exception 
     {
         String[] sitesToSelect = {siteName};

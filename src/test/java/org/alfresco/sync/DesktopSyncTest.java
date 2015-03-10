@@ -28,10 +28,12 @@ import java.util.Properties;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
+import org.alfresco.utils.DirectoryTree;
 import org.alfresco.webdrone.WebDrone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.ITestResult;
@@ -48,8 +50,10 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected String[] userInfo = null;
 
     // generic share variables used in tests
-     LoginActions shareLogin = new LoginActions();
-     SiteActions site = new SiteActions();
+    protected LoginActions shareLogin = new LoginActions();
+    protected SiteActions share = new SiteActions();
+    protected boolean showClientFolderContent = true;
+
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -61,7 +65,10 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             userInfo = new String[] { username, password };
             
             // Site creation for windows 
-            initialSiteSetUp();
+            if(SystemUtils.OS_NAME.contains("Windows"))
+            {
+                initialSiteSetUp();
+            }
         }
         catch (Exception e)
         {
@@ -75,21 +82,32 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     private void initialSiteSetUp()
     {
+        try
+        {
+        File initialShareFile = getRandomFile("initialShareFile", "txt");
         siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
-       // File fileToUpload = getRandomFile("initialsyncfileofshare" , "txt");
         shareLogin.loginToShare(drone, userInfo, shareUrl);
-        site.createSite(drone, siteName, siteName, "public");
+        share.createSite(drone, siteName, siteName, "public");
+        logger.info("site created - successful"  + siteName);
+        share.openSitesDocumentLibrary(drone, siteName);
+        share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
+        share.uploadFile(drone, initialShareFile);
+        }
+        catch(Exception e)
+        {
+            logger.error("Failed to create file in share :" + this.getClass(), e);
+        }
     }
     
     @BeforeClass
     public void initialSetupOfShare()
-    {
+    {   
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
 
     /**
      * Util method for waiting
-     * 
+     *
      * @return
      * @throws InterruptedException
      */
@@ -254,11 +272,19 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     public void showStartInfo(Method method)
     {
         logger.info("*** START TestNG Method: {" + method.getName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content BEFORE test:");
+        }
     }
 
     @AfterMethod
     public void showEndInfo(ITestResult method)
     {
         logger.info("*** END TestNG Method:   {" + method.getMethod().getMethodName() + "} ***");
+        if (showClientFolderContent)
+        {
+            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content AFTER test:");
+        }
     }
 }

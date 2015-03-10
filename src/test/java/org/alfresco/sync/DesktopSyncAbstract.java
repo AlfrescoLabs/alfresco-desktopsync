@@ -102,7 +102,6 @@ public abstract class DesktopSyncAbstract
     @AfterSuite(alwaysRun = true)
     public void closeWebDrone()
     {
-        String[] userDetails = {username, password};
         //Delete the site before close 
         if(SystemUtils.OS_NAME.contains("Windows"))
         {

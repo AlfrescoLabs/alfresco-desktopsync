@@ -49,6 +49,7 @@ public class ManageAccount extends Application
         }
         setApplicationName("AlfrescoDesktopSync.exe");
         setWaitWindow("My Account");
+        getLdtp().setWindowName("My Account");
     }
 
     public ApplicationBase openApplication()
