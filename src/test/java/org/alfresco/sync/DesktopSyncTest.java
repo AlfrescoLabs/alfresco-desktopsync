@@ -63,8 +63,8 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             setupContext();
             drone = getWebDrone();
             userInfo = new String[] { username, password };
-            
-            // Site creation for windows 
+
+            // Site creation for windows
             if(SystemUtils.OS_NAME.contains("Windows"))
             {
                 initialSiteSetUp();
@@ -78,7 +78,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
     /**
      * private method which will create a site and upload just one file so that as part of initial sync process
-     * we can find out it was successful 
+     * we can find out it was successful
      */
     private void initialSiteSetUp()
     {
@@ -98,8 +98,8 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             logger.error("Failed to create file in share :" + this.getClass(), e);
         }
     }
-    
-    @BeforeClass
+
+    @BeforeClass(alwaysRun = true)
     public void initialSetupOfShare()
     {   
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
