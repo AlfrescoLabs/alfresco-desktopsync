@@ -21,6 +21,7 @@ import org.alfresco.po.share.site.document.*;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -56,6 +57,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * 
      * @throws Exception
      */
+    @AlfrescoTest(testlink="ALF-2569")
     @Test
     public void createFileInClient()
     {
@@ -94,6 +96,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
+    @AlfrescoTest(testlink="ALF-2571")
     @Test
     public void createFolderAndFileInShare()
     {
@@ -141,6 +144,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step10 - Validate whether the subFolder created is synched correctly
      */
 
+    @AlfrescoTest(testlink="ALF-2573")
     @Test
     public void createFolderTreeInClient()
     {
@@ -236,6 +240,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step7 - In client validate both the folder and sub folder is present
      */
+    @AlfrescoTest(testlink="ALF-2574")
     @Test
     public void createFolderInShare()
     {
@@ -264,6 +269,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
     }
 
+    @AlfrescoTest(testlink="ALF-2572")
     @Test
     public void createGoogleDocInShare()
     {

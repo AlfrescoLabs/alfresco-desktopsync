@@ -23,6 +23,7 @@ import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.test.AlfrescoTest;
 import org.alfresco.utilities.LdtpUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.testng.Assert;
@@ -240,6 +241,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
      * Step6 - Wait for the sync time of 5 mins
      * Step7 - In client check whether the folder is not synced
      */
+    @AlfrescoTest(testlink = "ALF-261")
     @Test
     public void moveFolderOutOfSubInShare()
     {
@@ -274,6 +276,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
      * Step7 - Check in the client explorer the folder is moved insided sharefoldertomove
      * step8 - Validate that the folder is not directly visible.
      */
+    @AlfrescoTest(testlink = "ALF-2609")
     @Test
     public void moveFolderWithInSubInShare()
     {
@@ -320,6 +323,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
      * Step8 - wait for the sync time - Client sync time
      * Step9 - Validate in share the file is moved and it is not visible in document library
      */
+    @AlfrescoTest(testlink = "ALF-2588")
     @Test
     public void moveFileInsideEmptyFolderInClient()
     {
@@ -361,6 +365,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
      * Step6 - Login in to share
      * Step7 - Validate whether the file is present inside the folder and not in the document library
      */
+    @AlfrescoTest(testlink= "ALF-2590")
     @Test
     public void moveFileInsideFolderInClient()
     {
@@ -405,6 +410,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
      * Step9 - Wait for the sync time - Client sync time
      * Step10 - Check the file is removed from document library
      */
+    @AlfrescoTest(testlink = "ALF-2610")
     @Test
     public void moveFileOutOfSubInClient()
     {

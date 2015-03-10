@@ -22,6 +22,7 @@ import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -61,6 +62,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
      * Step17 - Wait for the sync time of 2 mins in case of client
      * Step18 - Validate whether the file is same and has the same version number
      */
+    @AlfrescoTest(testlink="ALF-2575")
     @Test
     public void updateFileInClient()
     {
@@ -117,6 +119,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
      * Step7 - Wait for the file to synced to client - which is 5 mins in case of Share
      * Step8 - Compare the two files to see whether the same
      */
+    @AlfrescoTest(testlink ="ALF-2577")
     @Test
     public void updateFileInShare()
     {
