@@ -138,4 +138,18 @@ public class SyncSystemMenu extends Application
         getLdtp().waitTime(3);
         getLdtp().click("OK");
     }
+    
+    /**
+     * Hit sync now button in the context menu
+     *
+     */
+    
+    public void syncNow()
+    {
+        openContext();
+        getLdtp().setWindowName(notificationWindowName);
+        getLdtp().selectMenuItem("Sync Now");
+        //waiting 3 seconds to progress
+        getLdtp().waitTime(3);
+    }
 }

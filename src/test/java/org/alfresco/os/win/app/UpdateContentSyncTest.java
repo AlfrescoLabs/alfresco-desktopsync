@@ -17,6 +17,7 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
+import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.po.share.steps.LoginActions;
@@ -25,6 +26,7 @@ import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
@@ -39,6 +41,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
+    SyncSystemMenu contenxtMenu = new SyncSystemMenu();
 
     /**
      * Test to update a file in client which is already synced
@@ -125,6 +128,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
     {
         File fileTestUpdate = getRandomFileIn(getLocalSiteLocation(), "updateFile", "txt");
         File fileToUload = getRandomFileIn(getLocalSiteLocation(), "uploadFile", "txt");
+        File downloadFile = new File(downloadPath, fileTestUpdate.getName());
         ContentDetails content = new ContentDetails();
         content.setName(fileTestUpdate.getName());
         content.setDescription(fileTestUpdate.getName());
@@ -140,9 +144,10 @@ public class UpdateContentSyncTest extends DesktopSyncTest
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(fileTestUpdate.exists(), "Share new version file is synched on client.");
 
-            share.uploadNewVersionOfDocument(drone, fileTestUpdate.getName(), fileTestUpdate.getName(), "test sync update");
+            share.uploadNewVersionOfDocument(drone, fileTestUpdate.getName(), fileToUload.getName(), "test sync update");
+            share.shareDownloadFileFromDocLib(drone, fileTestUpdate.getName(), downloadFile.getPath());
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), fileToUload.getPath()));
+            Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), downloadFile.getPath()));
         }
         catch (Throwable e)
         {
@@ -152,5 +157,55 @@ public class UpdateContentSyncTest extends DesktopSyncTest
         {
             shareLogin.logout(drone);
         }
+    }
+    /**
+     * Test case to edit a property and change the title and description of the file and validate 
+     * in the client the file is with the same name and content is same 
+     * Step 1 - login in share 
+     * Step 2 - open site Document library and navigate to folder 
+     * Step 3 - upload a new file 
+     * Step 4 - Wait for it sync - Server sync time 
+     * Step 5 - In the client validate whether the file is present 
+     * Step 6 - Edit the properties and change the description and title 
+     * Step 7 - Wait for sync time - server sync tim 
+     * Step 8 - Validate whether the file are same 
+     * 
+     */
+    
+    public void setupEditProperties()
+    {
+        
+    }
+    public void editPropertiesInShare()
+    {
+        File editPropertyFile =  getRandomFileIn(getLocalSiteLocation(), "shareFileToEdit", "txt");
+        File downloadFile = new File(downloadPath, editPropertyFile.getName());
+       try
+       {
+        shareLogin.loginToShare(drone, userInfo, shareUrl);
+        share.openSitesDocumentLibrary(drone, siteName);
+        share.navigateToFolder(drone, getLocalSiteLocation().getName());
+        share.newFile(editPropertyFile.getName(), "share created first the file");
+        share.uploadFile(drone, editPropertyFile);
+        //hit sync now to sync immediately
+        contenxtMenu.syncNow();
+        //syncWaitTime(SERVERSYNCTIME);
+        Assert.assertTrue(editPropertyFile.exists(), "Share first version of the file exist");
+        share.editProperties(drone, editPropertyFile.getName(), null, "edit properties", "edit properties change");
+        share.shareDownloadFileFromDocLib(drone, editPropertyFile.getName(), downloadFile.getPath());
+      //  syncWaitTime(SERVERSYNCTIME);
+        //hit sync now to sync immediately
+        contenxtMenu.syncNow();
+        Assert.assertTrue(compareTwoFiles(editPropertyFile.getPath(), downloadFile.getPath()));
+       }
+       catch (Throwable e)
+       {
+           throw new TestException("test case failed -updateFileInShare ", e);
+       }
+       finally
+       {
+           shareLogin.logout(drone);
+       }
+       
     }
 }

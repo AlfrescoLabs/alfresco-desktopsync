@@ -17,13 +17,19 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
-import org.alfresco.po.share.site.document.*;
+import org.alfresco.po.share.site.document.ContentType;
+import org.alfresco.po.share.site.document.DocumentLibraryPage;
+import org.alfresco.po.share.site.document.EditInGoogleDocsPage;
+import org.alfresco.po.share.site.document.GoogleDocsAuthorisation;
+import org.alfresco.po.share.site.document.GoogleDocsRenamePage;
+import org.alfresco.po.share.site.document.GoogleSignUpPage;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
@@ -83,6 +89,36 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
     }
 
+    /**
+     * This test case will create a file in share and sync to the client
+     * Step1 - Login in share
+     * Step2 - Access the sync site 
+     * Step3 - Create a file in Document library 
+     * Step4 - Wait for the share sync time 
+     * Step5 - Validate the file is synced to client
+     */
+    @AlfrescoTest(testlink="ALF-2570")
+    @Test
+    public void createFileInShare()
+    {
+        File shareTestFile = getRandomFileIn(getLocalSiteLocation(), "sharecreatefile", "txt");
+        try
+        {
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
+            share.newFile(shareTestFile.getName(), "share created file for sync");
+            share.uploadFile(drone, shareTestFile);
+            syncWaitTime(SERVERSYNCTIME);
+            Assert.assertTrue(shareTestFile.exists() , "Share created file exist");
+        }
+        catch(Throwable e)
+        {
+            throw new TestException("test case failed - createFileInShare ", e);
+        }
+        
+    }
+    
     /**
      * This test will create a Folder and then a file in Share and validate
      * whether it is visible in client
