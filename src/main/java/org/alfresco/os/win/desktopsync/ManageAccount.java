@@ -25,9 +25,9 @@ import com.cobra.ldtp.Ldtp;
 import com.cobra.ldtp.LdtpExecutionError;
 
 /**
- * Manage account class will contain all the util methods related to login dialog 
+ * Manage account class will contain all the util methods related to login dialog
+ * 
  * @author subaprasann
- *
  */
 public class ManageAccount extends Application
 {
@@ -36,7 +36,7 @@ public class ManageAccount extends Application
      * Method to start up the windows native client
      */
 
-    public ManageAccount() 
+    public ManageAccount()
     {
         boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
         if (is64bit == true)
@@ -52,15 +52,17 @@ public class ManageAccount extends Application
         getLdtp().setWindowName("My Account");
     }
 
+    @Override
     public ApplicationBase openApplication()
     {
         try
         {
             openApplication(new String[] { getApplicationPath() });
+            focus();
         }
         catch (Exception e)
         {
-            logger.error("Could not open Application " + getApplicationName() + "Error: " + e);
+            logger.error("Could not open Application " + getApplicationName() + "Error: ", e);
         }
         return this;
     }
@@ -130,6 +132,7 @@ public class ManageAccount extends Application
      */
     public void login(String[] userInfo, String url) throws Exception
     {
+        logger.info("in the login method " + "Url " + url + " userinfo" + userInfo[0] + userInfo[1]);
         Ldtp ldtp = getLdtp();
         enterUserName(userInfo[0]);
         ldtp.keyPress("<tab>");
@@ -148,7 +151,7 @@ public class ManageAccount extends Application
     {
         try
         {
-        //    getLdtp().waitTillGuiExist("My Account", 30);
+            // getLdtp().waitTillGuiExist("My Account", 30);
             if (getLdtp().getWindowName().contains("My Account"))
                 return true;
         }

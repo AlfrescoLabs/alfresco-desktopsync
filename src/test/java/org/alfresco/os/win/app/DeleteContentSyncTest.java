@@ -17,8 +17,6 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
-import org.alfresco.po.share.steps.LoginActions;
-import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
@@ -34,8 +32,6 @@ import org.testng.annotations.Test;
 public class DeleteContentSyncTest extends DesktopSyncTest
 {
     Notepad notepad = new Notepad();
-    LoginActions shareLogin = new LoginActions();
-    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
 
     /**
@@ -53,7 +49,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
      * 
      * @throws InterruptedException
      */
-   @AlfrescoTest(testlink = "ALF-2579")
+    @AlfrescoTest(testlink = "ALF-2579")
     @Test
     public void deleteFileCreated() throws InterruptedException
     {
@@ -94,7 +90,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
      * Step5 - login in share
      * step6 - validate the folder is not visible in document library
      */
-   @AlfrescoTest(testlink = "ALF-2585")
+    @AlfrescoTest(testlink = "ALF-2585")
     @Test
     public void deleteFolderInClient()
     {
@@ -141,7 +137,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
      * Step9 - Wait for sync time - which is 5 mins in case of share
      * Step10 - Validate that folder is not visible in sync location
      */
-   @AlfrescoTest(testlink = "ALF-2586")
+    @AlfrescoTest(testlink = "ALF-2586")
     @Test
     public void deleteFolderWithFileInShare()
     {
@@ -190,7 +186,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
      * Step13 - Wait for the sync time - client sync time
      * Step14 - Check in share the folder is deleted and file is also deleted.
      */
-   @AlfrescoTest(testlink= "ALF-2583")
+    @AlfrescoTest(testlink = "ALF-2583")
     @Test
     public void deleteFolderWithFileInClient()
     {

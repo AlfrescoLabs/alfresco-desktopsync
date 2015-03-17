@@ -27,6 +27,13 @@ public class SyncSystemMenu extends Application
         getLdtp().mouseRightClick(alfrescoNotificationItemName);
         getLdtp().waitTime(2);
     }
+    public void activateCurrentDialog()
+    {
+        logger.info("Left mouse click on icon ");
+        getLdtp().mouseLeftClick(alfrescoNotificationItemName);
+        getLdtp().waitTime(2);
+    } 
+    
     
     /**
      * Method to check conflict status is correct for the file name paseed 

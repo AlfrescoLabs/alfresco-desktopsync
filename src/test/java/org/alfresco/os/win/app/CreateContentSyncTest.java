@@ -23,8 +23,6 @@ import org.alfresco.po.share.site.document.EditInGoogleDocsPage;
 import org.alfresco.po.share.site.document.GoogleDocsAuthorisation;
 import org.alfresco.po.share.site.document.GoogleDocsRenamePage;
 import org.alfresco.po.share.site.document.GoogleSignUpPage;
-import org.alfresco.po.share.steps.LoginActions;
-import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
@@ -42,13 +40,10 @@ import org.testng.annotations.Test;
 public class CreateContentSyncTest extends DesktopSyncTest
 {
     Notepad notepad = new Notepad();
-    LoginActions shareLogin = new LoginActions();
-    SiteActions share = new SiteActions();
 
     File folderChild = null;
 
     WindowsExplorer explorer = new WindowsExplorer();
-    
 
     /**
      * This test will create a notePad file in client and validate whether it is
@@ -63,7 +58,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * 
      * @throws Exception
      */
-    @AlfrescoTest(testlink="ALF-2569")
+    @AlfrescoTest(testlink = "ALF-2569")
     @Test
     public void createFileInClient()
     {
@@ -81,6 +76,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("File was not created or synched on Share", e);
         }
         finally
@@ -92,12 +88,12 @@ public class CreateContentSyncTest extends DesktopSyncTest
     /**
      * This test case will create a file in share and sync to the client
      * Step1 - Login in share
-     * Step2 - Access the sync site 
-     * Step3 - Create a file in Document library 
-     * Step4 - Wait for the share sync time 
+     * Step2 - Access the sync site
+     * Step3 - Create a file in Document library
+     * Step4 - Wait for the share sync time
      * Step5 - Validate the file is synced to client
      */
-    @AlfrescoTest(testlink="ALF-2570")
+    @AlfrescoTest(testlink = "ALF-2570")
     @Test
     public void createFileInShare()
     {
@@ -110,15 +106,16 @@ public class CreateContentSyncTest extends DesktopSyncTest
             share.newFile(shareTestFile.getName(), "share created file for sync");
             share.uploadFile(drone, shareTestFile);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(shareTestFile.exists() , "Share created file exist");
+            Assert.assertTrue(shareTestFile.exists(), "Share created file exist");
         }
-        catch(Throwable e)
+        catch (Throwable e)
         {
+            logger.error(e);
             throw new TestException("test case failed - createFileInShare ", e);
         }
-        
+
     }
-    
+
     /**
      * This test will create a Folder and then a file in Share and validate
      * whether it is visible in client
@@ -132,7 +129,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
-    @AlfrescoTest(testlink="ALF-2571")
+    @AlfrescoTest(testlink = "ALF-2571")
     @Test
     public void createFolderAndFileInShare()
     {
@@ -156,7 +153,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed - createFolderAndFileInShare ", e);
         }
         finally
@@ -180,7 +177,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step10 - Validate whether the subFolder created is synched correctly
      */
 
-    @AlfrescoTest(testlink="ALF-2573")
+    @AlfrescoTest(testlink = "ALF-2573")
     @Test
     public void createFolderTreeInClient()
     {
@@ -205,7 +202,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed - createFolderTreeInClient", e);
         }
         finally
@@ -256,7 +253,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("Test Case Failed - createFileInsideFolderInClient", e);
         }
         finally
@@ -276,7 +273,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step7 - In client validate both the folder and sub folder is present
      */
-    @AlfrescoTest(testlink="ALF-2574")
+    @AlfrescoTest(testlink = "ALF-2574")
     @Test
     public void createFolderInShare()
     {
@@ -296,7 +293,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed - createFolderInShare ", e);
         }
         finally
@@ -305,14 +302,14 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
     }
 
-    @AlfrescoTest(testlink="ALF-2572")
-    @Test
+    @AlfrescoTest(testlink = "ALF-2572")
+    // @Test
     public void createGoogleDocInShare()
     {
         File shareTestFile = getRandomFileIn(getLocalSiteLocation(), "createGoogleDoc", "docx");
         try
         {
-            shareLogin.loginToShare(drone,userInfo,shareUrl);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             DocumentLibraryPage docPage = new DocumentLibraryPage(drone);
@@ -327,7 +324,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed - createGoogleDocInShare ", e);
         }
         finally

@@ -29,7 +29,6 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.utilities.LdtpUtils;
 import org.alfresco.utils.DirectoryTree;
-import org.alfresco.webdrone.WebDrone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -46,12 +45,11 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 {
     Properties officeAppProperty = new Properties();
     protected static Log logger = onThisClass();
-    public WebDrone drone;
-    protected String[] userInfo = null;
+    protected static String[] userInfo = null;
 
     // generic share variables used in tests
-    protected LoginActions shareLogin = new LoginActions();
-    protected SiteActions share = new SiteActions();
+    protected static LoginActions shareLogin = new LoginActions();
+    protected static SiteActions share = new SiteActions();
     protected boolean showClientFolderContent = true;
 
 
@@ -92,6 +90,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         share.openSitesDocumentLibrary(drone, siteName);
         share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
         share.uploadFile(drone, initialShareFile);
+        shareLogin.logout(drone);
         }
         catch(Exception e)
         {
@@ -100,11 +99,11 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     }
 
     @BeforeClass(alwaysRun = true)
-    public void initialSetupOfShare()
+    public void initialSetupOfShare() throws Exception
     {   
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
-
+    
     /**
      * Util method for waiting
      *

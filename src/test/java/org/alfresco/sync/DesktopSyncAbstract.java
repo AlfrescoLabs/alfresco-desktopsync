@@ -49,10 +49,11 @@ public abstract class DesktopSyncAbstract
     protected static String siteName;
     protected static String fileAppend;
     protected static String installerPath;
+    public static WebDrone drone;
+    
     SyncSystemMenu contextMenu = new SyncSystemMenu();
     ManageAccount account = new ManageAccount();
 
-    protected WebDrone drone;
     protected static long SERVERSYNCTIME = 300000;
     protected static long CLIENTSYNCTIME = 60000;
     protected static String downloadPath;
@@ -87,6 +88,7 @@ public abstract class DesktopSyncAbstract
 
     public WebDrone getWebDrone() throws Exception
     {
+        WebDrone drone;
         drone = (WebDrone) ctx.getBean("webDrone");
         drone.maximize();
         return drone;

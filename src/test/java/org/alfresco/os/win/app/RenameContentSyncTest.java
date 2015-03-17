@@ -17,8 +17,6 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
-import org.alfresco.po.share.steps.LoginActions;
-import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
@@ -35,8 +33,6 @@ import org.testng.annotations.Test;
 public class RenameContentSyncTest extends DesktopSyncTest
 {
     Notepad notepad = new Notepad();
-    LoginActions shareLogin = new LoginActions();
-    SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
 
     /**
@@ -49,7 +45,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
      * Step6 - Validate the file name is
      * changed in share
      */
-    @AlfrescoTest(testlink= "ALF-2613")
+    @AlfrescoTest(testlink = "ALF-2613")
     @Test
     public void renameFileInClient()
     {
@@ -179,44 +175,44 @@ public class RenameContentSyncTest extends DesktopSyncTest
         }
     }
 
-//    /**
-//     * Rename of empty folder in share
-//     * Step1 - login in to share
-//     * Step2 - Create a folder in the document library
-//     * Step3 - Wait for the sync time - server sync time
-//     * Step4 - Rename the folder in share
-//     * Step5 - Wait for the sync time - server sync time
-//     * Step6 - Validate in client the folder name is
-//     * changed to the renamed name.
-//     */
-//  //  @Test
-//    public void renameFolderInShare()
-//    {
-//        File folderInShare = getRandomFolderIn(getLocalSiteLocation(), "fldInShare");
-//        File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInShare");
-//        try
-//        {
-//            shareLogin.loginToShare(drone, userInfo, shareUrl);
-//            share.openSitesDocumentLibrary(drone, siteName);
-//            share.navigateToFolder(drone, getLocalSiteLocation().getName());
-//            share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
-//            syncWaitTime(SERVERSYNCTIME);
-//            Assert.assertTrue(folderInShare.exists(), "Folder created in Share was synched to Client");
-//            share.editContentNameInline(drone, folderInShare.getName(), folderInShareRenamed.getName(), true);
-//            syncWaitTime(SERVERSYNCTIME);
-//            Assert.assertFalse(folderInShare.exists(), "Original folder does not exists in Client");
-//            Assert.assertTrue(folderInShareRenamed.exists(), "Renamed folder exists in Client");
-//        }
-//        catch (Throwable e)
-//        {
-//            e.printStackTrace();
-//            throw new SkipException("test case failed-renameFolderInShare", e);
-//        }
-//        finally
-//        {
-//            shareLogin.logout(drone);
-//        }
-//    }
+    // /**
+    // * Rename of empty folder in share
+    // * Step1 - login in to share
+    // * Step2 - Create a folder in the document library
+    // * Step3 - Wait for the sync time - server sync time
+    // * Step4 - Rename the folder in share
+    // * Step5 - Wait for the sync time - server sync time
+    // * Step6 - Validate in client the folder name is
+    // * changed to the renamed name.
+    // */
+    // // @Test
+    // public void renameFolderInShare()
+    // {
+    // File folderInShare = getRandomFolderIn(getLocalSiteLocation(), "fldInShare");
+    // File folderInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInShare");
+    // try
+    // {
+    // shareLogin.loginToShare(drone, userInfo, shareUrl);
+    // share.openSitesDocumentLibrary(drone, siteName);
+    // share.navigateToFolder(drone, getLocalSiteLocation().getName());
+    // share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
+    // syncWaitTime(SERVERSYNCTIME);
+    // Assert.assertTrue(folderInShare.exists(), "Folder created in Share was synched to Client");
+    // share.editContentNameInline(drone, folderInShare.getName(), folderInShareRenamed.getName(), true);
+    // syncWaitTime(SERVERSYNCTIME);
+    // Assert.assertFalse(folderInShare.exists(), "Original folder does not exists in Client");
+    // Assert.assertTrue(folderInShareRenamed.exists(), "Renamed folder exists in Client");
+    // }
+    // catch (Throwable e)
+    // {
+    // e.printStackTrace();
+    // throw new SkipException("test case failed-renameFolderInShare", e);
+    // }
+    // finally
+    // {
+    // shareLogin.logout(drone);
+    // }
+    // }
 
     /**
      * Rename a folder with File in share
@@ -237,7 +233,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
             share.navigateToFolder(drone, folderInShare.getName());
             share.uploadFile(drone, fileInShare);
-            share.navigateToDocuemntLibrary(drone,siteName);
+            share.navigateToDocuemntLibrary(drone, siteName);
             fileInShare.delete();
 
             syncWaitTime(SERVERSYNCTIME);
