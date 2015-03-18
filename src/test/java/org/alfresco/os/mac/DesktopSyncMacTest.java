@@ -35,7 +35,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
 {
     public enum TEST_DATA
     {
-        FILE, CONTENT
+        FILE, FOLDER, CONTENT, SITE
     };
 
     private LinkedHashMap<File, ApplicationBase> testClientData = new LinkedHashMap<File, ApplicationBase>();
@@ -127,11 +127,21 @@ public class DesktopSyncMacTest extends DesktopSyncTest
     }
 
     /**
-     * Run and create data in Share, found on data array created with {@link #addDataInClient(File, Application)}
+     * With no parameters, this will create all data in Share and waits for the sync to happen
      * 
      * @throws Exception
      */
     protected void runDataCreationInShare() throws Exception
+    {
+        runDataCreationInShare(true);
+    }
+
+    /**
+     * Run and create data in Share, found on data array created with {@link #addDataInClient(File, Application)}
+     * 
+     * @throws Exception
+     */
+    protected void runDataCreationInShare(boolean waitForSync) throws Exception
     {
         logger.info(String.format(info, "Start", "Share"));
         // login just once
@@ -146,7 +156,7 @@ public class DesktopSyncMacTest extends DesktopSyncTest
             TEST_DATA dataType = serverData.getValue();
 
             // always start from Document Library
-            share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToDocuemntLibrary(drone, siteName);
 
             if (dataType.equals(TEST_DATA.CONTENT))
             {
@@ -157,26 +167,28 @@ public class DesktopSyncMacTest extends DesktopSyncTest
                 content.setContent("Share Created file from MacTest.runDataCreationInShare ");
                 share.createContent(drone, content, ContentType.PLAINTEXT);
             }
+            else if (dataType.equals(TEST_DATA.FOLDER))
+            {
+                logger.info("Creating Directory in Share:" + data.getName());
+                share.createFolder(drone, data.getName(), data.getName(), "description");
+            }
             else if (dataType.equals(TEST_DATA.FILE))
             {
-                if (isFolder(data))
+
+                logger.info("Uploading File in Share:" + data.getName());
+                File fileToUpload = share.newFile(data.getName(), data.getName());
+                String parentFolder = data.getParentFile().getName();
+                if (!parentFolder.equals(getLocalSiteLocationClean().getName()))
                 {
-                    logger.info("Creating Directory in Share:" + data.getName());
-                    share.createFolder(drone, data.getName(), data.getName(), "description");
+                    // we need to navigate first to the parent folder of this file;
+                    share.navigateToFolder(drone, parentFolder);
                 }
-                else
-                {
-                    logger.info("Uploading File in Share:" + data.getName());
-                    File fileToUpload = share.newFile(data.getName(), data.getName());
-                    String parentFolder = data.getParentFile().getName();
-                    if (!parentFolder.equals(getLocalSiteLocationClean().getName()))
-                    {
-                        // we need to navigate first to the parent folder of this file;
-                        share.navigateToFolder(drone, parentFolder);
-                    }
-                    share.uploadFile(drone, fileToUpload);
-                    fileToUpload.delete(); // and deleting the temporary file
-                }
+                share.uploadFile(drone, fileToUpload);
+                fileToUpload.delete(); // and deleting the temporary file
+            }
+            else if (dataType.equals(TEST_DATA.SITE))
+            {
+                share.createSite(drone, data.getName(), "Description", "public");
             }
         }
 
@@ -184,7 +196,8 @@ public class DesktopSyncMacTest extends DesktopSyncTest
         if (!testServerData.isEmpty())
         {
             shareLogin.logout(drone);
-            syncWaitTime(SERVERSYNCTIME);
+            if (waitForSync)
+                syncWaitTime(SERVERSYNCTIME);
         }
         logger.info(String.format(info, "End", "Share"));
     }

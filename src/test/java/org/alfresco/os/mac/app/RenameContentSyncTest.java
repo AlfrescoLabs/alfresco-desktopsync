@@ -53,7 +53,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
         _clFile         = addDataInClient(getRandomFileIn(getLocalSiteLocationClean(), "file", "rtf"), notepad);
         _shFile         = addDataInShare(getRandomFileIn(getLocalSiteLocationClean(), "shFile", "rtf"), TEST_DATA.FILE);
 
-        _shFolderWFile  = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderWFile"), TEST_DATA.FILE);
+        _shFolderWFile  = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderWFile"), TEST_DATA.FOLDER);
         _shFileInFolder = addDataInShare(getRandomFileIn(_shFolderWFile, "shFileInFolder", "rtf"), TEST_DATA.FILE);
 
         runDataCreationProcess();
