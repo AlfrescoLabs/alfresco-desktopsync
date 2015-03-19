@@ -1,17 +1,14 @@
-package org.alfresco.os.win.concurrent;
+package org.alfresco.os.win.concurrent.notepad;
 
 import org.alfresco.os.win.app.Notepad;
 import org.alfresco.os.win.app.WindowsExplorer;
-import org.alfresco.os.win.app.office.MicrosoftOffice2013;
-import org.alfresco.os.win.app.office.MicrosoftOfficeBase;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
-import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -27,9 +24,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
 {
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
-    WindowsExplorer explorer = new WindowsExplorer();
     Notepad notepad = new Notepad();
-    MicrosoftOffice2013 office = new MicrosoftOffice2013(MicrosoftOfficeBase.VersionDetails.WORD);
     SyncSystemMenu notification = new SyncSystemMenu();
     String resolveUsingClient = "ResolveUsingLocal";
     String resolveUsingRemote = "ResolveUsingRemote";
@@ -41,7 +36,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
     File concurrentUpdateDelete = null;
 
     /**
-     * This BeforeClass will create a Notepad file in Client and validate whether it is
+     * This BeforeMethod will create a Notepad file in Client and validate whether it is
      * synced in Share. Then it will keep the file opened (locked for editing) while
      * it is being deleted in Share and trigger a conflict.
      * Step1 - Create a file in Notepad and save it without any content without closing it.
@@ -58,7 +53,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
      *
      * @throws Exception
      */
-    @BeforeClass
+    @BeforeMethod
     public void setupUpdateInClientDeleteInShare()
     {
         concurrentUpdateDelete = getRandomFileIn(getLocalSiteLocation(), "concUpdateDelete", "txt");

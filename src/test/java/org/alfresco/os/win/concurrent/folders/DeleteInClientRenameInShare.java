@@ -1,49 +1,43 @@
-package org.alfresco.os.win.concurrent;
+package org.alfresco.os.win.concurrent.folders;
 
-import org.alfresco.os.win.app.Notepad;
 import org.alfresco.os.win.app.WindowsExplorer;
-import org.alfresco.os.win.app.office.MicrosoftOffice2013;
-import org.alfresco.os.win.app.office.MicrosoftOfficeBase;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
-import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
+import org.testng.TestException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
 
 /**
- * This class will contain all the test cases related to Concurrent rename of folder
- * in Client (Windows machine) and Share
+ * This class will contain all the test cases related to Concurrent delete of folder
+ * in Client (Windows machine) and rename the same folder in Share
  *
  * @author rdorobantu
  */
-public class ConcurrentRenameFolderTest extends DesktopSyncTest
+public class DeleteInClientRenameInShare extends DesktopSyncTest
 {
     LoginActions shareLogin = new LoginActions();
     SiteActions share = new SiteActions();
     WindowsExplorer explorer = new WindowsExplorer();
-    MicrosoftOffice2013 office = new MicrosoftOffice2013(MicrosoftOfficeBase.VersionDetails.WORD);
     SyncSystemMenu notification = new SyncSystemMenu();
     String resolveUsingClient = "ResolveUsingLocal";
     String resolveUsingRemote = "ResolveUsingRemote";
-    String conflictTypeRename = "Conflict-Rename";
+    String conflictTypeDelete = "Conflict-Delete";
 
     /**
-     * Folder declarations for test concurrentRenameFolder
+     * Folder declarations for test DeleteInClientRenameInShare
      */
     File concurrentRenameFolder = null;
     File concurrentFldInShareRenamed = null;
-    File concurrentFldInClientRenamed = null;
 
     /**
-     * This BeforeClass will create a folder in Client and validate whether it is
-     * synced in Share. Then it will rename the folder simultaneously in Share and in Client
+     * This BeforeMethod will create a folder in Client and validate whether it is
+     * synced in Share. Then it will rename the folder in Share and delete in Client
      * and trigger a conflict.
      * Step1 - Create a folder and save it.
      * Step2 - Wait for Sync time which is 2 minutes for Client.
@@ -51,18 +45,17 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
      * Step4 - Access sync site.
      * Step5 - Check the new folder created in Client is synced in Share.
      * Step6 - Rename the folder in Share.
-     * Step7 - Rename the folder in Client.
+     * Step7 - Delete the folder in Client.
      * Step8 - Wait for Sync time which is 5 minutes for Share.
      * Step9 - Check if conflict appears.
      *
      * @throws Exception
      */
     @BeforeMethod
-    public void setupConcurrentRenameFolder()
+    public void setupDeleteInClientRenameInShare()
     {
         concurrentRenameFolder = getRandomFolderIn(getLocalSiteLocation(), "conFolder");
         concurrentFldInShareRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInShare");
-        concurrentFldInClientRenamed = getRandomFolderIn(getLocalSiteLocation(), "renamedFldInClient");
         try
         {
             explorer.openApplication();
@@ -70,19 +63,22 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
             explorer.createAndOpenFolder(concurrentRenameFolder.getName());
             explorer.goBack(getLocalSiteLocation().getName());
             syncWaitTime(CLIENTSYNCTIME);
+
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, concurrentRenameFolder.getName()), "Client folder is successfully synced in Share.");
             share.editContentNameInline(drone, concurrentRenameFolder.getName(), concurrentFldInShareRenamed.getName(), true);
-            explorer.rename(concurrentRenameFolder, concurrentFldInClientRenamed);
+            explorer.deleteFolder(concurrentRenameFolder.getName(), true);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(notification.isConflictStatusCorrect(conflictTypeRename,concurrentRenameFolder.getName()));
+            //as I cannot test the following line of code locally
+            // the conflictType may be different. Will update it once I can test it
+            Assert.assertTrue(notification.isConflictStatusCorrect(conflictTypeDelete,concurrentRenameFolder.getName()));
         }
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - setupConcurrentRenameFolder", e);
+            throw new TestException("test case failed - setupDeleteInClientRenameInShare", e);
         }
         finally
         {
@@ -106,7 +102,6 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
             notification.resolveConflictingFilesWithoutOpeningWindow(concurrentRenameFolder.getName(),resolveUsingRemote);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(concurrentFldInShareRenamed.exists(), "Renamed folder in Share is now synced in Client.");
-            Assert.assertFalse(concurrentFldInClientRenamed.exists(), "Renamed folder in Client is not present in Client.");
         }
         catch (Throwable e)
         {
@@ -125,7 +120,7 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
      * Step2 - Wait for Sync time which is 2 minutes for Client.
      * Step3 - Login in Share.
      * Step4 - Navigate to the sync site.
-     * Step5 - Verify the renamed folder in Client is synced in Share.
+     * Step5 - Verify the deleted folder in Client will not be present in Share.
      *
      * @throws Exception
      */
@@ -139,8 +134,7 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            Assert.assertTrue(share.isFileVisible(drone, concurrentFldInClientRenamed.getName()), "Client renamed folder is successfully synced in Share.");
-            Assert.assertFalse(share.isFileVisible(drone, concurrentFldInShareRenamed.getName()), "Renamed folder in Share is not present in Share.");
+            Assert.assertFalse(share.isFileVisible(drone, concurrentFldInShareRenamed.getName()), "Deleted folder in Client is not present in Share.");
         }
         catch (Throwable e)
         {
