@@ -17,20 +17,22 @@ package org.alfresco.os.mac.desktopsync;
 
 import org.alfresco.os.mac.Application;
 
+import com.cobra.ldtp.LdtpExecutionError;
+
 /**
  * Handles AlfrescoDesktopSync tool on MAC system
  * 
  * @author <a href="mailto:paulbrodner@gmail.com">Paul Brodner</a>
  */
-public class DesktopSync extends Application
+public class SyncSystemMenu extends Application
 {
-    public DesktopSync()
+    public SyncSystemMenu()
     {
         setApplicationName("AlfrescoDesktopSyncClient");
         // set the root path of the Finder Window to the current user Documents folder
         setApplicationPath("/Applications/AlfrescoDesktopSyncClient.app");
         // each finder has the window name set to the current folder name
-        setWaitWindow("AlfrescoDesktopSyncClient");
+        setWaitWindow("appAlfrescoDesktopSyncClient");
     }
 
     /**
@@ -38,14 +40,41 @@ public class DesktopSync extends Application
      */
     public void synchNow()
     {
-        getLdtp().click("mnu0");
+        openTrayMenu();
         getLdtp().click("mnuSyncNow!");
+    }
+
+    /**
+     * Quit application, using the context menu
+     */
+    public void quit()
+    {
+        openTrayMenu();
+        getLdtp().click("mnuQuit");
+    }
+
+    private void openTrayMenu()
+    {
+        try
+        {
+            getLdtp().click("mnu0");
+        }
+        catch (LdtpExecutionError e)
+        {
+            if (e.getMessage().contains(getWaitWindow()))
+            {
+                logger.error("Please restart Desktop Sync application!");
+            }
+            else
+            {
+                logger.error(e);
+            }
+        }
     }
 
     @Override
     public void exitApplication()
     {
-
         killProcess();
     }
 }
