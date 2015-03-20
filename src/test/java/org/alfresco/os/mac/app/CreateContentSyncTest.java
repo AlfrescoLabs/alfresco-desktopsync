@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.Test;
@@ -47,6 +48,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
+    @AlfrescoTest(testlink = "ALF-2569")
     @Test(groups = { "MacOnly"})
     public void createFileInClient()
     {
@@ -88,6 +90,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
+    @AlfrescoTest(testlink = "ALF-2571")
     @Test(groups = { "MacOnly"})
     public void createFolderAndFileInShare()
     {
@@ -137,6 +140,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step9 - Navigate to folder
      * Step10 - Validate whether the subFolder created is synched correctly
      */
+    @AlfrescoTest(testlink = "ALF-2573")
     @Test(groups = { "MacOnly"})
     public void createFolderTreeInClient()
     {
@@ -229,6 +233,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step7 - In client validate both the folder and sub folder is present
      */
+    @AlfrescoTest(testlink = "ALF-2574")
     @Test(groups = { "MacOnly"})
     public void createFolderInShare()
     {

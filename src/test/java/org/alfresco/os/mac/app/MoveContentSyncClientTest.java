@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -57,6 +58,7 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
+    @AlfrescoTest(testlink = "ALF-2588")
     @Test(groups = { "MacOnly"})
     public void inClientMoveFileFromFolderInOtherEmptyFolder() throws Exception
     {
@@ -100,6 +102,7 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * @throws Exception
      *             ALF-2589 Move content in client not an empty folder
      */
+    @AlfrescoTest(testlink = "ALF-2589")
     @Test(groups = { "MacOnly"})
     public void inClientMoveFileFromFolderInOtherNonEmptyFolder() throws Exception
     {
@@ -139,6 +142,7 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
+    @AlfrescoTest(testlink = "ALF-2590")
     @Test(groups = { "MacOnly"})
     public void inClientMoveFolderWithFileInOtherEmptyFolder() throws Exception
     {
@@ -178,6 +182,7 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * wait for sync and check that this file is not found in Share after refresh
      * ALF-2610: Move out of subscription
      */
+    @AlfrescoTest(testlink = "ALF-2610")
     @Test(groups = { "MacOnly"})
     public void inClientMoveFileOutsideSubscription()
     {

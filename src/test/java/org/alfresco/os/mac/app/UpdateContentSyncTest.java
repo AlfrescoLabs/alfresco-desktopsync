@@ -20,6 +20,7 @@ import java.io.File;
 import org.alfresco.os.mac.DesktopSyncMacTest;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
+import org.alfresco.test.AlfrescoTest;
 import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.TestException;
@@ -58,6 +59,7 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
      * Step17 - Wait for the sync time of 2 mins in case of client
      * Step18 - Validate whether the file is same and has the same version number
      */
+    @AlfrescoTest(testlink = "ALF-2575")
     @Test(groups = { "MacOnly"})
     public void updateFileInClient()
     {
@@ -120,6 +122,7 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
      * Step7 - Wait for the file to synced to client - which is 5 mins in case of Share
      * Step8 - Compare the two files to see whether the same
      */
+    @AlfrescoTest(testlink = "ALF-2577")
     @Test(groups = { "MacOnly"})
     public void updateFileInShare()
     {

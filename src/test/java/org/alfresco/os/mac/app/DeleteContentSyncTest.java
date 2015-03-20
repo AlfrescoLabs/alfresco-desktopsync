@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.BeforeClass;
@@ -95,6 +96,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * 
      * @throws InterruptedException
      */
+    @AlfrescoTest(testlink = "ALF-2579")
     @Test(groups = { "MacOnly"})
     public void deleteFileInClient()
     {
@@ -134,6 +136,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step5 - login in share
      * step6 - validate the folder is not visible in document library
      */
+    @AlfrescoTest(testlink = "ALF-2585")
     @Test(groups = { "MacOnly"})
     public void deleteFolderInClient()
     {
@@ -178,6 +181,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step9 - Wait for sync time - which is 5 mins in case of share
      * Step10 - Validate that folder is not visible in sync location
      */
+    @AlfrescoTest(testlink = "ALF-2586")
     @Test(groups = { "MacOnly"})
     public void deleteFolderWithFileInShare()
     {
@@ -226,6 +230,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step13 - Wait for the sync time - client sync time
      * Step14 - Check in share the folder is deleted and file is also deleted.
      */
+    @AlfrescoTest(testlink = "ALF-2583")
     @Test(groups = { "MacOnly"})
     public void deleteFolderWithFileInClient()
     {

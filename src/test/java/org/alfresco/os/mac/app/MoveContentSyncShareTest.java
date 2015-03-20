@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -72,6 +73,7 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
+    @AlfrescoTest(testlink = "ALF-2609")
     @Test(groups = { "MacOnly"})
     public void inShareMoveFileFromFolderInOtherEmptyFolder() throws Exception
     {
@@ -107,6 +109,7 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * No TestLink ID
      * @throws Exception 
      */
+    @AlfrescoTest(testlink = "ALF-2609")
     @Test(groups = { "MacOnly"})
     public void inShareMoveFolderWithFileInAnotherFolder() throws Exception
     {
@@ -136,6 +139,7 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * Prerequisites:
      * ALF-3286 Move folder with file into Subscription in Share
      */
+    @AlfrescoTest(testlink = "ALF-3286")
     @Test(groups = { "MacOnly"})
     public void inShareMoveFolderWithFileIntoSubscription()
     {
@@ -161,6 +165,7 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * bug: first folder _shFileInSubscription4 is now synched in client prior to test
      * @throws Exception 
      */
+    @AlfrescoTest(testlink = "ALF-2611")
     @Test(groups = { "MacOnly"})
     public void inShareMoveFileOutsideSubscription() throws Exception
     {
@@ -189,6 +194,7 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * AONE-3285 Move folder with file outside Subscription in Share
      * @throws Exception 
      */
+    @AlfrescoTest(testlink = "ALF-3285")
     @Test(groups = { "MacOnly"})
     public void inShareMoveFolderWithFileOutsideSubscription() throws Exception
     {

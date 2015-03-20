@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.BeforeClass;
@@ -69,6 +70,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
      * Step6 - Validate the file name is
      * changed in share
      */
+    @AlfrescoTest(testlink = "ALF-2613")
     @Test(groups = { "MacOnly"})
     public void renameFileInClient()
     {
@@ -158,6 +160,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
      * Step7 - Wait for the sync time - server sync time
      * Step8 - In client sync location the file is renamed correctly
      */
+    @AlfrescoTest(testlink = "ALF-2616")
     @Test(groups = { "MacOnly"})
     public void renameFileInShare()
     {

@@ -26,6 +26,8 @@ import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.sync.DesktopSyncTest;
 
+import com.google.common.io.Files;
+
 /**
  * Helper class that should be extended by any MacOS tests
  * 
@@ -211,4 +213,14 @@ public class DesktopSyncMacTest extends DesktopSyncTest
         testServerData.clear(); // clear data after is created
         logger.info(String.format(info, "End", "Share"));
     }
+
+    /**
+     * Return a new file in Conflict state
+     */
+    protected File getConflictName(File file)
+    {
+        String name = Files.getNameWithoutExtension(file.getPath()) + "CONFLICT" + Files.getFileExtension(file.getName());
+        return new File(file.getPath(), name);
+    }
+
 }
