@@ -95,7 +95,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * 
      * @throws InterruptedException
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void deleteFileInClient()
     {
         File deleteFile = _deleteFileClient;
@@ -134,7 +134,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step5 - login in share
      * step6 - validate the folder is not visible in document library
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void deleteFolderInClient()
     {
         File deleteTestFolder = _deleteFolderClient;
@@ -178,7 +178,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step9 - Wait for sync time - which is 5 mins in case of share
      * Step10 - Validate that folder is not visible in sync location
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void deleteFolderWithFileInShare()
     {
         try
@@ -226,7 +226,7 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
      * Step13 - Wait for the sync time - client sync time
      * Step14 - Check in share the folder is deleted and file is also deleted.
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void deleteFolderWithFileInClient()
     {
         File folderDelete = _deleteFolderClientMisc;

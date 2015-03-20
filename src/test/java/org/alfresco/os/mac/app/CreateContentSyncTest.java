@@ -47,7 +47,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void createFileInClient()
     {
         File clientTestFile = getRandomFileIn(getLocalSiteLocationClean(), "createFile", "rtf");
@@ -88,7 +88,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step7 - Validate the folder with file created in share is synced
      * correctly
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void createFolderAndFileInShare()
     {
         File folderToCreate = getRandomFolderIn(getLocalSiteLocationClean(), "createFolder");
@@ -137,7 +137,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step9 - Navigate to folder
      * Step10 - Validate whether the subFolder created is synched correctly
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void createFolderTreeInClient()
     {
         File folderParent = getRandomFolderIn(getLocalSiteLocationClean(), "folderParent");
@@ -183,7 +183,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step9 - Navigate to the sub Folder
      * step10 - Validate the file created in client is synced correctly
      */
-    @Test(groups = { "MacOnly", "Create" }, dependsOnMethods = "createFolderTreeInClient")
+    @Test(groups = { "MacOnly"}, dependsOnMethods = "createFolderTreeInClient")
     public void createFileInsideFolderInClient()
     {
         folderChild = folderChild.getParentFile();
@@ -229,7 +229,7 @@ public class CreateContentSyncTest extends DesktopSyncMacTest
      * Step6 - Wait for Sync time which is 5 mins for share
      * Step7 - In client validate both the folder and sub folder is present
      */
-    @Test(groups = { "MacOnly", "Create" })
+    @Test(groups = { "MacOnly"})
     public void createFolderInShare()
     {
         File shareFolderParent = getRandomFolderIn(getLocalSiteLocationClean(), "createShareParentFldr");

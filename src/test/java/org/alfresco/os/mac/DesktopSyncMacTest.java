@@ -123,6 +123,8 @@ public class DesktopSyncMacTest extends DesktopSyncTest
             // because SERVERSYNCTIME is greater than CLIENTSYNCTIME
             syncWaitTime(CLIENTSYNCTIME);
         }
+        testClientData.clear(); // clear the data after is created
+
         logger.info(String.format(info, "End", "Client"));
     }
 
@@ -188,17 +190,25 @@ public class DesktopSyncMacTest extends DesktopSyncTest
             }
             else if (dataType.equals(TEST_DATA.SITE))
             {
-                share.createSite(drone, data.getName(), "Description", "public");
+                try
+                {
+                    share.createSite(drone, data.getName(), "Description", "public");
+                }
+                catch (Exception e)
+                {
+                    logger.info("Site Name [" + data.getName() + "] already exists. Continue...");
+                }
             }
         }
 
         // wait process
         if (!testServerData.isEmpty())
         {
-            shareLogin.logout(drone);
             if (waitForSync)
                 syncWaitTime(SERVERSYNCTIME);
         }
+
+        testServerData.clear(); // clear data after is created
         logger.info(String.format(info, "End", "Share"));
     }
 }

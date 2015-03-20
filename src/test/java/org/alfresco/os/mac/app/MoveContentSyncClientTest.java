@@ -33,43 +33,9 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
     TextEdit notepad = new TextEdit();
     FinderExplorer explorer = new FinderExplorer();
 
-    File _clFolder1;
-    File _clFile1;
-    File _clFolderMove1;
-    File _clFolder2;
-    File _clFile2;
-    File _clFile3;
-    File _clFolderMove2;
-
-    File _clFolder4;
-    File _clFile4;
-    File _clFolderMove4;
-
-    File _clFile5;
-
     @BeforeClass
-    public void prepareData() throws Exception
+    public void start() throws Exception
     {
-        // inClientMoveFileFromFolderInOtherEmptyFolder
-        _clFolder1      = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
-        _clFile1        = addDataInClient(getRandomFileIn(_clFolder1, "clFile", "rtf"), notepad);
-        _clFolderMove1  = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
-
-        // inClientMoveFileFromFolderInOtherNonEmptyFolder
-        _clFolder2      = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
-        _clFile2        = addDataInClient(getRandomFileIn(_clFolder2, "clFile", "rtf"), notepad);
-        _clFolderMove2  = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
-        _clFile3        = addDataInClient(getRandomFileIn(_clFolderMove2, "clFile", "rtf"), notepad);
-
-        // inClientMoveFolderWithFileInOtherEmptyFolder
-        _clFolder4      = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
-        _clFile4        = addDataInClient(getRandomFileIn(_clFolder4, "clFile", "rtf"), notepad);
-        _clFolderMove4  = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
-
-        // inClientMoveFileOutsideSubscription
-        _clFile5        = addDataInClient(getRandomFileIn(getLocalSiteLocationClean(), "clFile", "rtf"), notepad);
-
-        runDataCreationProcess();
         shareLogin.loginToShare(drone, userInfo, shareUrl);
     }
 
@@ -91,25 +57,33 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inClientMoveFileFromFolderInOtherEmptyFolder() throws Exception
     {
+        // inClientMoveFileFromFolderInOtherEmptyFolder
+        File clFolderWithFile   = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
+        File clFileFromFolder   = addDataInClient(getRandomFileIn(clFolderWithFile, "clFile", "rtf"), notepad);
+        File clFolderMove       = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
+        runDataCreationInClient();
+        // end prepare data
+
         explorer.openApplication();
-        explorer.moveFile(_clFile1, _clFolderMove1);
+        explorer.moveFile(clFileFromFolder, clFolderMove);
         explorer.closeExplorer();
         syncWaitTime(CLIENTSYNCTIME);
 
         share.navigateToDocuemntLibrary(drone, siteName);
 
-        Assert.assertTrue(share.isFileVisible(drone, _clFolderMove1.getName()),
-                String.format("Folder {%s} exists in Share, prior to tests", _clFolderMove1.getName()));
-        share.navigateToFolder(drone, _clFolderMove1.getName());
-        Assert.assertTrue(share.isFileVisible(drone, _clFile1.getName()), String.format("File{%s} from moved folder, was found in Share", _clFile1.getName()));
+        Assert.assertTrue(share.isFileVisible(drone, clFolderMove.getName()),
+                String.format("Folder {%s} exists in Share, prior to tests", clFolderMove.getName()));
+        share.navigateToFolder(drone, clFolderMove.getName());
+        Assert.assertTrue(share.isFileVisible(drone, clFileFromFolder.getName()),
+                String.format("File{%s} from moved folder, was found in Share", clFileFromFolder.getName()));
 
         share.navigateToDocuemntLibrary(drone, siteName);
-        share.navigateToFolder(drone, _clFolder1.getName());
-        Assert.assertFalse(share.isFileVisible(drone, _clFile1.getName()),
-                String.format("File {%s} moved in client, does not exists in original folder {%s}", _clFile1.getName(), _clFolder1.getName()));
+        share.navigateToFolder(drone, clFolderWithFile.getName());
+        Assert.assertFalse(share.isFileVisible(drone, clFileFromFolder.getName()),
+                String.format("File {%s} moved in client, does not exists in original folder {%s}", clFileFromFolder.getName(), clFolderWithFile.getName()));
     }
 
     /**
@@ -126,24 +100,32 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * @throws Exception
      *             ALF-2589 Move content in client not an empty folder
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inClientMoveFileFromFolderInOtherNonEmptyFolder() throws Exception
     {
+        // inClientMoveFileFromFolderInOtherNonEmptyFolder
+        File clFolderWithFile           = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
+        File clFileInFolder             = addDataInClient(getRandomFileIn(clFolderWithFile, "clFile", "rtf"), notepad);
+        File clFolderMoveDestination    = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
+        File clFileInMoveFolder         = addDataInClient(getRandomFileIn(clFolderMoveDestination, "clFile", "rtf"), notepad);
+        runDataCreationInClient();
+        // end prepare data
+
         explorer.openApplication();
-        explorer.moveFile(_clFile2, _clFolderMove2);
+        explorer.moveFile(clFileInFolder, clFolderMoveDestination);
         explorer.closeExplorer();
         syncWaitTime(CLIENTSYNCTIME);
         share.navigateToDocuemntLibrary(drone, siteName);
 
-        Assert.assertTrue(share.isFileVisible(drone, _clFolderMove2.getName()),
-                String.format("Folder {%s} moved exists in Share prior to move operation.", _clFolderMove2.getName()));
+        Assert.assertTrue(share.isFileVisible(drone, clFolderMoveDestination.getName()),
+                String.format("Folder {%s} moved exists in Share prior to move operation.", clFolderMoveDestination.getName()));
 
-        share.navigateToFolder(drone, _clFolderMove2.getName());
-        
-        Assert.assertTrue(share.isFileVisible(drone, _clFile2.getName()),
-                String.format("File {%s} moved in Client exists in new destination: {%s}.", _clFile2.getName(), _clFolderMove2.getName()));
-        Assert.assertTrue(share.isFileVisible(drone, _clFile3.getName()),
-                String.format("Existing file {%s} still exists in destination: {%s}.", _clFile3.getName(), _clFolderMove2.getName()));
+        share.navigateToFolder(drone, clFolderMoveDestination.getName());
+
+        Assert.assertTrue(share.isFileVisible(drone, clFileInFolder.getName()),
+                String.format("File {%s} moved in Client exists in new destination: {%s}.", clFileInFolder.getName(), clFolderMoveDestination.getName()));
+        Assert.assertTrue(share.isFileVisible(drone, clFileInMoveFolder.getName()),
+                String.format("Existing file {%s} still exists in destination: {%s}.", clFileInMoveFolder.getName(), clFolderMoveDestination.getName()));
     }
 
     /**
@@ -157,27 +139,34 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inClientMoveFolderWithFileInOtherEmptyFolder() throws Exception
     {
+        // inClientMoveFolderWithFileInOtherEmptyFolder
+        File clFolderWithFile   = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clFolder"), explorer);
+        File clFileInFolder     = addDataInClient(getRandomFileIn(clFolderWithFile, "clFile", "rtf"), notepad);
+        File clFolderMoved      = addDataInClient(getRandomFolderIn(getLocalSiteLocationClean(), "clMoveFolder"), explorer);
+        runDataCreationInClient();
+        // //end prepare data
+
         explorer.openApplication();
-        explorer.moveFolder(_clFolder4, _clFolderMove4);
+        explorer.moveFolder(clFolderWithFile, clFolderMoved);
         explorer.closeExplorer();
         syncWaitTime(CLIENTSYNCTIME);
 
         share.navigateToDocuemntLibrary(drone, siteName);
-        
-        Assert.assertTrue(share.isFileVisible(drone, _clFolderMove4.getName()),
-                String.format("Destination folder {%s} exists in Share.", _clFolderMove4.getName()));
-        Assert.assertFalse(share.isFileVisible(drone, _clFolder4.getName()),
-                String.format("Folder {%s} moved from root, is not visible in share.", _clFolder4.getName()));
 
-        share.navigateToFolder(drone, _clFolderMove4.getName());
-        Assert.assertTrue(share.isFileVisible(drone, _clFolder4.getName()),
-                String.format("Moved folder {%s} exists now in source destination {%s}.", _clFolder4.getName(), _clFolderMove4.getName()));
-        share.navigateToFolder(drone, _clFolder4.getName());
-        Assert.assertTrue(share.isFileVisible(drone, _clFile4.getName()),
-                String.format("File {%s} was also moved in the process and exists in Share", _clFile4.getName()));
+        Assert.assertTrue(share.isFileVisible(drone, clFolderMoved.getName()),
+                String.format("Destination folder {%s} exists in Share.", clFolderMoved.getName()));
+        Assert.assertFalse(share.isFileVisible(drone, clFolderWithFile.getName()),
+                String.format("Folder {%s} moved from root, is not visible in share.", clFolderWithFile.getName()));
+
+        share.navigateToFolder(drone, clFolderMoved.getName());
+        Assert.assertTrue(share.isFileVisible(drone, clFolderWithFile.getName()),
+                String.format("Moved folder {%s} exists now in source destination {%s}.", clFolderWithFile.getName(), clFolderMoved.getName()));
+        share.navigateToFolder(drone, clFolderWithFile.getName());
+        Assert.assertTrue(share.isFileVisible(drone, clFileInFolder.getName()),
+                String.format("File {%s} was also moved in the process and exists in Share", clFileInFolder.getName()));
     }
 
     /**
@@ -189,18 +178,24 @@ public class MoveContentSyncClientTest extends DesktopSyncMacTest
      * wait for sync and check that this file is not found in Share after refresh
      * ALF-2610: Move out of subscription
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inClientMoveFileOutsideSubscription()
     {
+        // inClientMoveFileOutsideSubscription
+        File clFileMoved = addDataInClient(getRandomFileIn(getLocalSiteLocationClean(), "clFile", "rtf"), notepad);
+        runDataCreationInClient();
+
         share.navigateToDocuemntLibrary(drone, siteName);
-        Assert.assertTrue(share.isFileVisible(drone, _clFile5.getName()),
-                String.format("File {%s} exists in Share prior to move operation .", _clFile5.getName()));
+        share.refreshSharePage(drone);
+        
+        Assert.assertTrue(share.isFileVisible(drone, clFileMoved.getName()),
+                String.format("File {%s} exists in Share prior to move operation .", clFileMoved.getName()));
 
         explorer.openApplication();
-        explorer.moveFile(_clFile5, new File(downloadPath));
+        explorer.moveFile(clFileMoved, new File(downloadPath));
         syncWaitTime(CLIENTSYNCTIME);
         share.navigateToDocuemntLibrary(drone, siteName);
-        Assert.assertFalse(share.isFileVisible(drone, _clFile5.getName()),
-                String.format("File {%s} removed from Share after it was moved from client.", _clFile5.getName()));
+        Assert.assertFalse(share.isFileVisible(drone, clFileMoved.getName()),
+                String.format("File {%s} removed from Share after it was moved from client.", clFileMoved.getName()));
     }
 }
