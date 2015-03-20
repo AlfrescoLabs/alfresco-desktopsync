@@ -29,9 +29,9 @@ public class SyncSystemMenu extends Application
     }
     public void activateCurrentDialog()
     {
-        logger.info("Left mouse click on icon ");
-        getLdtp().mouseLeftClick(alfrescoNotificationItemName);
-        getLdtp().waitTime(2);
+        openContext();
+        focus();
+     //   getLdtp().click("1076");
     } 
     
     

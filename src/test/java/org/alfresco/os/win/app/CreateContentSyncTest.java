@@ -103,7 +103,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            share.newFile(shareTestFile.getName(), "share created file for sync");
+            shareTestFile = share.newFile(shareTestFile.getName(), "share created file for sync");
             share.uploadFile(drone, shareTestFile);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(shareTestFile.exists(), "Share created file exist");
