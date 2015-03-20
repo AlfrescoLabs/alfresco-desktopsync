@@ -148,6 +148,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed -updateFileInShare ", e);
         }
         finally
@@ -198,6 +199,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new TestException("test case failed -updateFileInShare ", e);
         }
         finally

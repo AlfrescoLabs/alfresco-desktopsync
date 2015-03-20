@@ -5,6 +5,7 @@ import org.alfresco.os.win.desktopsync.ManageFolders;
 import org.alfresco.os.win.desktopsync.ManageFolders.syncOptions;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.sync.DesktopSyncTest;
+import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -43,7 +44,7 @@ public class ManageAccountTest extends DesktopSyncTest
             Assert.assertTrue(syncAccount.getErrorText().contains("Failed to connect to server http://172.29.100.170:8080/alfresco"),
                     "invalid login dialog was show correctly");
             syncAccount.clickCancelButton();
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         }
         catch (Throwable e)
         {
