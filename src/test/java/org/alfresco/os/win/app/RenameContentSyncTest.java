@@ -69,6 +69,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
 
             syncWaitTime(CLIENTSYNCTIME);
             share.openSitesDocumentLibrary(drone, siteName);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, fileRenamed.getName()));
         }
         catch (Throwable e)
@@ -115,12 +116,14 @@ public class RenameContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            Assert.assertTrue(share.isFileVisible(drone, folder.getName()), "Folder was synched in Share");
+            Assert.assertTrue(share.isFileVisible(drone, folder.getName()), "Folder was synced in Share");
+            share.navigateToFolder(drone, folder.getName());
+            Assert.assertTrue(share.isFileVisible(drone, folderFile.getName()), "File created in Folder was synced in Share");
             explorer.rename(folder, folderRename);
             syncWaitTime(CLIENTSYNCTIME);
             share.navigateToDocuemntLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            Assert.assertTrue((share.isFileVisible(drone, folderRename.getName())), "Renamed folder was synched in Share");
+            Assert.assertTrue((share.isFileVisible(drone, folderRename.getName())), "Renamed folder was synced in Share");
             share.navigateToFolder(drone, folderRename.getName());
             Assert.assertTrue((share.isFileVisible(drone, folderFile.getName())), "File exists in renamed folder in Share");
         }
@@ -162,7 +165,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             share.editContentNameInline(drone, fileTest.getName(), renamedFile.getName(), true);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(fileTest.exists(), "Original file does not exists in Client");
-            Assert.assertTrue(renamedFile.exists(), "Renamed file in Share is now synched in Client");
+            Assert.assertTrue(renamedFile.exists(), "Renamed file in Share is now synced in Client");
         }
         catch (Throwable e)
         {
