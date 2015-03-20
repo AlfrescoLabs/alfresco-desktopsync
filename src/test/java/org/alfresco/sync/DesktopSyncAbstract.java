@@ -50,6 +50,7 @@ public abstract class DesktopSyncAbstract
     protected static String fileAppend;
     protected static String installerPath;
     public static WebDrone drone;
+    protected static boolean syncImmediately;
     
     SyncSystemMenu contextMenu = new SyncSystemMenu();
     ManageAccount account = new ManageAccount();
@@ -74,11 +75,13 @@ public abstract class DesktopSyncAbstract
         siteName = t.getSiteName();
         downloadPath = t.getFiledirectoryPath();
         installerPath = t.getInstallerpath();
-
+        syncImmediately = t.getSyncImmediately();
+        
         displayProperties("Client Sync Location", location);
         displayProperties("Share URL", shareUrl);
         displayProperties("SiteName", siteName);
         displayProperties("downloadPath", downloadPath);
+        displayProperties("Sync Immediately", Boolean.toString(syncImmediately));
     }
 
     private void displayProperties(String property, String value)

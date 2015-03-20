@@ -52,7 +52,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     protected static SiteActions share = new SiteActions();
     protected boolean showClientFolderContent = true;
 
-
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
     {
@@ -63,7 +62,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             userInfo = new String[] { username, password };
 
             // Site creation for windows
-            if(SystemUtils.OS_NAME.contains("Windows"))
+            if (SystemUtils.OS_NAME.contains("Windows"))
             {
                 initialSiteSetUp();
             }
@@ -82,17 +81,17 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     {
         try
         {
-        File initialShareFile = getRandomFile("initialShareFile", "txt");
-        siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
-        shareLogin.loginToShare(drone, userInfo, shareUrl);
-        share.createSite(drone, siteName, siteName, "public");
-        logger.info("site created - successful"  + siteName);
-        share.openSitesDocumentLibrary(drone, siteName);
-        share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
-        share.uploadFile(drone, initialShareFile);
-        shareLogin.logout(drone);
+            File initialShareFile = getRandomFile("initialShareFile", "txt");
+            siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.createSite(drone, siteName, siteName, "public");
+            logger.info("site created - successful" + siteName);
+            share.openSitesDocumentLibrary(drone, siteName);
+            share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
+            share.uploadFile(drone, initialShareFile);
+            shareLogin.logout(drone);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.error("Failed to create file in share :" + this.getClass(), e);
         }
@@ -100,10 +99,10 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
     @BeforeClass(alwaysRun = true)
     public void initialSetupOfShare() throws Exception
-    {   
+    {
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
-    
+
     /**
      * Util method for waiting
      *
@@ -112,23 +111,41 @@ public class DesktopSyncTest extends DesktopSyncAbstract
      */
     public void syncWaitTime(long totalWaitTime)
     {
-        long delaytime = 60000;
-        long delay = delaytime;
-        logger.info("Sync Wait Time Started (waiting to pass: " + (totalWaitTime / delaytime) + " minute(s) )");
-        while (delay <= totalWaitTime)
+        // based on the syncImmediate flag defined in desktopsync.properties file we can force or use the default wait method
+        if (syncImmediately)
         {
-            logger.info("Sleep - (for 1 minute)");
-            try
+            if (SystemUtils.IS_OS_MAC)
             {
-                Thread.sleep(delaytime);
+                org.alfresco.os.mac.desktopsync.SyncSystemMenu app = new org.alfresco.os.mac.desktopsync.SyncSystemMenu();
+                app.synchNow();
             }
-            catch (Exception e)
+            else if (SystemUtils.IS_OS_WINDOWS)
             {
-                e.printStackTrace();
+                org.alfresco.os.win.desktopsync.SyncSystemMenu app = new org.alfresco.os.win.desktopsync.SyncSystemMenu();
+                app.syncNow();
             }
-            delay = delay + delaytime;
+            LdtpUtils.waitToLoopTime(6);
         }
-        logger.info("Sync Wait Time Ended (after: " + (totalWaitTime / delaytime) + " minute(s) )");
+        else
+        {
+            long delaytime = 60000;
+            long delay = delaytime;
+            logger.info("Sync Wait Time Started (waiting to pass: " + (totalWaitTime / delaytime) + " minute(s) )");
+            while (delay <= totalWaitTime)
+            {
+                logger.info("Sleep - (for 1 minute)");
+                try
+                {
+                    Thread.sleep(delaytime);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                delay = delay + delaytime;
+            }
+            logger.info("Sync Wait Time Ended (after: " + (totalWaitTime / delaytime) + " minute(s) )");
+        }
     }
 
     /**
