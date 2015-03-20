@@ -1,0 +1,33 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="ConcurrentTestsDesktopSync" verbose="1" parallel="tests" thread-count="1" configfailurepolicy="continue">
+
+	<test name="ManageAccountTest" verbose="1" preserve-order="true" >
+		<classes>
+			<class name="org.alfresco.os.win.client.ManageAccountTest">
+				<methods>
+					<include name="syncClientLoginTest"></include>
+					<include name="selectSites"></include>
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="ConcurrentTests" verbose="1" preserve-order="true" >
+		<classes>
+			<class name="org.alfresco.os.win.concurrent.folders.ConcurrentRenameFolderTest"></class>
+			<class name="org.alfresco.os.win.concurrent.folders.DeleteInClientMoveInShare"></class>
+			<class name="org.alfresco.os.win.concurrent.folders.DeleteInClientRenameInShare"></class>
+			<class name="org.alfresco.os.win.concurrent.folders.DeleteInShareUpdateInClient"></class>
+			<class name="org.alfresco.os.win.concurrent.folders.RenameInClientMoveInShare"></class>
+			<class name="org.alfresco.os.win.concurrent.folders.RenameInShareUpdateInClient"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.ConcurrentRenameFileTest"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.LockInClientDeleteInShareTest"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.LockInClientMoveInShareTest"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.LockInClientRenameInShareTest"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.UpdateInClientDeleteInShareTest"></class>
+			<class name="org.alfresco.os.win.concurrent.notepad.UpdateInShareRenameInClient"></class>
+		</classes>
+	</test>
+
+</suite>
+	
