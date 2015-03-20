@@ -153,6 +153,7 @@ public class SyncSystemMenu extends Application
     
     public void syncNow()
     {
+        logger.info("Force Sync process from Sys Tray!");
         openContext();
         getLdtp().setWindowName(notificationWindowName);
         getLdtp().selectMenuItem("Sync Now");

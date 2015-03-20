@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Smoke Test Suites">
-	<test verbose="2" name="Default test" preserve-order="true" thread-count="1" parallel="none">
+	<test verbose="2" name="Default test" preserve-order="true"
+		thread-count="1" parallel="none">
 		<classes>
-			<class name="org.alfresco.os.mac.app.CreateContentSyncTest"/>
-			<class name="org.alfresco.os.mac.app.DeleteContentSyncTest"/>
-			<class name="org.alfresco.os.mac.app.RenameContentSyncTest"/>
-			<class name="org.alfresco.os.mac.app.UpdateContentSyncTest"/>
+			<class name="org.alfresco.os.mac.app.CreateContentSyncTest" />
+			<class name="org.alfresco.os.mac.app.DeleteContentSyncTest" />
+			<class name="org.alfresco.os.mac.app.RenameContentSyncTest" />
+			<class name="org.alfresco.os.mac.app.UpdateContentSyncTest" />
+			<class name="org.alfresco.os.mac.app.MoveContentSyncClientTest" />
+			<class name="org.alfresco.os.mac.app.MoveContentSyncShareTest" />
 		</classes>
 	</test>
 </suite>

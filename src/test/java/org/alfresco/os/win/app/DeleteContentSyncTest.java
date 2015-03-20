@@ -68,7 +68,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "File exists in Share after auto Sync.");
+            Assert.assertFalse(share.isFileVisible(drone, deleteFile.getName()), "Deleted file no longer exists in Share after Sync.");
         }
         catch (Throwable e)
         {
@@ -141,7 +141,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
     @Test
     public void deleteFolderWithFileInShare()
     {
-        File folderDelete = getRandomFolderIn(getLocalSiteLocation(), "deleteFoldeF");
+        File folderDelete = getRandomFolderIn(getLocalSiteLocation(), "deleteFolder");
         File fileDelete = getRandomFileIn(folderDelete, "fileDel", "txt");
         try
         {
@@ -154,10 +154,11 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             share.uploadFile(drone, shareFile);
             share.navigateToDocuemntLibrary(drone, siteName);
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(folderDelete.exists(), "Folder was synched in client");
+            Assert.assertTrue(folderDelete.exists(), "Folder was synced in client");
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
             share.deleteContentInDocLib(drone, folderDelete.getName());
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertFalse(fileDelete.exists(), "File was successfuly deleted from client after share.");
+            Assert.assertFalse(fileDelete.exists(), "File was successfully deleted from client after Sync.");
         }
         catch (Throwable e)
         {
@@ -201,20 +202,22 @@ public class DeleteContentSyncTest extends DesktopSyncTest
             notepad.openApplication();
             notepad.edit("content");
             notepad.saveAs(fileDelete);
-            notepad.exitApplication();
+            notepad.close(fileDelete);
             syncWaitTime(CLIENTSYNCTIME);
 
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
+            Assert.assertTrue(share.isFileVisible(drone, folderDelete.getName()), "Folder exists in Share");
             share.navigateToFolder(drone, folderDelete.getName());
-            Assert.assertTrue(share.isFileVisible(drone, fileDelete.getName()), "File exist in Share");
+            Assert.assertTrue(share.isFileVisible(drone, fileDelete.getName()), "File exists in Share");
 
             explorer.deleteFolder(folderDelete.getName());
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
             share.openSitesDocumentLibrary(drone, siteName);
-            Assert.assertFalse(share.isFileVisible(drone, folderDelete.getName()), "Folder was deleted automaticaly after sync.");
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
+            Assert.assertFalse(share.isFileVisible(drone, folderDelete.getName()), "Folder was deleted from Share after sync.");
         }
         catch (Throwable e)
         {

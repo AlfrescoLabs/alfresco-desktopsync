@@ -38,6 +38,7 @@ public class DesktopSyncProperties
     private final String browser;
     private final String version;
     private final String mimeTypes;
+    private final boolean syncImmediately;
     
     public DesktopSyncProperties(
             final String shareUrl, 
@@ -52,7 +53,8 @@ public class DesktopSyncProperties
             final String grid,
             final String browser,
             final String version,
-            final String mimeTypes)
+            final String mimeTypes,
+            final boolean syncImmediately)
     {
         this.shareUrl = shareUrl;
         this.username = username;
@@ -64,9 +66,10 @@ public class DesktopSyncProperties
         this.filedirectoryPath = filedirectoryPath;
         this.installerpath = installerpath;
         this.grid = grid;
-        this.browser=browser;
-        this.version=version;
-        this.mimeTypes=mimeTypes;
+        this.browser = browser;
+        this.version = version;
+        this.mimeTypes = mimeTypes;
+        this.syncImmediately = syncImmediately;
     }
 
     public String getGrid()
@@ -132,5 +135,10 @@ public class DesktopSyncProperties
     public String getMimeTypes()
     {
         return mimeTypes;
+    }
+
+    public boolean getSyncImmediately()
+    {
+        return syncImmediately;
     }
 }

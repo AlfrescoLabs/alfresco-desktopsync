@@ -33,46 +33,24 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
     TextEdit notepad = new TextEdit();
     FinderExplorer explorer = new FinderExplorer();
 
-    // inShareMoveFileFromFolderInOtherEmptyFolder
-    File _shFolderWithFile1;
-    File _shFileInFolder1;
-    File _shEmptyFolderMove1;
+    File _shSiteOutOfSubscription;
+    File _shFolderOutOfSync;
 
-    // inShareMoveFolderWithFileInAnotherFolder
-    File _shFolderWithFile2;
-    File _shFileInFolder2;
-
-    // inShareMoveFolderWithFileIntoSubscription
-    File _shSiteOutOfSubscription3;
-    File _shFolderOutOfSync3;
-    File _shFolderInSync3;
-
-    File _shFileInSubscription4;
-    File _shFileInSubscription5;
-
+    
     @BeforeClass
-    public void prepareData() throws Exception
+    public void start() throws Exception
     {
-        _shFolderWithFile1      = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolder1"), TEST_DATA.FOLDER);
-        _shFileInFolder1        = addDataInShare(getRandomFileIn(_shFolderWithFile1, "file1", "rtf"), TEST_DATA.FILE);
-        _shEmptyFolderMove1     = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderM1"), TEST_DATA.FOLDER);
-
-        _shFolderWithFile2      = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolder2"), TEST_DATA.FOLDER);
-        _shFileInFolder2        = addDataInShare(getRandomFileIn(_shFolderWithFile2, "file2", "rtf"), TEST_DATA.FILE);
-
-        _shSiteOutOfSubscription3 = addDataInShare(new File(getRandomValue("site")), TEST_DATA.SITE);
-        _shFolderOutOfSync3     = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderOutOfSync"), TEST_DATA.FOLDER);
-        _shFolderInSync3        = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFoldeInSync"), TEST_DATA.FOLDER);
-
-        _shFileInSubscription4  = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderInSubs"), TEST_DATA.FILE);
-        _shFileInSubscription5   = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFoldeInSync"), TEST_DATA.FOLDER);
-
+        _shSiteOutOfSubscription        = addDataInShare(new File("siteOut"), TEST_DATA.SITE);
+        _shFolderOutOfSync              = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderOutOfSync"), TEST_DATA.FOLDER);
         runDataCreationInShare(false);
 
         shareLogin.loginToShare(drone, userInfo, shareUrl);
         // site out of subscription
-        share.navigateToDocuemntLibrary(drone, _shSiteOutOfSubscription3.getName());
-        share.createFolder(drone, _shFolderOutOfSync3.getName(), _shFolderOutOfSync3.getName(), _shFolderOutOfSync3.getName());
+        share.navigateToDocuemntLibrary(drone, _shSiteOutOfSubscription.getName());
+        share.createFolder(drone, _shFolderOutOfSync.getName(), _shFolderOutOfSync.getName(), _shFolderOutOfSync.getName());
+        
+        share.navigateToDocuemntLibrary(drone, siteName);
+        syncWaitTime(SERVERSYNCTIME);
     }
 
     @AfterClass(alwaysRun = true)
@@ -94,9 +72,15 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * 
      * @throws Exception
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inShareMoveFileFromFolderInOtherEmptyFolder() throws Exception
     {
+        File _shFolderWithFile1 = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolder1"), TEST_DATA.FOLDER);
+        File _shFileInFolder1 = addDataInShare(getRandomFileIn(_shFolderWithFile1, "file1", "rtf"), TEST_DATA.FILE);
+        File _shEmptyFolderMove1 = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderM1"), TEST_DATA.FOLDER);
+        runDataCreationInShare();
+        //end data creation
+        
         share.navigateToDocuemntLibrary(drone, siteName);
         Assert.assertTrue(share.isFileVisible(drone, _shFolderWithFile1.getName()),
                 String.format("Folder source {%s} was found in share prior to test", _shFolderWithFile1.getName()));
@@ -121,20 +105,28 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * Wait for the server sync
      * Check in client that folder (c) contains folder (a) with file (b)
      * No TestLink ID
+     * @throws Exception 
      */
-    @Test
-    public void inShareMoveFolderWithFileInAnotherFolder()
+    @Test(groups = { "MacOnly"})
+    public void inShareMoveFolderWithFileInAnotherFolder() throws Exception
     {
+        File _shEmptyFolderMove = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolderM1"), TEST_DATA.FOLDER);
+        File _shFolderWithFile2 = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFolder2"), TEST_DATA.FOLDER);
+        File _shFileInFolder2   = addDataInShare(getRandomFileIn(_shFolderWithFile2, "file2", "rtf"), TEST_DATA.FILE);
+        runDataCreationInShare();
+        //end data creation
+        
         share.navigateToDocuemntLibrary(drone, siteName);
         Assert.assertTrue(share.isFileVisible(drone, _shFolderWithFile2.getName()),
                 String.format("Folder source {%s} was found in share prior to test", _shFolderWithFile2.getName()));
-        Assert.assertTrue(share.isFileVisible(drone, _shEmptyFolderMove1.getName()),
-                String.format("Empty folder {%s} was found in share prior to test", _shEmptyFolderMove1.getName()));
-        share.copyOrMoveArtifact(drone, "All Sites", siteName, _shFolderWithFile2.getName(), _shEmptyFolderMove1.getName(), "Move");
+        Assert.assertTrue(share.isFileVisible(drone, _shEmptyFolderMove.getName()),
+                String.format("Empty folder {%s} was found in share prior to test", _shEmptyFolderMove.getName()));
+        logger.info(String.format("Moving folder with file {%s} into empty folder {%s}", _shEmptyFolderMove.getName(), _shFolderWithFile2.getName()));
+        share.copyOrMoveArtifact(drone, "All Sites", siteName, _shEmptyFolderMove.getName(), _shFolderWithFile2.getName(), "Move");
 
         syncWaitTime(SERVERSYNCTIME);
 
-        File movedFolder = new File(_shEmptyFolderMove1.getPath(), _shFolderWithFile2.getName());
+        File movedFolder = new File(_shEmptyFolderMove.getPath(), _shFolderWithFile2.getName());
         File movedFileWFolder = new File(movedFolder.getPath(), _shFileInFolder2.getName());
         Assert.assertTrue(movedFolder.exists(), String.format("Folder moved in share was synched on Client {%s}", movedFolder.getPath()));
         Assert.assertTrue(movedFileWFolder.exists(), String.format("File moved with folder in share was synched on Client {%s}", movedFileWFolder.getPath()));
@@ -144,15 +136,17 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * Prerequisites:
      * ALF-3286 Move folder with file into Subscription in Share
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void inShareMoveFolderWithFileIntoSubscription()
     {
-        share.navigateToDocuemntLibrary(drone, _shSiteOutOfSubscription3.getName());
-        share.copyOrMoveArtifact(drone, "All Sites", siteName, null, _shFolderOutOfSync3.getName(), "Move");
+        share.navigateToDocuemntLibrary(drone, _shSiteOutOfSubscription.getName());
+        logger.info(String.format("Moving folder with file {%s} into root document library", _shFolderOutOfSync.getName()));
+        share.copyOrMoveArtifact(drone, "All Sites", siteName, null, _shFolderOutOfSync.getName(), "Move");
         syncWaitTime(SERVERSYNCTIME);
 
-        File movedFolder = new File(getLocalSiteLocationClean(), _shFolderOutOfSync3.getName());
-        Assert.assertTrue(movedFolder.exists(), String.format("File moved from external Site into subscription was synched in client {%s}", movedFolder.getPath()));
+        File movedFolder = new File(getLocalSiteLocationClean(), _shFolderOutOfSync.getName());
+        Assert.assertTrue(movedFolder.exists(),
+                String.format("File moved from external Site into subscription was synched in client {%s}", movedFolder.getPath()));
     }
 
     /**
@@ -164,44 +158,54 @@ public class MoveContentSyncShareTest extends DesktopSyncMacTest
      * Wait for server sync
      * In Client verify that file (b) exists in folder (c) and it doesn't also exists in folder (a)
      * ALF-2611: Move out of subscription in Share
-     * bug: first folder _shFileInSubscription4 is now synched in client prior to test 
+     * bug: first folder _shFileInSubscription4 is now synched in client prior to test
+     * @throws Exception 
      */
-    @Test
-    public void inShareMoveFileOutsideSubscription()
+    @Test(groups = { "MacOnly"})
+    public void inShareMoveFileOutsideSubscription() throws Exception
     {
-
+        File _shFileInSubscription = addDataInShare(getRandomFileIn(getLocalSiteLocationClean(), "fileInShare", "rtf"), TEST_DATA.FILE);
+        runDataCreationInShare();
+        //end data creation
+        
         share.navigateToDocuemntLibrary(drone, siteName);
-        Assert.assertTrue(share.isFileVisible(drone, _shFileInSubscription4.getName()),
-                String.format("File exists in share {%s} prior to test", _shFileInSubscription4.getName()));
-        Assert.assertTrue(_shFileInSubscription4.exists(), String.format("File is synched in Client {%s} prior to test", _shFileInSubscription4.getName()));
+        Assert.assertTrue(share.isFileVisible(drone, _shFileInSubscription.getName()),
+                String.format("File exists in share {%s} prior to test", _shFileInSubscription.getName()));
+        Assert.assertTrue(_shFileInSubscription.exists(), String.format("File is synched in Client {%s} prior to test", _shFileInSubscription.getName()));
 
-        share.copyOrMoveArtifact(drone, "All Sites", _shSiteOutOfSubscription3.getName(), null, _shFileInSubscription4.getName(), "move");
+        logger.info(String.format("Moving file {%s} outside subscription, in site: {%s}", _shFileInSubscription.getName(), _shSiteOutOfSubscription.getName()));
+        
+        share.copyOrMoveArtifact(drone, "All Sites", _shSiteOutOfSubscription.getName(), null, _shFileInSubscription.getName(), "move");
+        share.refreshSharePage(drone);
+        Assert.assertFalse(share.isFileVisible(drone, _shFileInSubscription.getName()),
+                String.format("File was removed from share {%s}", _shFileInSubscription.getName()));
         syncWaitTime(SERVERSYNCTIME);
-
-        share.navigateToDocuemntLibrary(drone, siteName);
-        Assert.assertFalse(share.isFileVisible(drone, _shFileInSubscription4.getName()),
-                String.format("File was removed from share {%s}", _shFileInSubscription4.getName()));
-        Assert.assertFalse(_shFileInSubscription4.exists(),
-                String.format("File was removed in Client {%s} after move operation", _shFileInSubscription4.getName()));
+        Assert.assertFalse(_shFileInSubscription.exists(),
+                String.format("File was removed in Client {%s} after move operation", _shFileInSubscription.getName()));
     }
 
-     /**
+    /**
      * Prerequisites:
      * AONE-3285 Move folder with file outside Subscription in Share
+     * @throws Exception 
      */
-     @Test
-     public void inShareMoveFolderWithFileOutsideSubscription()
-     {
+    @Test(groups = { "MacOnly"})
+    public void inShareMoveFolderWithFileOutsideSubscription() throws Exception
+    {
+        File _shFolderInSubscription = addDataInShare(getRandomFolderIn(getLocalSiteLocationClean(), "shFoldeInSync"), TEST_DATA.FOLDER);
+        addDataInShare(getRandomFileIn(_shFolderInSubscription, "fileInSub", "rtf"), TEST_DATA.FILE);
+        runDataCreationInShare();
+        //end data creation
+        
         share.navigateToDocuemntLibrary(drone, siteName);
-        Assert.assertTrue(share.isFileVisible(drone, _shFileInSubscription5.getName()),
-                String.format("Folder exists in Share {%s} prior to test", _shFileInSubscription5.getName()));
-        Assert.assertTrue(_shFileInSubscription5.exists(),
-                String.format("Folder exists in Client {%s} prior to test", _shFileInSubscription5.getName()));
-        
-        share.copyOrMoveArtifact(drone, "All Sites", _shSiteOutOfSubscription3.getName(), null, _shFileInSubscription5.getName(), "move");
+        Assert.assertTrue(share.isFileVisible(drone, _shFolderInSubscription.getName()),
+                String.format("Folder exists in Share {%s} prior to test", _shFolderInSubscription.getName()));
+        Assert.assertTrue(_shFolderInSubscription.exists(), String.format("Folder exists in Client {%s} prior to test", _shFolderInSubscription.getName()));
+        logger.info(String.format("Moving folder with file {%s} outside subscription in site: {%s}", _shFolderInSubscription.getName(),
+                _shSiteOutOfSubscription.getName()));
+        share.copyOrMoveArtifact(drone, "All Sites", _shSiteOutOfSubscription.getName(), null, _shFolderInSubscription.getName(), "move");
         syncWaitTime(SERVERSYNCTIME);
-        
-        Assert.assertTrue(_shFileInSubscription5.exists(),
-                String.format("Folder is removed in Client {%s} after is moved in share out of subscription", _shFileInSubscription5.getName()));
-     }
+        Assert.assertTrue(_shFolderInSubscription.exists(),
+                String.format("Folder is removed in Client {%s} after is moved in share out of subscription", _shFolderInSubscription.getName()));
+    }
 }

@@ -32,5 +32,6 @@
 		<constructor-arg name="browser" value="${webdrone.browser}"></constructor-arg>
 		<constructor-arg name="version" value="${share.version}"></constructor-arg>
 		<constructor-arg name="mimeTypes" value="${webdrone.download.mime.types}"></constructor-arg>
+		<constructor-arg name="syncImmediately" value="${desktopsync.syncImmediately}"></constructor-arg>
 	</bean>
 </beans>

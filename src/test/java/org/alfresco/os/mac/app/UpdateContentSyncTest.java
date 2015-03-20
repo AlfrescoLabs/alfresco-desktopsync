@@ -20,17 +20,19 @@ import java.io.File;
 import org.alfresco.os.mac.DesktopSyncMacTest;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
+import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
  * This class will contain all the test cases related to update of file in both client (MAC machine) and share
- *  Must be executed using the -Dwebdrone.browser=FireFoxDownloadToDir 
+ * Must be executed using the -Dwebdrone.browser=FireFoxDownloadToDir
+ * 
  * @author Paul Brodner
  */
 public class UpdateContentSyncTest extends DesktopSyncMacTest
-{   
+{
     TextEdit notepad = new TextEdit();
     FinderExplorer explorer = new FinderExplorer();
 
@@ -56,7 +58,7 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
      * Step17 - Wait for the sync time of 2 mins in case of client
      * Step18 - Validate whether the file is same and has the same version number
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void updateFileInClient()
     {
         File synchedFile = getRandomFileIn(getLocalSiteLocationClean(), "updateSyncFile", "rtf");
@@ -80,14 +82,20 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
             syncWaitTime(CLIENTSYNCTIME);
             share.refreshSharePage(drone);
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
+            downloadFile.delete();
             share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
-            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
+            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()), 
+                    String.format("Synched file {%s} is the same as downloaded file {%s}.",synchedFile.getPath(), downloadFile.getPath()));
             notepad.close(synchedFile);
             syncWaitTime(CLIENTSYNCTIME);
             downloadFile.delete();
+            
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
             share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
-            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
+            
+            LdtpUtils.waitUntilFileExistsOnDisk(downloadFile);
+            Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()), 
+                    String.format("Synched file {%s} is the same as downloaded file {%s}.",synchedFile.getPath(), downloadFile.getPath()));
         }
         catch (Exception e)
         {
@@ -112,7 +120,7 @@ public class UpdateContentSyncTest extends DesktopSyncMacTest
      * Step7 - Wait for the file to synced to client - which is 5 mins in case of Share
      * Step8 - Compare the two files to see whether the same
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void updateFileInShare()
     {
         File fileTestUpdate = getRandomFileIn(getLocalSiteLocationClean(), "updateFile", "rtf");
