@@ -69,7 +69,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
      * Step6 - Validate the file name is
      * changed in share
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void renameFileInClient()
     {
         String fileRenamed = "fileRenamed.rtf";
@@ -113,7 +113,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
      * Step9 - validate in share whether the folder is renamed
      * Step10 - Validate whether the file is still present inside the folder.
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void renameFolderWithFileInClient()
     {
         String folderRename = getRandomValue("clFolderRenamed");
@@ -158,7 +158,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
      * Step7 - Wait for the sync time - server sync time
      * Step8 - In client sync location the file is renamed correctly
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void renameFileInShare()
     {
         File renamedFile = getRandomFileIn(getLocalSiteLocationClean(), "shFileRenamed", "rtf");
@@ -172,7 +172,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
             share.editContentNameInline(drone, _shFile.getName(), renamedFile.getName(), true);
 
             syncWaitTime(SERVERSYNCTIME);
-            Assert.assertTrue(renamedFile.exists(), "Renamed file in Share is now synched in Client");
+            Assert.assertTrue(renamedFile.exists(), "Renamed file in Share is now synched in Client: " + renamedFile.getPath());
         }
         catch (Exception e)
         {
@@ -188,7 +188,7 @@ public class RenameContentSyncTest extends DesktopSyncMacTest
     /**
      * Rename a folder with File in share
      */
-    @Test
+    @Test(groups = { "MacOnly"})
     public void renameFolderWithFileInShare()
     {
         File renamedFolderWFile = getRandomFolderIn(getLocalSiteLocationClean(), "rnmFolderWFile");

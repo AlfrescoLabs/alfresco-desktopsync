@@ -40,8 +40,10 @@ public class SyncSystemMenu extends Application
      */
     public void synchNow()
     {
+        logger.info("Force Sync process from Sys Tray!");
         openTrayMenu();
         getLdtp().click("mnuSyncNow!");
+        getLdtp().waitTime(5);
     }
 
     /**
@@ -63,7 +65,7 @@ public class SyncSystemMenu extends Application
         {
             if (e.getMessage().contains(getWaitWindow()))
             {
-                logger.error("Please restart Desktop Sync application!");
+                logger.error("Could not open Sys Tray of Desktop Sync. Please restart application!");
             }
             else
             {
