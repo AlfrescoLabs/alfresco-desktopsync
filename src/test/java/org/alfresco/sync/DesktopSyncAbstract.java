@@ -54,7 +54,8 @@ public abstract class DesktopSyncAbstract
     SyncSystemMenu contextMenu = new SyncSystemMenu();
     ManageAccount account = new ManageAccount();
 
-    protected static long SERVERSYNCTIME = 300000;
+   // protected static long SERVERSYNCTIME = 300000;
+    protected static long SERVERSYNCTIME = 60000;
     protected static long CLIENTSYNCTIME = 60000;
     protected static String downloadPath;
     public static long maxWaitTime_CloudSync = 50000;
@@ -97,7 +98,7 @@ public abstract class DesktopSyncAbstract
     @AfterSuite(alwaysRun = true)
     public void closeWebDrone()
     {
-        // Delete the site before close
+//        // Delete the site before close
         if (SystemUtils.OS_NAME.contains("Windows"))
         {
             removeAccount();
@@ -109,8 +110,8 @@ public abstract class DesktopSyncAbstract
         // Close the browser
         if (drone != null)
         {
-            drone.quit();
-            drone = null;
+          drone.quit();
+          drone = null;
         }
     }
 

@@ -62,10 +62,10 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             drone = getWebDrone();
             userInfo = new String[] { username, password };
 
-            // Site creation for windows
+//            // Site creation for windows
             if(SystemUtils.OS_NAME.contains("Windows"))
-            {
-                initialSiteSetUp();
+             {
+                  initialSiteSetUp();
             }
         }
         catch (Exception e)
@@ -88,7 +88,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         share.createSite(drone, siteName, siteName, "public");
         logger.info("site created - successful"  + siteName);
         share.openSitesDocumentLibrary(drone, siteName);
-        share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
+        initialShareFile =  share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
         share.uploadFile(drone, initialShareFile);
         shareLogin.logout(drone);
         }
