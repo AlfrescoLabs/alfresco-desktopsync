@@ -7,12 +7,12 @@
 	<test name="initialsync">
         <classes>
             <class name="org.alfresco.os.win.client.ManageAccountTest" />
-<!--   			<class name="org.alfresco.os.win.app.CreateContentSyncTest"/> -->
-<!-- 			<class name="org.alfresco.os.win.app.DeleteContentSyncTest"/> -->
+  			<class name="org.alfresco.os.win.app.CreateContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.DeleteContentSyncTest"/>
 			<class name="org.alfresco.os.win.app.MoveContentSyncTest"/>
-<!-- 			<class name="org.alfresco.os.win.app.RenameContentSyncTest"/> -->
-<!-- 			<class name="org.alfresco.os.win.app.UpdateContentSyncTest"/> -->
+			<class name="org.alfresco.os.win.app.RenameContentSyncTest"/>
+			<class name="org.alfresco.os.win.app.UpdateContentSyncTest"/>
    </classes> 
 	</test> 
 </suite> 
-<!-- n -->
+<!-- mvn test -DsuiteXml=win-os-smoke.xml -Dwebdrone.browser=FireFoxDownloadToDir -->

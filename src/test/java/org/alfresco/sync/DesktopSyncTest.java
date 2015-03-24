@@ -183,7 +183,7 @@ public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTest
      */
     public File getLocalSiteLocation()
     {
-        File tmp = new File(getLocalSiteLocationClean(), getClass().getSimpleName());
+        File tmp = new File(getLocalSiteLocationClean(), getClass().getSimpleName().toLowerCase());
         if (!tmp.exists())
         {
             tmp.mkdir();
