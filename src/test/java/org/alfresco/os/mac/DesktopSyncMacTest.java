@@ -25,6 +25,7 @@ import org.alfresco.os.mac.app.TextEdit;
 import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.sync.DesktopSyncTest;
+import org.apache.log4j.Logger;
 
 /**
  * Helper class that should be extended by any MacOS tests
@@ -33,6 +34,7 @@ import org.alfresco.sync.DesktopSyncTest;
  */
 public class DesktopSyncMacTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(DesktopSyncMacTest.class);    
     public enum TEST_DATA
     {
         FILE, FOLDER, CONTENT, SITE

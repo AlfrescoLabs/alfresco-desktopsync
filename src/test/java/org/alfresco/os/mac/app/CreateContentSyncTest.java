@@ -18,6 +18,7 @@ package org.alfresco.os.mac.app;
 import java.io.File;
 
 import org.alfresco.os.mac.DesktopSyncMacTest;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.Test;
@@ -30,6 +31,7 @@ import org.testng.annotations.Test;
  */
 public class CreateContentSyncTest extends DesktopSyncMacTest
 {
+    private static final Logger logger = Logger.getLogger(CreateContentSyncTest.class);
     TextEdit notepad = new TextEdit();
     File folderChild = null;
     FinderExplorer explorer = new FinderExplorer();

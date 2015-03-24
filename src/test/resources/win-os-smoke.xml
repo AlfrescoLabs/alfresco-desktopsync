@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Smoke Test Suites" preserve-order ="true" verbose="2" thread-count="0" parallel="false">
+	<listeners>
+		<listener class-name="org.alfresco.test.FailedTestListener" />
+	</listeners>
 	<test name="initialsync">
         <classes>
             <class name="org.alfresco.os.win.client.ManageAccountTest" />
