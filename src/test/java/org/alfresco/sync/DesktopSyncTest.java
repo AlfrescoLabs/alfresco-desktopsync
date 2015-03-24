@@ -22,36 +22,41 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
+import org.alfresco.test.AlfrescoTests;
 import org.alfresco.utilities.LdtpUtils;
 import org.alfresco.utils.DirectoryTree;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
-public class DesktopSyncTest extends DesktopSyncAbstract
+public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTests
 {
     Properties officeAppProperty = new Properties();
-    protected static Log logger = onThisClass();
+    protected static final Logger logger = Logger.getLogger(DesktopSyncTest.class);
     protected static String[] userInfo = null;
 
     // generic share variables used in tests
     protected static LoginActions shareLogin = new LoginActions();
     protected static SiteActions share = new SiteActions();
     protected boolean showClientFolderContent = true;
-
+    protected static String SCREENSHOTS_FOLDER = "screenshots" + File.separator + System.getProperty("os.name") + File.separator;
+    protected boolean captureLdtpScreenshot = true;
 
     @BeforeSuite(alwaysRun = true)
     public void initialSetup()
@@ -62,10 +67,18 @@ public class DesktopSyncTest extends DesktopSyncAbstract
             drone = getWebDrone();
             userInfo = new String[] { username, password };
 
-//            // Site creation for windows
-            if(SystemUtils.OS_NAME.contains("Windows"))
-             {
-                  initialSiteSetUp();
+            try
+            {
+                new File(SCREENSHOTS_FOLDER).mkdir();
+            }
+            catch (Exception e)
+            {
+                logger.error("Cannot initialize SCREENSTHOT FOLDER: " + SCREENSHOTS_FOLDER);
+            }
+            // // Site creation for windows
+            if (SystemUtils.OS_NAME.contains("Windows"))
+            {
+                initialSiteSetUp();
             }
         }
         catch (Exception e)
@@ -82,17 +95,17 @@ public class DesktopSyncTest extends DesktopSyncAbstract
     {
         try
         {
-        File initialShareFile = getRandomFile("initialShareFile", "txt");
-        siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
-        shareLogin.loginToShare(drone, userInfo, shareUrl);
-        share.createSite(drone, siteName, siteName, "public");
-        logger.info("site created - successful"  + siteName);
-        share.openSitesDocumentLibrary(drone, siteName);
-        initialShareFile =  share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
-        share.uploadFile(drone, initialShareFile);
-        shareLogin.logout(drone);
+            File initialShareFile = getRandomFile("initialShareFile", "txt");
+            siteName = "desktopsyncsite" + RandomStringUtils.randomAlphanumeric(2);
+            shareLogin.loginToShare(drone, userInfo, shareUrl);
+            share.createSite(drone, siteName, siteName, "public");
+            logger.info("site created - successful" + siteName);
+            share.openSitesDocumentLibrary(drone, siteName);
+            initialShareFile = share.newFile(initialShareFile.getName(), "Initial file uploaded in share");
+            share.uploadFile(drone, initialShareFile);
+            shareLogin.logout(drone);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.error("Failed to create file in share :" + this.getClass(), e);
         }
@@ -100,10 +113,10 @@ public class DesktopSyncTest extends DesktopSyncAbstract
 
     @BeforeClass(alwaysRun = true)
     public void initialSetupOfShare() throws Exception
-    {   
+    {
         logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
-    
+
     /**
      * Util method for waiting
      *
@@ -162,17 +175,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         String encoding = "UTF-8";
         InputStream in = new FileInputStream(path);
         return IOUtils.toByteArray(new InputStreamReader(in), encoding);
-    }
-
-    /**
-     * This will return the logger of the caller
-     * 
-     * @return logger of the class name
-     */
-    protected static Log onThisClass()
-    {
-        StackTraceElement thisCaller = Thread.currentThread().getStackTrace()[2];
-        return LogFactory.getLog(thisCaller.getClassName());
     }
 
     /**
@@ -285,5 +287,42 @@ public class DesktopSyncTest extends DesktopSyncAbstract
         {
             new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content AFTER test:");
         }
+    }
+
+    @Override
+    public void saveScreenShot(String methodName) throws IOException
+    {
+        Date dNow = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy.MM.dd(hh-mm)");
+
+        File htmlScreen = new File(String.format("%s%s_%s.png", SCREENSHOTS_FOLDER, ft.format(dNow), methodName));
+        // this will be visible in Reporter output in html
+
+        if (drone != null)
+        {
+            File file = drone.getScreenShot();
+            FileUtils.copyFile(file, htmlScreen);
+            logger.info("HTML Screenshot saved to: " + htmlScreen.getPath());
+            Reporter.log((String.format("<br>HTML Screenshots: <a href='../%s'><img src='../%s' height='70' width='100'>%s</a>", htmlScreen.getPath(),
+                    htmlScreen.getPath(), htmlScreen.getName())));
+        }
+        if (captureLdtpScreenshot)
+        {
+            File screen = LdtpUtils.getScreenShot();
+            if (screen != null)
+            {
+                File ldtpScreen = new File(htmlScreen.getParent(), "LDTP_" + htmlScreen.getName()); // append LDTP on screenshot
+                FileUtils.copyFile(screen, ldtpScreen);
+                logger.info("LDTP Screenshot saved to: " + ldtpScreen.getPath());
+                Reporter.log((String.format("<br>LDTP Screenshots: <a href='../%s'><img src='../%s' height='70' width='100'>%s</a>", ldtpScreen.getPath(),
+                        ldtpScreen.getPath(), ldtpScreen.getName())));
+            }
+        }
+    }
+
+    @Override
+    public void savePageSource(String methodName) throws IOException
+    {
+        logger.info("No code implemented, for saving page source");
     }
 }

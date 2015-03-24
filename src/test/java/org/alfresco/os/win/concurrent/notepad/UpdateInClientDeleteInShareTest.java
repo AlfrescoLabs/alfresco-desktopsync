@@ -1,7 +1,8 @@
 package org.alfresco.os.win.concurrent.notepad;
 
+import java.io.File;
+
 import org.alfresco.os.win.app.Notepad;
-import org.alfresco.os.win.app.WindowsExplorer;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
@@ -10,8 +11,6 @@ import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * This class will contain all the test cases related to Concurrent

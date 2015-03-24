@@ -190,7 +190,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
-            logger.info(e);
+            logger.error(e);
             throw new SkipException("share creation failed ", e);
         }
     }
