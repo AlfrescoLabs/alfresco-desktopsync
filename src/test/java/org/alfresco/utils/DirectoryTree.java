@@ -16,7 +16,8 @@
 package org.alfresco.utils;
 
 import java.io.File;
-import org.apache.commons.logging.Log;
+
+import org.apache.log4j.Logger;
 
 /**
  * Print Directory Tree structure
@@ -44,7 +45,7 @@ public class DirectoryTree
         return parseRootFolder(getRoot(), 0, getInfoTree());
     }
 
-    public void showTree(Log logger, String info)
+    public void showTree(Logger logger, String info)
     {
         logger.info(info + "\n" + showTree());
     }

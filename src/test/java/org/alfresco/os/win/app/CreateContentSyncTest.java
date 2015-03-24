@@ -25,6 +25,7 @@ import org.alfresco.po.share.site.document.GoogleDocsRenamePage;
 import org.alfresco.po.share.site.document.GoogleSignUpPage;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.TestException;
@@ -39,6 +40,7 @@ import org.testng.annotations.Test;
  */
 public class CreateContentSyncTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(CreateContentSyncTest.class);
     Notepad notepad = new Notepad();
 
     File folderChild = null;

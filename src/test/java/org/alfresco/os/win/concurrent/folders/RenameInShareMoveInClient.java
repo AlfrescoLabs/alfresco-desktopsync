@@ -1,19 +1,18 @@
 package org.alfresco.os.win.concurrent.folders;
 
+import java.io.File;
+
 import org.alfresco.os.win.app.Notepad;
 import org.alfresco.os.win.app.WindowsExplorer;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
-import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.TestException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * This class will contain all the test cases related to Concurrent rename of folder

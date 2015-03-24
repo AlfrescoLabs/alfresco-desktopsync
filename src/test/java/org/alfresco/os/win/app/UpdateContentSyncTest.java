@@ -22,6 +22,7 @@ import org.alfresco.po.share.site.document.ContentDetails;
 import org.alfresco.po.share.site.document.ContentType;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.TestException;
@@ -35,6 +36,7 @@ import org.testng.annotations.Test;
  */
 public class UpdateContentSyncTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(UpdateContentSyncTest.class);
     Notepad notepad = new Notepad();
     WindowsExplorer explorer = new WindowsExplorer();
     SyncSystemMenu contenxtMenu = new SyncSystemMenu();
