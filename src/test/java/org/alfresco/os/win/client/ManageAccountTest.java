@@ -5,7 +5,6 @@ import org.alfresco.os.win.desktopsync.ManageFolders;
 import org.alfresco.os.win.desktopsync.ManageFolders.syncOptions;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.sync.DesktopSyncTest;
-import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;

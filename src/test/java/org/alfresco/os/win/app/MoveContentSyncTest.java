@@ -92,7 +92,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed -  initialSetupOfShare ", e);
         }
     }
@@ -154,6 +154,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed - moveFolderwithFileWithInSubInClient ", e);
         }
         finally
@@ -189,6 +190,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Exception e)
         {
+            logger.info(e);
             throw new SkipException("share creation failed ", e);
         }
     }
@@ -219,6 +221,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("Share data setup in share failed ", e);
         }
 
@@ -243,13 +246,13 @@ public class MoveContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            share.copyOrMoveArtifact(drone, "All Sites", siteNameToMoveShare, null, folderNameShare.getName(), "Move");
+            share.copyOrMoveArtifact(drone, "All Sites", siteNameToMoveShare, folderNameShare.getName(), "Move",null);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(folderNameShare.exists(), "Folder move performed in share is synced correctly");
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed - moveFolderOutOfSubInShare ", e);
         }
         finally
@@ -278,7 +281,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
-            share.copyOrMoveArtifact(drone, "All Sites", siteName, folderToMoveShare.getName(), folderName_2Share.getName(), "Move");
+            share.copyOrMoveArtifact(drone, "All Sites", siteName,folderName_2Share.getName()  , "Move",getLocalSiteLocation().getName(),folderToMoveShare.getName());
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(
                     LdtpUtils.isFilePresent(folderToMoveShare.getAbsolutePath() + File.separator + folderName_2Share.getName() + File.separator
@@ -286,6 +289,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            e.printStackTrace();
             throw new SkipException("test case failed - moveFolderWithInSubInShare", e);
         }
         finally
@@ -331,7 +335,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, emptyFileName.getName()), "File got sycned to the client");
-            explorer.activateApplicationWindow(siteName);
+            explorer.activateApplicationWindow(getLocalSiteLocation().getName());
             explorer.moveFolder(emptyFileName, emptyFolderName);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
@@ -343,6 +347,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed - setupMoveFileInsideEmptyFolderInClient ", e);
         }
         finally
@@ -372,7 +377,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
             explorer.openApplication();
             explorer.openFolder(getLocalSiteLocation());
             explorer.createNewFolderMenu(folderNameToMove.getName());
-            explorer.rightClickCreate(siteName, fileName.getName(), type.TEXTFILE);
+            explorer.rightClickCreate(getLocalSiteLocation().getName(), fileName.getName(), type.TEXTFILE);
             explorer.moveFolder(fileName, folderNameToMove);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
@@ -385,6 +390,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed - moveFileInsideFolderInClient", e);
         }
         finally
@@ -415,13 +421,13 @@ public class MoveContentSyncTest extends DesktopSyncTest
         {
             explorer.openApplication();
             explorer.openFolder(getLocalSiteLocation());
-            explorer.rightClickCreate(siteName, fileToMove.getName(), type.TEXTFILE);
+            explorer.rightClickCreate(getLocalSiteLocation().getName(), fileToMove.getName(), type.TEXTFILE);
             syncWaitTime(CLIENTSYNCTIME);
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue(share.isFileVisible(drone, fileToMove.getName()), "the file created is visible in share");
-            explorer.activateApplicationWindow(siteName);
+            explorer.activateApplicationWindow(getLocalSiteLocation().getName());
             explorer.moveFolder(fileToMove, downloadLocation);
             explorer.closeExplorer();
             syncWaitTime(CLIENTSYNCTIME);
@@ -431,6 +437,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed - moveFileOutOfSubInClient ", e);
         }
         finally
@@ -452,6 +459,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         try
         {
             explorer.openApplication();
+            logger.info("download location " + downloadLocation);
             explorer.openFolder(downloadLocation);
             explorer.moveFolder(moveFileOutOFSub, getLocalSiteLocation());
             explorer.closeExplorer();
@@ -465,6 +473,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
+            logger.error(e);
             throw new SkipException("test case failed - moveFileIntoSubClient ", e);
         }
         finally

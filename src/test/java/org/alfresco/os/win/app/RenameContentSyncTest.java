@@ -17,6 +17,7 @@ package org.alfresco.os.win.app;
 
 import java.io.File;
 
+import org.alfresco.po.share.site.document.DocumentLibraryPage;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
@@ -68,9 +69,9 @@ public class RenameContentSyncTest extends DesktopSyncTest
             explorer.closeExplorer();
 
             syncWaitTime(CLIENTSYNCTIME);
-            share.openSitesDocumentLibrary(drone, siteName);
-            share.navigateToFolder(drone, getLocalSiteLocation().getName());
+            share.refreshSharePage(drone);
             Assert.assertTrue(share.isFileVisible(drone, fileRenamed.getName()));
+            Assert.assertFalse(share.isFileVisible(drone, fileToRename.getName()));
         }
         catch (Throwable e)
         {
@@ -96,6 +97,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
      * Step9 - validate in share whether the folder is renamed
      * Step10 - Validate whether the file is still present inside the folder.
      */
+    @SuppressWarnings("static-access")
     @Test
     public void renameFolderInClient()
     {
@@ -108,11 +110,12 @@ public class RenameContentSyncTest extends DesktopSyncTest
             explorer.openApplication();
             explorer.openFolder(folder.getParentFile());
             explorer.createAndOpenFolder(folder.getName());
-            explorer.goBack(folder.getParentFile().getName());
+            explorer.goBack(getLocalSiteLocation().getName());
             notepad.openApplication();
             notepad.saveAs(folderFile);
             notepad.close(folderFile);
             syncWaitTime(CLIENTSYNCTIME);
+            
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
@@ -121,15 +124,18 @@ public class RenameContentSyncTest extends DesktopSyncTest
             Assert.assertTrue(share.isFileVisible(drone, folderFile.getName()), "File created in Folder was synced in Share");
             explorer.rename(folder, folderRename);
             syncWaitTime(CLIENTSYNCTIME);
-            share.navigateToDocuemntLibrary(drone, siteName);
+            
+            DocumentLibraryPage docLib = (DocumentLibraryPage) share.refreshSharePage(drone);
+            docLib.selectDocumentLibrary(drone);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertTrue((share.isFileVisible(drone, folderRename.getName())), "Renamed folder was synced in Share");
+            Assert.assertFalse(share.isFileVisible(drone,folderFile.getName()), "old folder is renamed correctly");
             share.navigateToFolder(drone, folderRename.getName());
             Assert.assertTrue((share.isFileVisible(drone, folderFile.getName())), "File exists in renamed folder in Share");
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            logger.error(e);
             throw new SkipException("test case failed- renameFolderInClient", e);
         }
         finally
@@ -162,6 +168,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(fileInShare.exists(), "File exists in Client");
+            
             share.editContentNameInline(drone, fileTest.getName(), renamedFile.getName(), true);
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertFalse(fileTest.exists(), "Original file does not exists in Client");
@@ -217,6 +224,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     // }
     // }
 
+    @SuppressWarnings("static-access")
     /**
      * Rename a folder with File in share
      */
@@ -236,8 +244,12 @@ public class RenameContentSyncTest extends DesktopSyncTest
             share.createFolder(drone, folderInShare.getName(), folderInShare.getName(), folderInShare.getName());
             share.navigateToFolder(drone, folderInShare.getName());
             share.uploadFile(drone, fileInShare);
-            share.navigateToDocuemntLibrary(drone, siteName);
-            fileInShare.delete();
+            
+            // Goto back to the root folder 
+            DocumentLibraryPage docLib = (DocumentLibraryPage) share.refreshSharePage(drone);
+            docLib.selectDocumentLibrary(drone);
+            share.navigateToFolder(drone, getLocalSiteLocation().getName());
+            fileInShare.delete(); 
 
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(folderInShare.exists(), "Folder created in Share was synched to Client");

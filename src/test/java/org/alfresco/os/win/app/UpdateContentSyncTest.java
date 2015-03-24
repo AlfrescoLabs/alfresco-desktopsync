@@ -75,10 +75,12 @@ public class UpdateContentSyncTest extends DesktopSyncTest
             notepad.save();
             notepad.focus(synchedFile);
             syncWaitTime(CLIENTSYNCTIME);
+            
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.1", "Appropriate version found on synched file in share");
+           
             notepad.appendData("adding another line of text");
             notepad.save();
 
@@ -88,6 +90,8 @@ public class UpdateContentSyncTest extends DesktopSyncTest
             Assert.assertEquals(share.getDocLibVersionInfo(drone, synchedFile.getName()), "1.2", "Appropriate version found on synched file in share");
             share.shareDownloadFileFromDocLib(drone, synchedFile.getName(), downloadFile.getPath());
             Assert.assertTrue(compareTwoFiles(synchedFile.getPath(), downloadFile.getPath()));
+           
+            // this is to re validate that even after closing the file is same 
             notepad.close(synchedFile);
             syncWaitTime(CLIENTSYNCTIME);
             downloadFile.delete();
@@ -142,7 +146,6 @@ public class UpdateContentSyncTest extends DesktopSyncTest
             Assert.assertTrue(fileTestUpdate.exists(), "Share new version file is synched on client." + fileTestUpdate.getName());
 
             share.uploadNewVersionOfDocument(drone, fileTestUpdate.getName(), fileToUload.getName(), "test sync update");
-         //   share.shareDownloadFileFromDocLib(drone, fileTestUpdate.getName(), downloadFile.getPath());
             syncWaitTime(SERVERSYNCTIME);
             Assert.assertTrue(compareTwoFiles(fileTestUpdate.getPath(), downloadFile.getPath()));
         }
@@ -172,7 +175,7 @@ public class UpdateContentSyncTest extends DesktopSyncTest
 
     public void setupEditProperties()
     {
-
+        
     }
 
     public void editPropertiesInShare()
