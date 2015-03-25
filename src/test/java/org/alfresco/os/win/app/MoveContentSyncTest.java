@@ -24,6 +24,7 @@ import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.alfresco.utilities.LdtpUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -36,6 +37,7 @@ import org.testng.annotations.Test;
  */
 public class MoveContentSyncTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(MoveContentSyncTest.class);
     Notepad notepad = new Notepad();
     WindowsExplorer explorer = new WindowsExplorer();
     File moveFileOutOFSub = null;

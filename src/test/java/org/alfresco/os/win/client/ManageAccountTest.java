@@ -5,6 +5,7 @@ import org.alfresco.os.win.desktopsync.ManageFolders;
 import org.alfresco.os.win.desktopsync.ManageFolders.syncOptions;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.sync.DesktopSyncTest;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -12,6 +13,7 @@ import org.testng.annotations.Test;
 
 public class ManageAccountTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(ManageAccountTest.class);
     ManageAccount syncAccount = new ManageAccount();
     ManageFolders syncSelection = new ManageFolders();
     SyncSystemMenu contextMenu = new SyncSystemMenu();

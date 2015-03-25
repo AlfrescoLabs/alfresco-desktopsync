@@ -20,6 +20,7 @@ import java.io.File;
 import org.alfresco.po.share.site.document.DocumentLibraryPage;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -33,6 +34,7 @@ import org.testng.annotations.Test;
  */
 public class RenameContentSyncTest extends DesktopSyncTest
 {
+    private static final Logger logger = Logger.getLogger(RenameContentSyncTest.class);
     Notepad notepad = new Notepad();
     WindowsExplorer explorer = new WindowsExplorer();
 

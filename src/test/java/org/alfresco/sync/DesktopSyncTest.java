@@ -48,7 +48,7 @@ import org.testng.annotations.BeforeSuite;
 public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTests
 {
     Properties officeAppProperty = new Properties();
-    protected static final Logger logger = Logger.getLogger(DesktopSyncTest.class);
+    private static final Logger logger = Logger.getLogger(DesktopSyncTest.class);
     protected static String[] userInfo = null;
 
     // generic share variables used in tests
