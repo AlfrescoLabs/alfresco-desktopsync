@@ -1,6 +1,7 @@
 package org.alfresco.os.win.desktopsync;
 
 import org.alfresco.os.win.Application;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -10,9 +11,9 @@ import org.alfresco.os.win.Application;
  */
 public class SyncSystemMenu extends Application
 {
-
+    private static Logger logger = Logger.getLogger(SyncSystemMenu.class);
     String notificationWindowName = "Context";
-    String alfrescoNotificationItemName = "Latest*";
+    String alfrescoNotificationItemName = "*ync*";
     String desktopWindowName = "pane0";
 
     public SyncSystemMenu()
@@ -156,8 +157,7 @@ public class SyncSystemMenu extends Application
         logger.info("Force Sync process from Sys Tray!");
         openContext();
         getLdtp().setWindowName(notificationWindowName);
-        getLdtp().selectMenuItem("Sync Now");
-        //waiting 3 seconds to progress
+        getLdtp().selectMenuItem("Sync Now");      
         getLdtp().waitTime(3);
     }
 }

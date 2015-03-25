@@ -14,8 +14,6 @@
 			<class name="org.alfresco.os.mac.app.UpdateContentSyncTest" />
 			<class name="org.alfresco.os.mac.app.MoveContentSyncClientTest" />
 			<class name="org.alfresco.os.mac.app.MoveContentSyncShareTest" />
-			<!-- <class name="org.alfresco.os.mac.app.ScreenShotTest"/> -->
-
 		</classes>
 	</test>
 </suite>

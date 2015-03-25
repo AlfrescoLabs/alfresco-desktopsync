@@ -20,6 +20,7 @@ package org.alfresco.os.win.desktopsync;
 
 import org.alfresco.os.common.ApplicationBase;
 import org.alfresco.os.win.Application;
+import org.apache.log4j.Logger;
 
 import com.cobra.ldtp.Ldtp;
 import com.cobra.ldtp.LdtpExecutionError;
@@ -31,7 +32,7 @@ import com.cobra.ldtp.LdtpExecutionError;
  */
 public class ManageAccount extends Application
 {
-
+    private static Logger logger = Logger.getLogger(ManageAccount.class);
     /**
      * Method to start up the windows native client
      */

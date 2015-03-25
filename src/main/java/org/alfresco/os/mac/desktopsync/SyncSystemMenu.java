@@ -16,6 +16,8 @@
 package org.alfresco.os.mac.desktopsync;
 
 import org.alfresco.os.mac.Application;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.cobra.ldtp.LdtpExecutionError;
 
@@ -26,6 +28,7 @@ import com.cobra.ldtp.LdtpExecutionError;
  */
 public class SyncSystemMenu extends Application
 {
+    private static Log logger = LogFactory.getLog(SyncSystemMenu.class);
     public SyncSystemMenu()
     {
         setApplicationName("AlfrescoDesktopSyncClient");

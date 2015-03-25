@@ -23,6 +23,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.testng.AssertJUnit;
 import org.testng.TestException;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
@@ -32,11 +33,12 @@ import org.testng.annotations.Test;
  * 
  * @author Paul Brodner
  */
+@Listeners(org.alfresco.test.FailedTestListener.class)
 public class ScreenShotTest extends DesktopSyncMacTest
 {
     private static final Logger logger = Logger.getLogger(ScreenShotTest.class);
 
-    @Test(groups = { "Development" })
+    @Test(groups = { "development" })
     public void test1eql2()
     {
         try
@@ -50,7 +52,7 @@ public class ScreenShotTest extends DesktopSyncMacTest
         }
     }
 
-    @Test(groups = { "Development" })
+    @Test(groups = { "development" })
     public void ldtp()
     {
         try

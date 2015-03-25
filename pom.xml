@@ -130,6 +130,9 @@
 					<suiteXmlFiles>
 						<suiteXmlFile>src/test/resources/${suiteXml}</suiteXmlFile>
 					</suiteXmlFiles>
+					<configuration>
+						<excludedGroups>development</excludedGroups>
+					</configuration>
 				</configuration>
 			</plugin>
 		</plugins>
