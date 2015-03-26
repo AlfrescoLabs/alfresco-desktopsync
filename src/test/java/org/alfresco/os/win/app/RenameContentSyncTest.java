@@ -99,7 +99,6 @@ public class RenameContentSyncTest extends DesktopSyncTest
      * Step9 - validate in share whether the folder is renamed
      * Step10 - Validate whether the file is still present inside the folder.
      */
-    @SuppressWarnings("static-access")
     @Test
     public void renameFolderInClient()
     {
@@ -226,7 +225,6 @@ public class RenameContentSyncTest extends DesktopSyncTest
     // }
     // }
 
-    @SuppressWarnings("static-access")
     /**
      * Rename a folder with File in share
      */

@@ -49,8 +49,6 @@ public class DeleteContentSyncTest extends DesktopSyncMacTest
     @BeforeClass
     public void prepareData() throws Exception
     {
-        super.initialSetupOfShare();
-
         _deleteFileClient = getRandomFileIn(getLocalSiteLocationClean(), "deleteFile", "rtf");
         notepad.openApplication();
         notepad.save(_deleteFileClient);

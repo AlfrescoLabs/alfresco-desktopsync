@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,18 +30,13 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.test.AlfrescoTests;
 import org.alfresco.utilities.LdtpUtils;
-import org.alfresco.utils.DirectoryTree;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
-import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
 public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTests
@@ -109,12 +103,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTest
         {
             logger.error("Failed to create file in share :" + this.getClass(), e);
         }
-    }
-
-    @BeforeClass(alwaysRun = true)
-    public void initialSetupOfShare() throws Exception
-    {
-        logger.info("Initialize Setup of Class:" + getClass().getSimpleName());
     }
 
     /**
@@ -267,26 +255,6 @@ public class DesktopSyncTest extends DesktopSyncAbstract implements AlfrescoTest
     protected boolean isFolder(File fileOrFolder)
     {
         return (FilenameUtils.getExtension(fileOrFolder.getName()).isEmpty());
-    }
-
-    @BeforeMethod
-    public void showStartInfo(Method method)
-    {
-        logger.info("*** START TestNG Method: {" + method.getName() + "} ***");
-        if (showClientFolderContent)
-        {
-            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content BEFORE test:");
-        }
-    }
-
-    @AfterMethod
-    public void showEndInfo(ITestResult method)
-    {
-        logger.info("*** END TestNG Method:   {" + method.getMethod().getMethodName() + "} ***");
-        if (showClientFolderContent)
-        {
-            new DirectoryTree(getLocalSiteLocationClean()).showTree(logger, "CLIENT's local site content AFTER test:");
-        }
     }
 
     @Override
