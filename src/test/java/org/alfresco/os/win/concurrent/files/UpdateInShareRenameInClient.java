@@ -1,4 +1,4 @@
-package org.alfresco.os.win.concurrent.notepad;
+package org.alfresco.os.win.concurrent.files;
 
 import org.alfresco.os.win.app.Notepad;
 import org.alfresco.os.win.app.WindowsExplorer;

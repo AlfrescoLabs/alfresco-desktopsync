@@ -1,7 +1,9 @@
-package org.alfresco.os.win.concurrent.notepad;
+package org.alfresco.os.win.concurrent.files;
 
 import org.alfresco.os.win.app.Notepad;
 import org.alfresco.os.win.app.WindowsExplorer;
+import org.alfresco.os.win.app.office.MicrosoftOffice2010;
+import org.alfresco.os.win.app.office.MicrosoftOfficeBase;
 import org.alfresco.os.win.desktopsync.SyncSystemMenu;
 import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
@@ -30,40 +32,42 @@ public class LockInClientDeleteInShareTest extends DesktopSyncTest
     String resolveUsingClient = "ResolveUsingLocal";
     String resolveUsingRemote = "ResolveUsingRemote";
     String conflictTypeUpdate = "Conflict-Update";
-
-
+    MicrosoftOffice2010 office = new MicrosoftOffice2010(MicrosoftOfficeBase.VersionDetails.WORD);
     /**
      * File declaration for test LockInClientDeleteInShare
      */
     File concurrentLockDelete = null;
 
     /**
-     * This BeforeMethod will create a Notepad file in Client and validate whether it is
+     * This BeforeMethod will create a Word file in Client and validate whether it is
      * synced in Share. Then it will keep the file opened (locked for editing) while
      * it is being deleted in Share and trigger a conflict.
-     * Step1 - Create a file in Notepad and save it without any content without closing it.
+     * Step1 - Create a file in Word and save it.
      * Step2 - Wait for Sync time which is 2 minutes for Client.
      * Step3 - Login in Share.
      * Step4 - Access sync site.
      * Step5 - Check the new file created in Client is synced in Share.
-     * Step6 - Delete the file in Share while it is still open in Client.
+     * Step6 - Delete the file in Share while it is open in Client.
      * Step7 - Wait for Sync time which is 5 minutes for Share.
-     * Step8 - Close the file in Client.
+     * Step8 - Add a new line of text and then close the file in Client.
      * Step9 - Wait for Sync time which is 2 minutes for Client.
      * Step10 - Check if conflict appears.
      *
      * @throws Exception
      */
-    @BeforeMethod
+    @Test
     public void setupLockInClientDeleteInShare()
     {
-        concurrentLockDelete = getRandomFileIn(getLocalSiteLocation(), "concLockDelete", "txt");
+        concurrentLockDelete = getRandomFileIn(getLocalSiteLocation(), "concLockDelete", "docx");
         try
         {
-            notepad.openApplication();
-            notepad.saveAs(concurrentLockDelete);
-
+            office.openApplication();
+            office.saveAsOffice(concurrentLockDelete.getPath());
+            office.closeApplication(concurrentLockDelete);
             syncWaitTime(CLIENTSYNCTIME);
+
+            office.openApplication();
+            office.openOfficeFromFileMenu(concurrentLockDelete.getPath());
             shareLogin.loginToShare(drone, userInfo, shareUrl);
             share.openSitesDocumentLibrary(drone, siteName);
             share.navigateToFolder(drone, getLocalSiteLocation().getName());
@@ -71,10 +75,11 @@ public class LockInClientDeleteInShareTest extends DesktopSyncTest
             share.deleteContentInDocLib(drone,concurrentLockDelete.getName());
 
             syncWaitTime(SERVERSYNCTIME);
-            notepad.save();
-            notepad.close(concurrentLockDelete);
+            office.editOffice("new line of text.");
+            office.closeApplication(concurrentLockDelete);
 
             syncWaitTime(CLIENTSYNCTIME);
+            //toDo - check type of conflict
             notification.isConflictStatusCorrect(conflictTypeUpdate, concurrentLockDelete.getName()); //or Conflict-Delete
         }
         catch (Throwable e)
