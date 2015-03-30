@@ -26,7 +26,7 @@ import org.alfresco.utilities.LdtpUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -95,7 +95,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed -  initialSetupOfShare ", e);
+            throw new TestException("Test case failed -  initialSetupOfShare ", e);
         }
     }
 
@@ -157,7 +157,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - moveFolderwithFileWithInSubInClient ", e);
+            throw new TestException("Test case failed - moveFolderwithFileWithInSubInClient ", e);
         }
         finally
         {
@@ -193,7 +193,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Exception e)
         {
             logger.error(e);
-            throw new SkipException("share creation failed ", e);
+            throw new TestException("Share creation failed ", e);
         }
     }
 
@@ -224,7 +224,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("Share data setup in share failed ", e);
+            throw new TestException("Share data setup in share failed ", e);
         }
 
     }
@@ -255,7 +255,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - moveFolderOutOfSubInShare ", e);
+            throw new TestException("Test case failed - moveFolderOutOfSubInShare ", e);
         }
         finally
         {
@@ -292,7 +292,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - moveFolderWithInSubInShare", e);
+            throw new TestException("Test case failed - moveFolderWithInSubInShare", e);
         }
         finally
         {
@@ -350,7 +350,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - setupMoveFileInsideEmptyFolderInClient ", e);
+            throw new TestException("Test case failed - setupMoveFileInsideEmptyFolderInClient ", e);
         }
         finally
         {
@@ -393,7 +393,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - moveFileInsideFolderInClient", e);
+            throw new TestException("Test case failed - moveFileInsideFolderInClient", e);
         }
         finally
         {
@@ -440,7 +440,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - moveFileOutOfSubInClient ", e);
+            throw new TestException("Test case failed - moveFileOutOfSubInClient ", e);
         }
         finally
         {
@@ -476,7 +476,7 @@ public class MoveContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - moveFileIntoSubClient ", e);
+            throw new TestException("Test case failed - moveFileIntoSubClient ", e);
         }
         finally
         {

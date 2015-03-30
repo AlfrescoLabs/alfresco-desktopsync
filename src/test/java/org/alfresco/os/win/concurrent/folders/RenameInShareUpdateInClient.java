@@ -90,7 +90,7 @@ public class RenameInShareUpdateInClient extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new TestException("test case failed - setupRenameInShareUpdateInClient", e);
+            throw new TestException("Test case failed - setupRenameInShareUpdateInClient", e);
         }
         finally
         {

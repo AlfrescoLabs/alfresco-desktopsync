@@ -22,7 +22,7 @@ import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
@@ -78,7 +78,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - renameFileInClient ", e);
+            throw new TestException("Test case failed - renameFileInClient ", e);
         }
         finally
         {
@@ -137,7 +137,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed- renameFolderInClient", e);
+            throw new TestException("Test case failed- renameFolderInClient", e);
         }
         finally
         {
@@ -178,7 +178,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed-renameFileInShare", e);
+            throw new TestException("Test case failed-renameFileInShare", e);
         }
         finally
         {
@@ -217,7 +217,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
     // catch (Throwable e)
     // {
     // e.printStackTrace();
-    // throw new SkipException("test case failed-renameFolderInShare", e);
+    // throw new TestException("test case failed-renameFolderInShare", e);
     // }
     // finally
     // {
@@ -262,7 +262,7 @@ public class RenameContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed-renameFolderInShare", e);
+            throw new TestException("Test case failed-renameFolderInShare", e);
         }
         finally
         {

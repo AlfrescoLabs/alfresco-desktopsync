@@ -86,7 +86,7 @@ public class DeleteInShareUpdateInClient extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new TestException("test case failed - setupDeleteInShareUpdateInClient", e);
+            throw new TestException("Test case failed - setupDeleteInShareUpdateInClient", e);
         }
         finally
         {

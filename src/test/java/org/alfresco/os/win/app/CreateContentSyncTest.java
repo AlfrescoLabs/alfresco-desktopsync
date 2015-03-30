@@ -79,7 +79,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("File was not created or synched on Share", e);
+            throw new TestException("File was not created or synched on Share", e);
         }
         finally
         {
@@ -113,7 +113,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new TestException("test case failed - createFileInShare ", e);
+            throw new TestException("Test case failed - createFileInShare ", e);
         }
 
     }
@@ -156,7 +156,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - createFolderAndFileInShare ", e);
+            throw new TestException("Test case failed - createFolderAndFileInShare ", e);
         }
         finally
         {
@@ -205,7 +205,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - createFolderTreeInClient", e);
+            throw new TestException("Test case failed - createFolderTreeInClient", e);
         }
         finally
         {
@@ -256,7 +256,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("Test Case Failed - createFileInsideFolderInClient", e);
+            throw new TestException("Test Case Failed - createFileInsideFolderInClient", e);
         }
         finally
         {
@@ -296,7 +296,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - createFolderInShare ", e);
+            throw new TestException("Test case failed - createFolderInShare ", e);
         }
         finally
         {
@@ -327,7 +327,7 @@ public class CreateContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             logger.error(e);
-            throw new SkipException("test case failed - createGoogleDocInShare ", e);
+            throw new TestException("Test case failed - createGoogleDocInShare ", e);
         }
         finally
         {

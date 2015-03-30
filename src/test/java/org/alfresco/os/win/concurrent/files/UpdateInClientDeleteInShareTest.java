@@ -8,7 +8,7 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -79,7 +79,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - setupUpdateInClientDeleteInShare", e);
+            throw new TestException("Test case failed - setupUpdateInClientDeleteInShare", e);
         }
         finally
         {
@@ -107,7 +107,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingRemote", e);
+            throw new TestException("Test case failed - resolveConflictUsingRemote", e);
         }
         finally
         {
@@ -140,7 +140,7 @@ public class UpdateInClientDeleteInShareTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingLocal", e);
+            throw new TestException("Test case failed - resolveConflictUsingLocal", e);
         }
         finally
         {

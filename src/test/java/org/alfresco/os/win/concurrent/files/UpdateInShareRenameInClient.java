@@ -8,7 +8,7 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -84,7 +84,7 @@ public class UpdateInShareRenameInClient extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - updateInShareRenameInClient", e);
+            throw new TestException("Test case failed - updateInShareRenameInClient", e);
         }
         finally
         {

@@ -6,7 +6,7 @@ import org.alfresco.po.share.steps.LoginActions;
 import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -76,7 +76,7 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - setupConcurrentRenameFolder", e);
+            throw new TestException("Test case failed - setupConcurrentRenameFolder", e);
         }
         finally
         {
@@ -105,7 +105,7 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingRemote", e);
+            throw new TestException("Test case failed - resolveConflictUsingRemote", e);
         }
         finally
         {
@@ -139,7 +139,7 @@ public class ConcurrentRenameFolderTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingLocal", e);
+            throw new TestException("Test case failed - resolveConflictUsingLocal", e);
         }
         finally
         {

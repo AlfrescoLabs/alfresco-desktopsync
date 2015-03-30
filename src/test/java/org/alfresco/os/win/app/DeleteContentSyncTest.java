@@ -20,7 +20,8 @@ import java.io.File;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.test.AlfrescoTest;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 /**
@@ -73,7 +74,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - deleteFileCreated", e);
+            throw new TestException("Test case failed - deleteFileCreated", e);
         }
         finally
         {
@@ -116,7 +117,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - deleteFileCreated", e);
+            throw new TestException("Test case failed - deleteFileCreated", e);
         }
         finally
         {
@@ -163,7 +164,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - deleteFolderWithFileInShare", e);
+            throw new TestException("Test case failed - deleteFolderWithFileInShare", e);
         }
         finally
         {
@@ -221,7 +222,7 @@ public class DeleteContentSyncTest extends DesktopSyncTest
         }
         catch (Throwable e)
         {
-            throw new SkipException("test case failed - deleteFolderWithFileInClient", e.getCause());
+            throw new TestException("Test case failed - deleteFolderWithFileInClient", e.getCause());
         }
         finally
         {

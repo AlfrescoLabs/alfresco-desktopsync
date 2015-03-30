@@ -78,7 +78,7 @@ public class DeleteInClientRenameInShare extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new TestException("test case failed - setupDeleteInClientRenameInShare", e);
+            throw new TestException("Test case failed - setupDeleteInClientRenameInShare", e);
         }
         finally
         {
@@ -106,7 +106,7 @@ public class DeleteInClientRenameInShare extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingRemote", e);
+            throw new SkipException("Test case failed - resolveConflictUsingRemote", e);
         }
         finally
         {
@@ -139,7 +139,7 @@ public class DeleteInClientRenameInShare extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - resolveConflictUsingLocal", e);
+            throw new SkipException("Test case failed - resolveConflictUsingLocal", e);
         }
         finally
         {

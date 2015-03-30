@@ -8,7 +8,7 @@ import org.alfresco.po.share.steps.SiteActions;
 import org.alfresco.sync.DesktopSyncTest;
 import org.alfresco.utilities.LdtpUtils;
 import org.testng.Assert;
-import org.testng.SkipException;
+import org.testng.TestException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -79,7 +79,7 @@ public class DeleteInClientMoveInShare extends DesktopSyncTest
         catch (Throwable e)
         {
             e.printStackTrace();
-            throw new SkipException("test case failed - LockInClientMoveInShare", e);
+            throw new TestException("Test case failed - LockInClientMoveInShare", e);
         }
         finally
         {
